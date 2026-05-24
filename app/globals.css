@@ -1,7 +1,9 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  /* This forces your warm cream Figma background globally */
+  --background: #FBFAF7;
+  /* This forces charcoal/black text globally */
   --foreground: #171717;
 }
 
@@ -12,12 +14,9 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* REMOVED: The @media (prefers-color-scheme: dark) block is stripped out 
+  to prevent your computer theme from changing the page colors.
+*/
 
 body {
   background: var(--background);
