@@ -1,5 +1,6 @@
 import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/home/Hero";
+import AnimatedBlobBackground from "@/components/ui/AnimatedBlobBackground";
 import TopArchitects from "@/components/home/TopArchitects";
 import DesignShowcase from "@/components/home/DesingShowcase";
 import StatsBanner from "@/components/home/StatsBanner";
@@ -12,13 +13,14 @@ export default function Home() {
   return (
     <div className="flex min-h-screen flex-col bg-[#FBFAF7] font-sans">
       
-      {/* Navbar sits at the very top */}
-      <Navbar />
+      {/* Shared animated background for navbar + hero */}
+      <div className="relative overflow-hidden bg-[#FBFAF7]">
+        <AnimatedBlobBackground />
+        <Navbar />
+        <Hero />
+      </div>
 
       <main className="flex-1 w-full pb-16">
-        
-        {/* Replaced the placeholder with our new Animated Hero Section */}
-        <Hero />
         <StatsBanner />
         <TopArchitects />
         <Testimonials />
