@@ -49,7 +49,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="w-full bg-[#FBFAF7] py-6 border-b border-zinc-100">
+    <nav className="relative z-10 w-full py-6">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6">
         
         {/* Logo Elements */}
@@ -120,6 +120,7 @@ export default function Navbar() {
         </div>
         
       </div>
+      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" aria-hidden />
     </nav>
   );
 }
