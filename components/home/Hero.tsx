@@ -198,9 +198,10 @@ export default function Hero() {
         <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-5">
           <button
             type="button"
-            className="group relative overflow-hidden flex items-center gap-4 rounded-2xl bg-[#111111] px-7 py-4 text-[#F1F1F1] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(0,0,0,0.22)] active:scale-[0.98]"
+            className="group relative overflow-hidden flex items-center gap-4 rounded-2xl bg-[#111111] px-7 py-4 text-[#F1F1F1] transition-all duration-300 hover:bg-[#FACC15] hover:text-[#111111] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(0,0,0,0.22)] active:scale-[0.98]
+                       before:absolute before:inset-0 before:-translate-x-full before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent before:transition-transform before:duration-500 hover:before:translate-x-full"
           >
-            <svg className="w-8 h-8 fill-current" viewBox="0 0 24 24" aria-hidden>
+            <svg className="w-8 h-8 fill-current transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24" aria-hidden>
               <path d="M17.05 13.9c-.03-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.8-2.1-1.6-.2-3.2.9-4 1-1-.1-2.4-1-3.6-1-1.6 0-3.1.9-4 2.4-1.7 3-1.4 7.6.3 10 1 1.4 2.1 3 3.6 2.9 1.5-.1 2-1 3.8-1s2.2 1 3.8 1c1.6.1 2.5-1.4 3.4-2.8.6-.8 1.1-1.7 1.4-2.6-.7-.2-1.8-1-1.9-2.8zM14.6 7.4c.8-1 1.4-2.4 1.2-3.8-1.2.1-2.7.8-3.5 1.8-.7.8-1.4 2.2-1.2 3.6 1.4.1 2.7-.6 3.5-1.6z" />
             </svg>
             <div className="text-left">
@@ -215,9 +216,10 @@ export default function Hero() {
 
           <button
             type="button"
-            className="group relative overflow-hidden flex items-center gap-4 rounded-2xl bg-[#111111] px-7 py-4 text-[#F1F1F1] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(0,0,0,0.22)] active:scale-[0.98]"
+            className="group relative overflow-hidden flex items-center gap-4 rounded-2xl bg-[#111111] px-7 py-4 text-[#F1F1F1] transition-all duration-300 hover:bg-[#FACC15] hover:text-[#111111] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(0,0,0,0.22)] active:scale-[0.98]
+                       before:absolute before:inset-0 before:-translate-x-full before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent before:transition-transform before:duration-500 hover:before:translate-x-full"
           >
-            <svg className="w-8 h-8 fill-current" viewBox="0 0 24 24" aria-hidden>
+            <svg className="w-8 h-8 fill-current transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24" aria-hidden>
               <path d="M3.6 21.3L15.9 12 3.6 2.7C3.3 2.5 3 2.8 3 3.1v17.8c0 .3.3.6.6.4zm13.1-8.5l3.8-2.2c.4-.2.4-.8 0-1l-3.8-2.2-3.1 3.2 3.1 3.2zM4.6 3.5l10 5.8-2.5 2.6L4.6 3.5zm0 17l10-5.8-2.5-2.6-7.5 8.4z" />
             </svg>
             <div className="text-left">
