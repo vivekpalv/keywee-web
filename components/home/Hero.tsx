@@ -6,7 +6,7 @@ import { motion, useReducedMotion } from "framer-motion";
 const IMAGES = [
   "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=500&q=80",
   "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=500&q=80",
-  "https://images.unsplash.com/photo-1503389152951-9c3d1a41e2af?auto=format&fit=crop&w=500&q=80",
+  "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=500&q=80",
   "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=500&q=80",
   "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=500&q=80",
 ];
@@ -15,7 +15,6 @@ const IMAGES = [
 const STACK_ROTATIONS = [-26, -13, 0, 13, 26];
 
 const ENTER_EASE = [0.22, 1, 0.36, 1] as const;
-const SPREAD_EASE = [0.22, 1, 0.36, 1] as const;
 
 /** Top copy slides down from above navbar; cards rise from below. */
 const SCROLL_ENTER = {
@@ -54,7 +53,6 @@ export default function Hero() {
     return () => window.removeEventListener("resize", update);
   }, []);
 
-  const spreadDuration = prefersReducedMotion ? 0 : 0.85;
   const skipEnter = Boolean(prefersReducedMotion);
 
   return (
@@ -85,9 +83,7 @@ export default function Hero() {
             },
           }}
         >
-          <span className="text-lg" aria-hidden>
-            ✨
-          </span>
+          <span className="text-lg" aria-hidden>✨</span>
           <span>AI-powered architect matching</span>
         </motion.div>
 
@@ -144,7 +140,11 @@ export default function Hero() {
             <motion.div
               key={src}
               className="absolute bottom-0 left-1/2 -translate-x-1/2"
-              style={{ zIndex: isExpanded ? idx : stackZIndex(idx) }}
+              // Fix 1 & 3: Constant zIndex prevents paint layout thrashing. willChange forces GPU.
+              style={{ 
+                zIndex: stackZIndex(idx),
+                willChange: "transform" 
+              }}
               animate={
                 isExpanded
                   ? {
@@ -162,10 +162,13 @@ export default function Hero() {
                       rotate: STACK_ROTATIONS[idx],
                     }
               }
+              // Fix 2: Spring physics handles motion drastically smoother than cubic-beziers
               transition={{
-                duration: spreadDuration,
-                delay: isExpanded && !prefersReducedMotion ? idx * 0.05 : 0,
-                ease: SPREAD_EASE,
+                type: "spring",
+                stiffness: 140,
+                damping: 14,
+                mass: 0.8,
+                delay: isExpanded && !prefersReducedMotion ? idx * 0.06 : 0,
               }}
             >
               <div
@@ -188,6 +191,7 @@ export default function Hero() {
                   src={src}
                   alt={`Architect inspiration ${idx + 1}`}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  loading={idx === 2 ? "eager" : "lazy"} // Minor optimization: eager load the center card
                 />
               </div>
             </motion.div>
