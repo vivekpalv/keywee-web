@@ -11,18 +11,14 @@ const IMAGES = [
   "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=500&q=80",
 ];
 
-/** Rotation (deg) for each card in the centered stack — fanned deck look. */
 const STACK_ROTATIONS = [-26, -13, 0, 13, 26];
-
 const ENTER_EASE = [0.22, 1, 0.36, 1] as const;
 
-/** Top copy slides down from above navbar; cards rise from below. */
 const SCROLL_ENTER = {
   top: { y: -160, duration: 2.4 },
   bottom: { y: 340, duration: 2.8, delay: 0.9 },
 } as const;
 
-/** Horizontal offset from center for each card after spread (px at md breakpoint). */
 function spreadOffset(index: number, step: number) {
   return (index - 2) * step;
 }
@@ -55,9 +51,17 @@ export default function Hero() {
 
   const skipEnter = Boolean(prefersReducedMotion);
 
+  // 1. Mouse Tracking Function
+  // Calculates exact X and Y position of the cursor inside the element
+  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    e.currentTarget.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`);
+    e.currentTarget.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`);
+  };
+
   return (
     <section className="relative flex flex-col items-center justify-center pt-12 pb-20 px-4 sm:px-6 text-center overflow-hidden min-h-[calc(100vh-88px)]">
-      {/* Top copy — slow scroll down from above navbar */}
+      
       <motion.div
         className="relative z-10 flex flex-col items-center w-full"
         initial={skipEnter ? false : "hidden"}
@@ -99,7 +103,14 @@ export default function Hero() {
           }}
         >
           Find Your{" "}
-          <span className="bg-gradient-to-r from-[#C99700] via-[#EAB308] to-[#FACC15] bg-clip-text text-transparent">
+          {/* 2. Live Text Gradient */}
+          <span
+            onMouseMove={handleMouseMove}
+            className="text-transparent bg-clip-text"
+            style={{
+              backgroundImage: "radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), #FACC15 0%, #EAB308 45%, #C99700 100%)"
+            }}
+          >
             Perfect Architect
           </span>
         </motion.h1>
@@ -120,7 +131,6 @@ export default function Hero() {
         </motion.p>
       </motion.div>
 
-      {/* Cards + store buttons — slow scroll up from below */}
       <motion.div
         className="relative z-10 -mt-4 sm:-mt-6 flex flex-col items-center w-full"
         initial={skipEnter ? false : { opacity: 0, y: SCROLL_ENTER.bottom.y }}
@@ -134,35 +144,20 @@ export default function Hero() {
           if (!skipEnter) setIsExpanded(true);
         }}
       >
-        {/* Image gallery — fanned stack at center, then spread into a flat row */}
         <div className="relative w-full max-w-6xl h-[200px] sm:h-[280px] md:h-[320px] mb-14 sm:mb-16 flex justify-center items-end">
           {IMAGES.map((src, idx) => (
             <motion.div
               key={src}
               className="absolute bottom-0 left-1/2 -translate-x-1/2"
-              // Fix 1 & 3: Constant zIndex prevents paint layout thrashing. willChange forces GPU.
               style={{ 
                 zIndex: stackZIndex(idx),
                 willChange: "transform" 
               }}
               animate={
                 isExpanded
-                  ? {
-                      x: spreadOffset(idx, spreadStep),
-                      y: 0,
-                      scale: 1,
-                      opacity: 1,
-                      rotate: 0,
-                    }
-                  : {
-                      x: 0,
-                      y: 0,
-                      scale: 1,
-                      opacity: 1,
-                      rotate: STACK_ROTATIONS[idx],
-                    }
+                  ? { x: spreadOffset(idx, spreadStep), y: 0, scale: 1, opacity: 1, rotate: 0 }
+                  : { x: 0, y: 0, scale: 1, opacity: 1, rotate: STACK_ROTATIONS[idx] }
               }
-              // Fix 2: Spring physics handles motion drastically smoother than cubic-beziers
               transition={{
                 type: "spring",
                 stiffness: 140,
@@ -191,24 +186,32 @@ export default function Hero() {
                   src={src}
                   alt={`Architect inspiration ${idx + 1}`}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading={idx === 2 ? "eager" : "lazy"} // Minor optimization: eager load the center card
+                  loading={idx === 2 ? "eager" : "lazy"} 
                 />
               </div>
             </motion.div>
           ))}
         </div>
 
-        {/* App store buttons */}
         <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-5">
+          {/* 3. Live Button Gradient */}
           <button
             type="button"
-            className="group relative overflow-hidden flex items-center gap-4 rounded-2xl bg-[#111111] px-7 py-4 text-[#F1F1F1] transition-all duration-300 hover:bg-[#FACC15] hover:text-[#111111] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(0,0,0,0.22)] active:scale-[0.98]
-                       before:absolute before:inset-0 before:-translate-x-full before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent before:transition-transform before:duration-500 hover:before:translate-x-full"
+            onMouseMove={handleMouseMove}
+            className="group relative overflow-hidden flex items-center gap-4 rounded-2xl bg-[#111111] px-7 py-4 text-[#F1F1F1] transition-all duration-300 hover:text-[#111111] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(250,204,21,0.25)] active:scale-[0.98]"
           >
-            <svg className="w-8 h-8 fill-current transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24" aria-hidden>
+            {/* The tracking background layer */}
+            <div 
+              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" 
+              style={{
+                background: "radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), #FACC15 0%, #EAB308 45%, #C99700 100%)"
+              }}
+            />
+            
+            <svg className="relative z-10 w-8 h-8 fill-current transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24" aria-hidden>
               <path d="M17.05 13.9c-.03-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.8-2.1-1.6-.2-3.2.9-4 1-1-.1-2.4-1-3.6-1-1.6 0-3.1.9-4 2.4-1.7 3-1.4 7.6.3 10 1 1.4 2.1 3 3.6 2.9 1.5-.1 2-1 3.8-1s2.2 1 3.8 1c1.6.1 2.5-1.4 3.4-2.8.6-.8 1.1-1.7 1.4-2.6-.7-.2-1.8-1-1.9-2.8zM14.6 7.4c.8-1 1.4-2.4 1.2-3.8-1.2.1-2.7.8-3.5 1.8-.7.8-1.4 2.2-1.2 3.6 1.4.1 2.7-.6 3.5-1.6z" />
             </svg>
-            <div className="text-left">
+            <div className="relative z-10 text-left">
               <div className="text-[10px] uppercase tracking-wide opacity-70 leading-tight">
                 Download on the
               </div>
@@ -220,13 +223,21 @@ export default function Hero() {
 
           <button
             type="button"
-            className="group relative overflow-hidden flex items-center gap-4 rounded-2xl bg-[#111111] px-7 py-4 text-[#F1F1F1] transition-all duration-300 hover:bg-[#FACC15] hover:text-[#111111] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(0,0,0,0.22)] active:scale-[0.98]
-                       before:absolute before:inset-0 before:-translate-x-full before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent before:transition-transform before:duration-500 hover:before:translate-x-full"
+            onMouseMove={handleMouseMove}
+            className="group relative overflow-hidden flex items-center gap-4 rounded-2xl bg-[#111111] px-7 py-4 text-[#F1F1F1] transition-all duration-300 hover:text-[#111111] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(250,204,21,0.25)] active:scale-[0.98]"
           >
-            <svg className="w-8 h-8 fill-current transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24" aria-hidden>
+             {/* The tracking background layer */}
+             <div 
+              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" 
+              style={{
+                background: "radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), #FACC15 0%, #EAB308 45%, #C99700 100%)"
+              }}
+            />
+
+            <svg className="relative z-10 w-8 h-8 fill-current transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24" aria-hidden>
               <path d="M3.6 21.3L15.9 12 3.6 2.7C3.3 2.5 3 2.8 3 3.1v17.8c0 .3.3.6.6.4zm13.1-8.5l3.8-2.2c.4-.2.4-.8 0-1l-3.8-2.2-3.1 3.2 3.1 3.2zM4.6 3.5l10 5.8-2.5 2.6L4.6 3.5zm0 17l10-5.8-2.5-2.6-7.5 8.4z" />
             </svg>
-            <div className="text-left">
+            <div className="relative z-10 text-left">
               <div className="text-[10px] uppercase tracking-wide opacity-70 leading-tight">
                 GET IT ON
               </div>

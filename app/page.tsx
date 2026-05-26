@@ -23,10 +23,10 @@ export default function Home() {
       <main className="flex-1 w-full pb-16">
         <StatsBanner />
         <TopArchitects />
+        <HowItWorks />
+        <LiveArea />
         <Testimonials />
         <DesignShowcase />
-        <LiveArea />
-        <HowItWorks />
 
         {/* Ready to design CTA Box */}
         <section className="px-6 py-12 mx-auto max-w-4xl w-full">
