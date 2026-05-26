@@ -51,7 +51,7 @@ export default function DesignShowcase() {
               Inspiration
             </p>
             <h2 className="text-4xl md:text-5xl font-black tracking-tight text-black">
-              Design Inspirations
+              Recent Work by Keywee Architects
             </h2>
             <p className="text-zinc-500 mt-4 max-w-2xl text-lg leading-relaxed">
               Explore beautifully crafted interiors designed by
