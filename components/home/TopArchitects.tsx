@@ -84,12 +84,12 @@ export default function TopArchitects() {
             </h2>
           </div>
 
-          <Link
+          {/* <Link
             href="/architects"
             className="text-sm font-semibold text-yellow-600 hover:text-yellow-700 transition-colors"
           >
             See all →
-          </Link>
+          </Link> */}
         </motion.div>
 
         {/* Loading Skeleton */}

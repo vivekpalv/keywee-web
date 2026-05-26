@@ -51,8 +51,7 @@ export default function Hero() {
 
   const skipEnter = Boolean(prefersReducedMotion);
 
-  // 1. Mouse Tracking Function
-  // Calculates exact X and Y position of the cursor inside the element
+  // Mouse Tracking Function
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     e.currentTarget.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`);
@@ -103,10 +102,9 @@ export default function Hero() {
           }}
         >
           Find Your{" "}
-          {/* 2. Live Text Gradient */}
           <span
             onMouseMove={handleMouseMove}
-            className="text-transparent bg-clip-text"
+            className="text-transparent bg-clip-text inline-block"
             style={{
               backgroundImage: "radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), #FACC15 0%, #EAB308 45%, #C99700 100%)"
             }}
@@ -194,11 +192,14 @@ export default function Hero() {
         </div>
 
         <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-5">
-          {/* 3. Live Button Gradient */}
+          {/* Button 1 */}
           <button
             type="button"
             onMouseMove={handleMouseMove}
-            className="group relative overflow-hidden flex items-center gap-4 rounded-2xl bg-[#111111] px-7 py-4 text-[#F1F1F1] transition-all duration-300 hover:text-[#111111] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(250,204,21,0.25)] active:scale-[0.98]"
+            style={{ 
+              transformOrigin: "var(--mouse-x, 50%) var(--mouse-y, 50%)" 
+            }}
+            className="group relative overflow-hidden flex items-center gap-4 rounded-2xl bg-[#111111] px-7 py-4 text-[#F1F1F1] transition-all duration-300 hover:text-[#111111] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(250,204,21,0.25)] active:scale-[0.95] active:translate-y-0"
           >
             {/* The tracking background layer */}
             <div 
@@ -221,10 +222,14 @@ export default function Hero() {
             </div>
           </button>
 
+          {/* Colorful Play Store Button */}
           <button
             type="button"
             onMouseMove={handleMouseMove}
-            className="group relative overflow-hidden flex items-center gap-4 rounded-2xl bg-[#111111] px-7 py-4 text-[#F1F1F1] transition-all duration-300 hover:text-[#111111] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(250,204,21,0.25)] active:scale-[0.98]"
+            style={{ 
+              transformOrigin: "var(--mouse-x, 50%) var(--mouse-y, 50%)" 
+            }}
+            className="group relative overflow-hidden flex items-center gap-4 rounded-2xl bg-[#111111] px-7 py-4 text-[#F1F1F1] transition-all duration-300 hover:text-[#111111] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(250,204,21,0.25)] active:scale-[0.95] active:translate-y-0"
           >
              {/* The tracking background layer */}
              <div 
@@ -234,9 +239,14 @@ export default function Hero() {
               }}
             />
 
-            <svg className="relative z-10 w-8 h-8 fill-current transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24" aria-hidden>
-              <path d="M3.6 21.3L15.9 12 3.6 2.7C3.3 2.5 3 2.8 3 3.1v17.8c0 .3.3.6.6.4zm13.1-8.5l3.8-2.2c.4-.2.4-.8 0-1l-3.8-2.2-3.1 3.2 3.1 3.2zM4.6 3.5l10 5.8-2.5 2.6L4.6 3.5zm0 17l10-5.8-2.5-2.6-7.5 8.4z" />
+            {/* Colorful standard Google Play icon */}
+            <svg className="relative z-10 w-8 h-8 transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+              <path d="M3.1 3.4C3.1 3.6 3 3.9 3 4.3V19.7C3 20 3.1 20.3 3.1 20.6L12.3 11.5L3.1 3.4Z" fill="#2196F3"/>
+              <path d="M16.5 15.6L12.3 11.5L3.1 20.6C3.5 20.9 4 21 4.7 20.6L16.5 15.6Z" fill="#F44336"/>
+              <path d="M16.5 8.4L4.7 3.4C4 3 3.5 3.1 3.1 3.4L12.3 11.5L16.5 8.4Z" fill="#4CAF50"/>
+              <path d="M21.1 12.8L16.5 15.6L12.3 11.5L16.5 8.4L21.1 11.2C21.8 11.6 21.8 12.4 21.1 12.8Z" fill="#FFEB3B"/>
             </svg>
+            
             <div className="relative z-10 text-left">
               <div className="text-[10px] uppercase tracking-wide opacity-70 leading-tight">
                 GET IT ON

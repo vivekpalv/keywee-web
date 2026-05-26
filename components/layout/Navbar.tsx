@@ -61,8 +61,9 @@ export default function Navbar() {
         {/* Global Nav Targets */}
         <div className="hidden gap-8 md:flex items-center text-sm font-semibold">
           <Link href="/" className="text-[#EAB308]">Home</Link>
-          <Link href="#architects" className="text-zinc-800 hover:text-black transition-colors">Architects</Link>
-          <Link href="#design-ideas" className="text-zinc-800 hover:text-black transition-colors">Design Ideas</Link>
+          <Link href="#architects" className="text-zinc-800 hover:text-black transition-colors">About Us</Link>
+          <Link href="#design-ideas" className="text-zinc-800 hover:text-black transition-colors">Contact Us</Link>
+          <Link href="#design-ideas" className="text-zinc-800 hover:text-black transition-colors">Blogs</Link>
         </div>
 
         {/* Dynamic Context CTA Actions */}

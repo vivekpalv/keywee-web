@@ -59,9 +59,9 @@ export default function DesignShowcase() {
             </p>
           </div>
 
-          <button className="w-fit px-6 py-3 rounded-full bg-black text-white text-sm font-semibold hover:bg-zinc-800 transition">
+          {/* <button className="w-fit px-6 py-3 rounded-full bg-black text-white text-sm font-semibold hover:bg-zinc-800 transition">
             View All Projects
-          </button>
+          </button> */}
         </motion.div>
 
         {/* Grid */}
@@ -127,12 +127,12 @@ export default function DesignShowcase() {
                   </p>
 
                   {/* CTA */}
-                  <div className="mt-6 flex items-center gap-2 text-yellow-400 text-sm font-semibold">
+                  {/* <div className="mt-6 flex items-center gap-2 text-yellow-400 text-sm font-semibold">
                     Explore Project
                     <span className="transition-transform duration-300 group-hover:translate-x-1">
                       →
                     </span>
-                  </div>
+                  </div> */}
                 </motion.div>
               </div>
 
