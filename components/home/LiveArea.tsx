@@ -69,9 +69,9 @@ export default function LiveArea() {
 
                   {/* Content */}
                   <div className="flex flex-col">
-                    <h3 className="text-xl md:text-[26px] leading-none font-black tracking-tight text-zinc-900">
+                    <h6 className="text-lg md:text-[17px] leading-none font-semibold tracking-tight text-zinc-800">
                       {city.name}
-                    </h3>
+                    </h6>
                     <p
                       className={`mt-1.5 md:mt-2 text-xs md:text-[16px] leading-none font-medium ${
                         city.active

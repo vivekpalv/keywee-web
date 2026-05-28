@@ -365,14 +365,15 @@ function stackZIndex(index: number) {
   return 10 - Math.abs(index - 2);
 }
 
+// Increased the spread distance so the wider square cards don't overlap too much
 function getSpreadStep(width: number) {
-  if (width >= 768) return 168;
-  return 132;
+  if (width >= 768) return 210; 
+  return 170;
 }
 
 export default function Hero() {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [spreadStep, setSpreadStep] = useState(132);
+  const [spreadStep, setSpreadStep] = useState(170);
 
   const prefersReducedMotion = useReducedMotion();
 
@@ -475,7 +476,7 @@ export default function Hero() {
 
       {/* Main Image Container */}
       <motion.div
-        className="relative z-10 mt-6 sm:-mt-6 flex flex-col items-center w-full"
+        className="relative z-10 mt-6 sm:-mt-2 flex flex-col items-center w-full"
         initial={skipEnter ? false : { opacity: 0, y: SCROLL_ENTER.bottom.y }}
         animate={{ opacity: 1, y: 0 }}
         transition={{
@@ -487,7 +488,8 @@ export default function Hero() {
           if (!skipEnter) setIsExpanded(true);
         }}
       >
-        <div className="relative w-full max-w-6xl h-[170px] sm:h-[280px] md:h-[320px] mb-12 sm:mb-16 flex justify-center items-end">
+        {/* Adjusted Container Height for shorter, square images */}
+        <div className="relative w-full max-w-6xl h-[150px] sm:h-[220px] md:h-[260px] mb-12 sm:mb-16 flex justify-center items-end">
           
           {/* MOBILE: Stock Market Ticker Reel */}
           <div 
@@ -499,17 +501,16 @@ export default function Hero() {
           >
             <motion.div
               className="flex w-max"
-              // Moves exactly 1/3 of the container to create a flawless infinite loop
               animate={isExpanded ? { x: ["0%", `-${100 / 3}%`] } : { x: "0%" }}
               transition={{ ease: "linear", duration: 18, repeat: Infinity }}
             >
-              {/* We render 3 identical sets to ensure no blank spaces appear on wider phones */}
               {[1, 2, 3].map((set) => (
                 <div key={set} className="flex gap-3 pr-3 items-end">
                   {IMAGES.map((src, idx) => (
                     <div
                       key={idx}
-                      className="relative overflow-hidden w-[100px] h-[140px] rounded-[20px] border-[3px] border-white shadow-[0_12px_30px_rgba(0,0,0,0.12)] bg-zinc-200 shrink-0 group cursor-pointer"
+                      // Made Mobile Images Square
+                      className="relative overflow-hidden w-[130px] h-[130px] rounded-[24px] border-[3px] border-white shadow-[0_12px_30px_rgba(0,0,0,0.12)] bg-zinc-200 shrink-0 group cursor-pointer"
                     >
                       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-gradient-to-br from-white/25 via-transparent to-transparent z-10 pointer-events-none" />
                       <img
@@ -562,9 +563,9 @@ export default function Hero() {
               <div
                 className="
                   group relative overflow-hidden
-                  w-[148px] h-[208px]
-                  md:w-[160px] md:h-[224px]
-                  rounded-[26px]
+                  w-[160px] h-[160px] 
+                  md:w-[200px] md:h-[200px]
+                  rounded-[28px]
                   border-[3px] border-white
                   shadow-[0_20px_50px_rgba(0,0,0,0.14)]
                   bg-zinc-200
@@ -590,7 +591,6 @@ export default function Hero() {
 
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-5">
-
           {/* App Store */}
           <button
             type="button"
