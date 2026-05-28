@@ -168,9 +168,9 @@ export default function Hero() {
           skipEnter
             ? false
             : {
-                opacity: 0,
-                y: SCROLL_ENTER.bottom.y,
-              }
+              opacity: 0,
+              y: SCROLL_ENTER.bottom.y,
+            }
         }
         animate={{ opacity: 1, y: 0 }}
         transition={{
@@ -196,26 +196,26 @@ export default function Hero() {
                 isExpanded
                   ? isMobile
                     ? {
-                        x: [-110, -55, 0, 55, 110][idx],
-                        y: [28, 10, 0, 10, 28][idx],
-                        rotate: [-18, -9, 0, 9, 18][idx],
-                        scale: [0.92, 0.96, 1, 0.96, 0.92][idx],
-                        opacity: 1,
-                      }
+                      x: [-110, -55, 0, 55, 110][idx],
+                      y: [28, 10, 0, 10, 28][idx],
+                      rotate: [-18, -9, 0, 9, 18][idx],
+                      scale: [0.92, 0.96, 1, 0.96, 0.92][idx],
+                      opacity: 1,
+                    }
                     : {
-                        x: spreadOffset(idx, spreadStep),
-                        y: 0,
-                        scale: 1,
-                        opacity: 1,
-                        rotate: 0,
-                      }
-                  : {
-                      x: 0,
+                      x: spreadOffset(idx, spreadStep),
                       y: 0,
                       scale: 1,
                       opacity: 1,
-                      rotate: STACK_ROTATIONS[idx],
+                      rotate: 0,
                     }
+                  : {
+                    x: 0,
+                    y: 0,
+                    scale: 1,
+                    opacity: 1,
+                    rotate: STACK_ROTATIONS[idx],
+                  }
               }
               transition={{
                 type: "spring",
@@ -279,13 +279,11 @@ export default function Hero() {
               }}
             />
 
-            <svg
-              className="relative z-10 w-8 h-8 fill-current transition-transform duration-300 group-hover:scale-110"
-              viewBox="0 0 24 24"
-              aria-hidden
-            >
-              <path d="M17.05 13.9c-.03-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.8-2.1-1.6-.2-3.2.9-4 1-1-.1-2.4-1-3.6-1-1.6 0-3.1.9-4 2.4-1.7 3-1.4 7.6.3 10 1 1.4 2.1 3 3.6 2.9 1.5-.1 2-1 3.8-1s2.2 1 3.8 1c1.6.1 2.5-1.4 3.4-2.8.6-.8 1.1-1.7 1.4-2.6-.7-.2-1.8-1-1.9-2.8zM14.6 7.4c.8-1 1.4-2.4 1.2-3.8-1.2.1-2.7.8-3.5 1.8-.7.8-1.4 2.2-1.2 3.6 1.4.1 2.7-.6 3.5-1.6z" />
-            </svg>
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/3/31/Apple_logo_white.svg"
+              alt="Apple"
+              className="relative z-10 w-7 h-8 transition-transform duration-300 group-hover:scale-110"
+            />
 
             <div className="relative z-10 text-left">
               <div className="text-[10px] uppercase tracking-wide opacity-70 leading-tight">
@@ -316,18 +314,11 @@ export default function Hero() {
               }}
             />
 
-            <svg
-              className="relative z-10 w-8 h-8 transition-transform duration-300 group-hover:scale-110"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden
-            >
-              <path d="M3.1 3.4C3.1 3.6 3 3.9 3 4.3V19.7C3 20 3.1 20.3 3.1 20.6L12.3 11.5L3.1 3.4Z" fill="#2196F3"/>
-              <path d="M16.5 15.6L12.3 11.5L3.1 20.6C3.5 20.9 4 21 4.7 20.6L16.5 15.6Z" fill="#F44336"/>
-              <path d="M16.5 8.4L4.7 3.4C4 3 3.5 3.1 3.1 3.4L12.3 11.5L16.5 8.4Z" fill="#4CAF50"/>
-              <path d="M21.1 12.8L16.5 15.6L12.3 11.5L16.5 8.4L21.1 11.2C21.8 11.6 21.8 12.4 21.1 12.8Z" fill="#FFEB3B"/>
-            </svg>
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/5/55/Google_Play_2016_icon.svg"
+              alt="Google Play"
+              className="relative z-10 w-7 h-7 transition-transform duration-300 group-hover:scale-110"
+            />
 
             <div className="relative z-10 text-left">
               <div className="text-[10px] uppercase tracking-wide opacity-70 leading-tight">
