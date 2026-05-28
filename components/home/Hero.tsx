@@ -28,7 +28,7 @@ function stackZIndex(index: number) {
 }
 
 function getSpreadStep(width: number) {
-  if (width >= 768) return 210; 
+  if (width >= 768) return 210;
   return 170;
 }
 
@@ -61,7 +61,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative flex flex-col items-center justify-center pt-12 pb-20 px-4 sm:px-6 text-center overflow-hidden min-h-[calc(100vh-88px)]">
+    <section className="relative flex flex-col items-center justify-center pt-32 md:pt-40 pb-20 px-4 sm:px-6 text-center overflow-hidden min-h-screen">
 
       <motion.div
         className="relative z-10 flex flex-col items-center w-full"
@@ -150,9 +150,9 @@ export default function Hero() {
         }}
       >
         <div className="relative w-full max-w-6xl h-[150px] sm:h-[220px] md:h-[260px] mb-12 sm:mb-16 flex justify-center items-end">
-          
+
           {/* MOBILE: Stock Market Ticker Reel */}
-          <div 
+          <div
             className="sm:hidden absolute bottom-0 w-full overflow-hidden flex pb-4 pt-4"
             style={{
               maskImage: "linear-gradient(to right, transparent, black 5%, black 95%, transparent)",
@@ -198,19 +198,19 @@ export default function Hero() {
               animate={
                 isExpanded
                   ? {
-                      x: spreadOffset(idx, spreadStep),
-                      y: 0,
-                      scale: 1,
-                      opacity: 1,
-                      rotate: 0,
-                    }
+                    x: spreadOffset(idx, spreadStep),
+                    y: 0,
+                    scale: 1,
+                    opacity: 1,
+                    rotate: 0,
+                  }
                   : {
-                      x: 0,
-                      y: 0,
-                      scale: 1,
-                      opacity: 1,
-                      rotate: STACK_ROTATIONS[idx],
-                    }
+                    x: 0,
+                    y: 0,
+                    scale: 1,
+                    opacity: 1,
+                    rotate: STACK_ROTATIONS[idx],
+                  }
               }
               transition={{
                 type: "spring",

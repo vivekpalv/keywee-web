@@ -113,7 +113,6 @@ export default function Navbar() {
 
   return (
     <nav 
-      // Changed 'sticky' to 'fixed left-0 right-0' to break out of the overflow-hidden parent
       className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
         isScrolled 
           ? "bg-[#FBFAF7]/90 backdrop-blur-md border-b border-zinc-200 py-3 sm:py-4 shadow-sm" 
@@ -168,6 +167,9 @@ export default function Navbar() {
         </div>
 
       </div>
+
+      {/* Your white bottom highlight line div */}
+      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" aria-hidden="true" />
 
       {/* Mobile Menu Dropdown */}
       <div 
