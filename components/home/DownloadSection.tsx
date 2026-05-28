@@ -1,6 +1,7 @@
-'use client';
+"use client";
 
 import React from "react";
+import { motion } from "framer-motion";
 
 export default function DownloadSection() {
   // Mouse Tracking Function
@@ -13,11 +14,29 @@ export default function DownloadSection() {
   return (
     <section className="relative overflow-hidden bg-[#FCFAEE] py-28 px-6 w-full flex items-center justify-center min-h-[400px]">
       {/* Background blurred glows */}
-      <div className="absolute top-[-20%] left-[5%] w-[400px] h-[400px] bg-yellow-300/20 blur-[100px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-[-20%] right-[5%] w-[400px] h-[400px] bg-yellow-300/20 blur-[100px] rounded-full pointer-events-none" />
+      <motion.div 
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+        viewport={{ once: true }}
+        className="absolute top-[-20%] left-[5%] w-[400px] h-[400px] bg-yellow-300/20 blur-[100px] rounded-full pointer-events-none" 
+      />
+      <motion.div 
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+        viewport={{ once: true }}
+        className="absolute bottom-[-20%] right-[5%] w-[400px] h-[400px] bg-yellow-300/20 blur-[100px] rounded-full pointer-events-none" 
+      />
 
-      {/* Content Container */}
-      <div className="relative z-10 flex flex-col items-center text-center max-w-3xl mx-auto">
+      {/* Content Container (Animated to match DesignShowcase) */}
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        viewport={{ once: true }}
+        className="relative z-10 flex flex-col items-center text-center max-w-3xl mx-auto"
+      >
         
         {/* Headline */}
         <h2 className="text-[28px] sm:text-3xl md:text-4xl font-bold text-[#18181B] tracking-tight mb-4">
@@ -96,7 +115,7 @@ export default function DownloadSection() {
           </button>
           
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }
