@@ -1,43 +1,41 @@
 "use client";
 
 import { motion } from "framer-motion";
-import DownloadSection from "./DownloadSection";
 
 const projects = [
   {
     id: 1,
     title: "Modern Minimalist Living",
     style: "Minimalist",
-    // 1. ADD YOUR IMAGE URLS HERE
-    imageUrl: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=80", 
+    imageUrl:
+      "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: 2,
     title: "Urban Loft",
     style: "Industrial",
-    imageUrl: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=800&q=80",
+    imageUrl:
+      "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: 3,
     title: "Cozy Studio",
     style: "Scandinavian",
-    imageUrl: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=500&q=80",
+    imageUrl:
+      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=500&q=80",
   },
   {
     id: 4,
     title: "Luxury Villa",
     style: "Contemporary",
-    imageUrl: "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=800&q=80",
+    imageUrl:
+      "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=800&q=80",
   },
 ];
 
 export default function DesignShowcase() {
   return (
-    <section className="relative overflow-hidden bg-[#FBFAF7] py-24 px-6">
-      {/* Background Glow */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-yellow-400/10 blur-3xl rounded-full" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-zinc-300/20 blur-3xl rounded-full" />
-
+    <section className="relative pt-24 pb-8 px-6 z-10">
       <div className="relative mx-auto max-w-7xl">
         {/* Header */}
         <motion.div
@@ -51,18 +49,16 @@ export default function DesignShowcase() {
             <p className="text-sm uppercase tracking-[0.25em] text-yellow-600 font-semibold mb-3">
               Inspiration
             </p>
+
             <h2 className="text-4xl md:text-5xl font-black tracking-tight text-black">
               Recent Work by Keywee Architects
             </h2>
+
             <p className="text-zinc-500 mt-4 max-w-2xl text-lg leading-relaxed">
-              Explore beautifully crafted interiors designed by
-              top architects and creative professionals from Keywee.
+              Explore beautifully crafted interiors designed by top architects
+              and creative professionals from Keywee.
             </p>
           </div>
-
-          {/* <button className="w-fit px-6 py-3 rounded-full bg-black text-white text-sm font-semibold hover:bg-zinc-800 transition">
-            View All Projects
-          </button> */}
         </motion.div>
 
         {/* Grid */}
@@ -72,7 +68,11 @@ export default function DesignShowcase() {
           viewport={{ once: true }}
           variants={{
             hidden: {},
-            visible: { transition: { staggerChildren: 0.15 } },
+            visible: {
+              transition: {
+                staggerChildren: 0.15,
+              },
+            },
           }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
         >
@@ -87,8 +87,7 @@ export default function DesignShowcase() {
               whileHover={{ y: -10 }}
               className="group relative overflow-hidden rounded-[32px] h-[420px] cursor-pointer shadow-[0_15px_60px_rgba(0,0,0,0.08)]"
             >
-              
-              {/* 2. REPLACE FAKE IMAGE WITH REAL <img> TAG HERE */}
+              {/* Image */}
               <img
                 src={project.imageUrl}
                 alt={project.title}
@@ -122,18 +121,11 @@ export default function DesignShowcase() {
                   <h3 className="text-white text-2xl font-bold leading-tight">
                     {project.title}
                   </h3>
-                  <p className="text-zinc-300 mt-3 text-sm leading-relaxed max-w-[260px]">
-                    Elegant spatial planning with premium materials,
-                    warm textures, and timeless modern aesthetics.
-                  </p>
 
-                  {/* CTA */}
-                  {/* <div className="mt-6 flex items-center gap-2 text-yellow-400 text-sm font-semibold">
-                    Explore Project
-                    <span className="transition-transform duration-300 group-hover:translate-x-1">
-                      →
-                    </span>
-                  </div> */}
+                  <p className="text-zinc-300 mt-3 text-sm leading-relaxed max-w-[260px]">
+                    Elegant spatial planning with premium materials, warm
+                    textures, and timeless modern aesthetics.
+                  </p>
                 </motion.div>
               </div>
 
