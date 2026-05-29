@@ -41,7 +41,7 @@ export default function TopArchitects() {
     const fetchArchitects = async () => {
       try {
         const res = await fetch(
-          "http://13.201.106.155:3000/api/v1/public/architects?page=1&limit=4&verified=false&minExperience=3"
+          "https://backend.keywee.in/api/v1/public/architects?page=1&limit=4&verified=false&minExperience=3"
         );
 
         if (!res.ok) throw new Error("Failed to fetch architects");

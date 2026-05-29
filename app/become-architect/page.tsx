@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-const API_BASE_URL = "http://13.201.106.155:3000/api/v1";
+const API_BASE_URL = "https://backend.keywee.in/api/v1";
 
 export default function BecomeArchitect() {
   const router = useRouter();
