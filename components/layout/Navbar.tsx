@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 
-// Define the interface mapping the decoded payload from your jwt.io screenshot
 interface DecodedToken {
   id: string;
   roles: string[];
@@ -19,7 +18,6 @@ export default function Navbar() {
   const [userRoles, setUserRoles] = useState<string[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   
-  // UI States
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -41,7 +39,6 @@ export default function Navbar() {
       }
     }
 
-    // Scroll listener to toggle transparent vs glassmorphism background
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
@@ -61,56 +58,6 @@ export default function Navbar() {
 
   const closeMenu = () => setIsMobileMenuOpen(false);
 
-  // --- COMPONENT: Primary Action (Outside Hamburger) ---
-  const renderPrimaryAction = () => {
-    if (!mounted) return <div className="h-9 w-28 animate-pulse bg-zinc-200/50 rounded-lg"></div>;
-
-    const baseClass = "rounded-lg border px-3 sm:px-5 py-2 sm:py-2.5 text-[11px] sm:text-xs font-bold transition-colors shadow-sm flex items-center justify-center";
-
-    if (!isLoggedIn) {
-      return (
-        <Link href="/become-architect" className={`${baseClass} border-zinc-300 bg-white text-black hover:bg-zinc-50`}>
-          Join as Architect
-        </Link>
-      );
-    }
-    if (!userRoles.includes("ARCHITECT")) {
-      return (
-        <Link href="/become-architect" className={`${baseClass} border-zinc-300 bg-white text-black hover:bg-zinc-50 animate-pulse`}>
-          Become Architect
-        </Link>
-      );
-    }
-    return (
-      <Link href="/dashboard" className={`${baseClass} border-[#EAB308] bg-[#FFF9E6] text-[#D97706] hover:bg-yellow-100`}>
-        <span className="hidden sm:inline">Visit Architect Profile</span>
-        <span className="sm:hidden">Profile</span>
-      </Link>
-    );
-  };
-
-  // --- COMPONENT: Auth Action (Desktop Header / Mobile Menu) ---
-  const renderAuthAction = (isMobileLayout = false) => {
-    if (!mounted) return <div className={`h-9 w-24 animate-pulse bg-zinc-200/50 rounded-lg ${isMobileLayout ? 'w-full' : ''}`}></div>;
-
-    const baseClass = `rounded-lg font-bold transition-colors shadow-sm flex items-center justify-center ${
-      isMobileLayout ? 'w-full py-3.5 text-sm' : 'px-5 py-2.5 text-xs'
-    }`;
-
-    if (isLoggedIn) {
-      return (
-        <button onClick={handleLogout} className={`${baseClass} bg-black text-white hover:bg-zinc-800`}>
-          Logout
-        </button>
-      );
-    }
-    return (
-      <Link href="/login" onClick={closeMenu} className={`${baseClass} bg-[#EAB308] text-white hover:bg-yellow-600`}>
-        Login / Sign up
-      </Link>
-    );
-  };
-
   return (
     <nav 
       className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
@@ -121,13 +68,13 @@ export default function Navbar() {
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6">
         
-        {/* Logo Elements */}
+        {/* Logo */}
         <Link href="/" className="text-2xl font-extrabold tracking-tight z-50 shrink-0">
           <span className="text-black">Key</span>
           <span className="text-[#EAB308]">wee</span>
         </Link>
 
-        {/* Desktop Global Nav Targets (Centered) */}
+        {/* Desktop Global Nav Targets */}
         <div className="hidden md:flex gap-8 items-center text-sm font-semibold absolute left-1/2 -translate-x-1/2">
           <Link href="/" className="text-[#EAB308]">Home</Link>
           <Link href="#about" className="text-zinc-800 hover:text-black transition-colors">About Us</Link>
@@ -136,22 +83,41 @@ export default function Navbar() {
         </div>
 
         {/* Actions Container */}
-        <div className="flex items-center gap-2 sm:gap-4 ml-auto">
+        <div className="flex items-center gap-3 ml-auto">
           
-          {/* Always visible Primary CTA (Join as Architect) */}
-          <div className="block">
-            {renderPrimaryAction()}
-          </div>
-
-          {/* Desktop Auth CTA (Hidden on mobile) */}
-          <div className="hidden md:block">
-            {renderAuthAction()}
+          {/* Main Auth Actions */}
+          <div className="hidden sm:block">
+            {!mounted ? (
+              <div className="h-9 w-32 animate-pulse bg-zinc-200/50 rounded-lg"></div>
+            ) : !isLoggedIn ? (
+              <Link 
+                href="/login" 
+                className="rounded-lg bg-black text-white px-5 py-2.5 text-xs font-bold transition-colors shadow-sm hover:bg-zinc-800 flex items-center justify-center"
+              >
+                Join as Architect
+              </Link>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link 
+                  href="/dashboard" 
+                  className="rounded-lg border border-[#EAB308] bg-[#FFF9E6] text-[#D97706] px-4 py-2 text-xs font-bold transition-colors hover:bg-yellow-100 shadow-sm"
+                >
+                  Dashboard
+                </Link>
+                <button 
+                  onClick={handleLogout} 
+                  className="rounded-lg bg-zinc-100 text-zinc-600 px-4 py-2 text-xs font-bold transition-colors hover:bg-zinc-200"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Mobile Hamburger Button */}
           <button 
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-1.5 text-zinc-900 hover:bg-zinc-100 rounded-md transition-colors focus:outline-none"
+            className="md:hidden p-1.5 text-zinc-900 hover:bg-zinc-100 rounded-md transition-colors focus:outline-none z-50"
             aria-label="Toggle mobile menu"
           >
             {isMobileMenuOpen ? (
@@ -168,17 +134,15 @@ export default function Navbar() {
 
       </div>
 
-      {/* Your white bottom highlight line div */}
       <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" aria-hidden="true" />
 
       {/* Mobile Menu Dropdown */}
       <div 
         className={`md:hidden absolute top-full left-0 w-full bg-[#FBFAF7] border-b border-zinc-200 shadow-xl overflow-hidden transition-all duration-300 ease-in-out ${
-          isMobileMenuOpen ? "max-h-[400px] opacity-100 visible" : "max-h-0 opacity-0 invisible"
+          isMobileMenuOpen ? "max-h-[500px] opacity-100 visible" : "max-h-0 opacity-0 invisible"
         }`}
       >
         <div className="flex flex-col px-6 py-6 gap-6">
-          {/* Mobile Links */}
           <div className="flex flex-col gap-5 text-base font-semibold">
             <Link href="/" onClick={closeMenu} className="text-[#EAB308]">Home</Link>
             <Link href="#about" onClick={closeMenu} className="text-zinc-800 hover:text-black">About Us</Link>
@@ -188,9 +152,32 @@ export default function Navbar() {
 
           <hr className="border-zinc-200" />
 
-          {/* Mobile Auth CTA (Login/Logout) */}
-          <div className="w-full">
-            {renderAuthAction(true)}
+          <div className="w-full flex flex-col gap-3">
+            {!isLoggedIn ? (
+              <Link 
+                href="/login" 
+                onClick={closeMenu}
+                className="w-full rounded-lg bg-black text-white py-3.5 text-sm font-bold transition-colors shadow-sm hover:bg-zinc-800 text-center"
+              >
+                Join as Architect
+              </Link>
+            ) : (
+              <>
+                <Link 
+                  href="/dashboard" 
+                  onClick={closeMenu}
+                  className="w-full rounded-lg border border-[#EAB308] bg-[#FFF9E6] text-[#D97706] py-3.5 text-sm font-bold transition-colors shadow-sm hover:bg-yellow-100 text-center"
+                >
+                  Dashboard
+                </Link>
+                <button 
+                  onClick={handleLogout} 
+                  className="w-full rounded-lg bg-zinc-100 text-zinc-600 py-3.5 text-sm font-bold transition-colors hover:bg-zinc-200 text-center"
+                >
+                  Logout
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
