@@ -6,6 +6,14 @@ import Link from "next/link";
 
 const API_BASE_URL = "https://backend.keywee.in/api/v1"; 
 
+// --- Reusable Loader Component ---
+const LoadingSpinner = ({ className = "w-5 h-5 text-white" }) => (
+  <svg className={`animate-spin ${className}`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+  </svg>
+);
+
 // --- Interfaces ---
 interface ProjectItem {
   _id: string;
@@ -424,7 +432,13 @@ export default function Dashboard() {
 
 
   // --- RENDER BLOCK ---
-  if (loading) return <div className="flex min-h-screen items-center justify-center bg-[#FBFAF7]">Loading...</div>;
+  if (loading) return (
+    <div className="flex min-h-screen items-center justify-center bg-[#FBFAF7] gap-3">
+      <LoadingSpinner className="w-6 h-6 text-zinc-900" />
+      <span className="font-bold text-zinc-900">Loading Dashboard...</span>
+    </div>
+  );
+  
   if (error) return <div className="flex min-h-screen items-center justify-center text-red-500 bg-[#FBFAF7]">{error}</div>;
 
   const archDetails = profile?.architectDetails;
@@ -694,7 +708,8 @@ export default function Dashboard() {
               
               <div className="flex gap-4 mt-6 pt-6 border-t border-zinc-100">
                 <button type="button" onClick={closeProfileModal} disabled={isSavingProfile} className="flex-1 py-4 border border-zinc-300 hover:bg-zinc-50 text-zinc-900 rounded-xl font-extrabold transition-colors disabled:opacity-50">Cancel</button>
-                <button type="submit" disabled={isSavingProfile} className="flex-1 py-4 bg-black hover:bg-zinc-800 text-white rounded-xl font-extrabold transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                <button type="submit" disabled={isSavingProfile} className="flex-1 py-4 flex items-center justify-center gap-2 bg-black hover:bg-zinc-800 text-white rounded-xl font-extrabold transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                  {isSavingProfile && <LoadingSpinner className="w-5 h-5 text-white mr-1" />}
                   {isSavingProfile ? "Saving Profile..." : "Update Profile"}
                 </button>
               </div>
@@ -772,7 +787,8 @@ export default function Dashboard() {
               
               <div className="flex gap-4 mt-6 pt-6 border-t border-zinc-100">
                 <button type="button" onClick={closeProjectModal} disabled={isUploadingMedia} className="flex-1 py-4 border border-zinc-300 hover:bg-zinc-50 text-zinc-900 rounded-xl font-extrabold transition-colors disabled:opacity-50">Cancel</button>
-                <button type="submit" disabled={isUploadingMedia} className="flex-1 py-4 bg-[#EAB308] hover:bg-yellow-600 text-white rounded-xl font-extrabold transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                <button type="submit" disabled={isUploadingMedia} className="flex-1 py-4 flex items-center justify-center gap-2 bg-[#EAB308] hover:bg-yellow-600 text-white rounded-xl font-extrabold transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                  {isUploadingMedia && <LoadingSpinner className="w-5 h-5 text-white mr-1" />}
                   {isUploadingMedia ? "Processing Uploads..." : editingProjectId ? "Save Changes" : "Publish Project"}
                 </button>
               </div>
@@ -831,7 +847,8 @@ export default function Dashboard() {
               
               <div className="flex gap-4 mt-6 pt-6 border-t border-zinc-100">
                 <button type="button" onClick={closeQualModal} disabled={isUploadingMedia} className="flex-1 py-4 border border-zinc-300 hover:bg-zinc-50 text-zinc-900 rounded-xl font-extrabold transition-colors disabled:opacity-50">Cancel</button>
-                <button type="submit" disabled={isUploadingMedia} className="flex-1 py-4 bg-black hover:bg-zinc-800 text-white rounded-xl font-extrabold transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                <button type="submit" disabled={isUploadingMedia} className="flex-1 py-4 flex items-center justify-center gap-2 bg-black hover:bg-zinc-800 text-white rounded-xl font-extrabold transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                  {isUploadingMedia && <LoadingSpinner className="w-5 h-5 text-white mr-1" />}
                   {isUploadingMedia ? "Processing..." : editingQualId ? "Update" : "Save Credential"}
                 </button>
               </div>
