@@ -6,6 +6,9 @@ import Link from "next/link";
 
 const API_BASE_URL = "https://backend.keywee.in/api/v1"; 
 
+// 40MB limit in bytes
+const MAX_FILE_SIZE_BYTES = 40 * 1024 * 1024; 
+
 // --- Reusable Loader Component ---
 const LoadingSpinner = ({ className = "w-5 h-5 text-white" }) => (
   <svg className={`animate-spin ${className}`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -31,7 +34,7 @@ interface QualificationItem {
   university?: string;
   yearOfPassing?: number;
   coaNo?: string;
-  coaCertUrl?: string; // This is now mandatory in the UI
+  coaCertUrl?: string; 
 }
 
 interface UserProfile {
@@ -149,6 +152,14 @@ export default function Dashboard() {
   const handleProfileImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      
+      // Validation
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        alert("Image size exceeds the 40MB limit.");
+        e.target.value = '';
+        return;
+      }
+
       setProfileImageFile(file);
       setProfileImagePreview(URL.createObjectURL(file)); 
     }
@@ -230,6 +241,19 @@ export default function Dashboard() {
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const newFiles = Array.from(e.target.files);
+    
+    // Calculate size of existing pending files
+    const currentTotalSize = mediaItems.reduce((acc, item) => acc + (item.file?.size || 0), 0);
+    // Calculate size of newly selected files
+    const newFilesSize = newFiles.reduce((acc, file) => acc + file.size, 0);
+
+    // Validation: Total queued upload batch must be under 40MB
+    if (currentTotalSize + newFilesSize > MAX_FILE_SIZE_BYTES) {
+      alert("Total media size for this upload batch cannot exceed 40MB.");
+      e.target.value = '';
+      return;
+    }
+
     const newMediaItems: MediaItem[] = newFiles.map(file => ({
       id: `new-${Date.now()}-${Math.random()}`,
       url: URL.createObjectURL(file),
@@ -354,6 +378,14 @@ export default function Dashboard() {
   const handleQualCertSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      
+      // Validation
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        alert("Document size exceeds the 40MB limit.");
+        e.target.value = '';
+        return;
+      }
+
       setQualCertFile(file);
       setQualCertPreview(URL.createObjectURL(file)); 
     }
@@ -661,7 +693,7 @@ export default function Dashboard() {
                   </div>
                   <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleProfileImageSelect} />
                 </div>
-                <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Profile Image</span>
+                <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Profile Image (Max 40MB)</span>
               </div>
 
               <div className="grid grid-cols-2 gap-5">
@@ -776,7 +808,7 @@ export default function Dashboard() {
                 <label htmlFor="media-upload" className="w-full border-2 border-dashed border-zinc-300 hover:border-[#EAB308] hover:bg-yellow-50 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-colors text-zinc-500">
                   <div className="bg-white p-2 rounded-full shadow-sm mb-2 text-xl">📸</div>
                   <span className="text-sm font-bold text-zinc-900 mb-1">Click to browse images</span>
-                  <span className="text-xs">Supports High-Res JPG & PNG</span>
+                  <span className="text-xs">Supports High-Res JPG & PNG (Max 40MB total)</span>
                 </label>
               </div>
 
@@ -840,7 +872,7 @@ export default function Dashboard() {
                   
                   <input type="file" id="cert-upload" accept="image/*,.pdf" className="hidden" onChange={handleQualCertSelect} />
                   <label htmlFor="cert-upload" className="px-5 py-2.5 border border-zinc-300 rounded-xl text-xs font-bold cursor-pointer hover:bg-zinc-50 transition-colors shadow-sm text-zinc-900 flex-1 text-center">
-                    {qualCertPreview ? "Change Document" : "Upload Document"}
+                    {qualCertPreview ? "Change Document" : "Upload Document (Max 40MB)"}
                   </label>
                 </div>
               </div>
