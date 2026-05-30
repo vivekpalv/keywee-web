@@ -17,7 +17,7 @@ export default function LiveArea() {
   return (
     <section className="relative overflow-hidden px-4 sm:px-6 py-10 md:py-16 text-center">
       <div className="relative mx-auto max-w-7xl">
-        
+
         {/* Heading */}
         <div className="mb-10 md:mb-14">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-zinc-900 leading-tight">
@@ -33,11 +33,10 @@ export default function LiveArea() {
           {cities.map((city) => (
             <div
               key={city.name}
-              className={`group relative overflow-hidden rounded-[20px] md:rounded-[26px] border p-3 md:p-4 text-left cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] ${
-                city.active
+              className={`group relative overflow-hidden rounded-[20px] md:rounded-[26px] border p-3 md:p-4 text-left cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] ${city.active
                   ? "border-[#EAB308] bg-[#FFF4CC] shadow-[0_16px_40px_rgba(234,179,8,0.16)]"
                   : "border-zinc-200 bg-white hover:border-zinc-300 shadow-[0_12px_40px_rgba(0,0,0,0.05)]"
-              }`}
+                }`}
             >
               {/* Active Glow */}
               {city.active && (
@@ -48,17 +47,16 @@ export default function LiveArea() {
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-700 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full" />
 
               <div className="relative flex items-center justify-between gap-3 md:gap-4">
-                
+
                 {/* Left Side */}
                 <div className="flex items-center gap-3 md:gap-4">
-                  
+
                   {/* Icon */}
                   <div
-                    className={`flex h-12 w-12 md:h-[58px] md:w-[58px] items-center justify-center rounded-2xl md:rounded-[18px] shrink-0 transition-all duration-300 ${
-                      city.active
+                    className={`flex h-12 w-12 md:h-[58px] md:w-[58px] items-center justify-center rounded-2xl md:rounded-[18px] shrink-0 transition-all duration-300 ${city.active
                         ? "bg-[#DDA700] text-white shadow-md"
                         : "bg-zinc-100 text-zinc-600"
-                    }`}
+                      }`}
                   >
                     {city.active ? (
                       <MapPin className="h-6 w-6 md:h-7 md:w-7" strokeWidth={2.2} />
@@ -73,11 +71,10 @@ export default function LiveArea() {
                       {city.name}
                     </h6>
                     <p
-                      className={`mt-1.5 md:mt-2 text-xs md:text-[16px] leading-none font-medium ${
-                        city.active
+                      className={`mt-1.5 md:mt-2 text-xs md:text-[16px] leading-none font-medium ${city.active
                           ? "text-zinc-600"
                           : "text-zinc-500"
-                      }`}
+                        }`}
                     >
                       {city.active ? "Available now" : "Coming soon"}
                     </p>
@@ -99,7 +96,7 @@ export default function LiveArea() {
         </div>
 
         {/* Bottom CTA */}
-        <div className="mt-12 md:mt-16">
+        {/* <div className="mt-12 md:mt-16">
           <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-3xl font-black tracking-tight leading-tight">
             
             <div className="flex items-center gap-2">
@@ -113,6 +110,24 @@ export default function LiveArea() {
               <ArrowRight className="h-4 w-4 md:h-5 md:w-5 transition-transform duration-300 group-hover:translate-x-1" />
             </button>
             
+          </div>
+        </div> */}
+
+        {/* Bottom CTA */}
+        <div className="mt-8 md:mt-12">
+          <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-xl font-semibold tracking-tight leading-tight">
+
+            <div className="flex items-center gap-2">
+              <span className="text-zinc-500">Want</span>
+              <span className="text-[#EAB308]">Keywee</span>
+              <span className="text-zinc-500">in your city?</span>
+            </div>
+
+            <button className="group inline-flex items-center gap-1 text-xs md:text-base font-medium text-[#EAB308] underline underline-offset-4 hover:text-yellow-600 transition-all duration-300">
+              Join the waitlist
+              <ArrowRight className="h-3.5 w-3.5 md:h-4 md:w-4 transition-transform duration-300 group-hover:translate-x-1" />
+            </button>
+
           </div>
         </div>
 
