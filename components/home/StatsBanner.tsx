@@ -65,7 +65,7 @@ export default function StatsBanner() {
   return (
     <section 
       ref={sectionRef} 
-      className="bg-black py-12 px-6 rounded-3xl mx-4 sm:mx-8 lg:max-w-7xl lg:mx-auto my-12 shadow-xl"
+      className="bg-black dark:bg-zinc-900/80 border border-transparent dark:border-zinc-800 py-12 px-6 rounded-3xl mx-4 sm:mx-8 lg:max-w-7xl lg:mx-auto my-12 shadow-xl"
     >
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-zinc-800">
         

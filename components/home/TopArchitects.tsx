@@ -26,10 +26,10 @@ interface Architect {
 }
 
 const placeholderColors = [
-  "bg-zinc-200",
-  "bg-zinc-300",
-  "bg-stone-200",
-  "bg-neutral-200",
+  "bg-zinc-200 dark:bg-zinc-800",
+  "bg-zinc-300 dark:bg-zinc-700",
+  "bg-stone-200 dark:bg-stone-800",
+  "bg-neutral-200 dark:bg-neutral-800",
 ];
 
 export default function TopArchitects() {
@@ -64,7 +64,7 @@ export default function TopArchitects() {
   }, []);
 
   return (
-    <section className="px-6 py-20 bg-[#FBFAF7] overflow-hidden">
+    <section className="px-6 py-20 bg-background overflow-hidden">
       <div className="mx-auto max-w-7xl">
         {/* Header */}
         <motion.div
@@ -75,21 +75,14 @@ export default function TopArchitects() {
           className="flex items-center justify-between mb-10"
         >
           <div>
-            <p className="text-sm uppercase tracking-[0.2em] text-yellow-600 font-semibold">
+            <p className="text-sm uppercase tracking-[0.2em] text-yellow-600 dark:text-yellow-500 font-semibold">
               Professionals
             </p>
 
-            <h2 className="text-3xl md:text-4xl font-bold text-black mt-2">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2">
               Top Architects Near You
             </h2>
           </div>
-
-          {/* <Link
-            href="/architects"
-            className="text-sm font-semibold text-yellow-600 hover:text-yellow-700 transition-colors"
-          >
-            See all →
-          </Link> */}
         </motion.div>
 
         {/* Loading Skeleton */}
@@ -98,14 +91,14 @@ export default function TopArchitects() {
             {Array.from({ length: 4 }).map((_, i) => (
               <div
                 key={i}
-                className="rounded-3xl overflow-hidden bg-white border border-zinc-100 shadow-sm"
+                className="rounded-3xl overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-sm"
               >
-                <div className="h-56 bg-gradient-to-r from-zinc-200 via-zinc-100 to-zinc-200 animate-pulse" />
+                <div className="h-56 bg-gradient-to-r from-zinc-200 via-zinc-100 to-zinc-200 dark:from-zinc-800 dark:via-zinc-700 dark:to-zinc-800 animate-pulse" />
 
                 <div className="p-5 space-y-4">
-                  <div className="h-4 bg-zinc-200 rounded w-2/3 animate-pulse" />
-                  <div className="h-3 bg-zinc-100 rounded w-1/2 animate-pulse" />
-                  <div className="h-3 bg-zinc-100 rounded w-full animate-pulse" />
+                  <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-2/3 animate-pulse" />
+                  <div className="h-3 bg-zinc-100 dark:bg-zinc-700 rounded w-1/2 animate-pulse" />
+                  <div className="h-3 bg-zinc-100 dark:bg-zinc-700 rounded w-full animate-pulse" />
                 </div>
               </div>
             ))}
@@ -114,7 +107,7 @@ export default function TopArchitects() {
 
         {/* Error */}
         {error && (
-          <div className="text-center py-16 text-zinc-500">
+          <div className="text-center py-16 text-zinc-500 dark:text-zinc-400">
             Could not load architects.
           </div>
         )}
@@ -155,7 +148,7 @@ export default function TopArchitects() {
                 whileHover={{
                   y: -10,
                 }}
-                className="group relative bg-white rounded-3xl overflow-hidden border border-zinc-100 shadow-sm hover:shadow-2xl transition-all duration-500"
+                className="group relative bg-white dark:bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-100 dark:border-zinc-800 shadow-sm hover:shadow-2xl transition-all duration-500"
               >
                 {/* Image */}
                 {arch.profilePictureUrl ? (
@@ -168,13 +161,13 @@ export default function TopArchitects() {
                     />
 
                     {/* Overlay */}
-                    <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition duration-500" />
+                    <div className="absolute inset-0 bg-black/10 dark:bg-black/30 opacity-0 group-hover:opacity-100 transition duration-500" />
                   </div>
                 ) : (
                   <div
                     className={`h-56 w-full ${placeholderColors[index % placeholderColors.length]} flex items-center justify-center`}
                   >
-                    <span className="text-5xl text-zinc-500 font-bold">
+                    <span className="text-5xl text-zinc-500 dark:text-zinc-400 font-bold">
                       {arch.user.name.charAt(0)}
                     </span>
                   </div>
@@ -184,42 +177,42 @@ export default function TopArchitects() {
                 <div className="p-6">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <h3 className="font-bold text-xl text-black leading-tight">
+                      <h3 className="font-bold text-xl text-foreground leading-tight">
                         {arch.user.name}
                       </h3>
 
-                      <p className="text-sm text-zinc-500 mt-1">
+                      <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
                         {arch.firmName}
                       </p>
                     </div>
 
                     {arch.verified && (
-                      <div className="px-2 py-1 rounded-full bg-green-100 text-green-700 text-[10px] font-semibold">
+                      <div className="px-2 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-[10px] font-semibold">
                         VERIFIED
                       </div>
                     )}
                   </div>
 
-                  <p className="text-sm text-zinc-500 mt-4 leading-relaxed line-clamp-3">
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-4 leading-relaxed line-clamp-3">
                     {arch.bio}
                   </p>
 
                   {/* Footer */}
-                  <div className="mt-6 pt-4 border-t border-zinc-100 flex items-center justify-between">
-                    <span className="text-xs text-zinc-500">
+                  <div className="mt-6 pt-4 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+                    <span className="text-xs text-zinc-500 dark:text-zinc-400">
                       {arch.city && arch.state
                         ? `📍 ${arch.city}, ${arch.state}`
                         : "📍 Location N/A"}
                     </span>
 
-                    <span className="text-sm font-semibold text-black">
+                    <span className="text-sm font-semibold text-foreground">
                       {arch.experience}+ yrs
                     </span>
                   </div>
                 </div>
 
                 {/* Glow */}
-                <div className="absolute inset-0 rounded-3xl ring-1 ring-transparent group-hover:ring-yellow-200 transition duration-500 pointer-events-none" />
+                <div className="absolute inset-0 rounded-3xl ring-1 ring-transparent group-hover:ring-yellow-200 dark:group-hover:ring-yellow-500/50 transition duration-500 pointer-events-none" />
               </motion.div>
             ))}
           </motion.div>
@@ -227,7 +220,7 @@ export default function TopArchitects() {
 
         {/* Empty */}
         {!loading && !error && architects.length === 0 && (
-          <div className="text-center py-16 text-zinc-400">
+          <div className="text-center py-16 text-zinc-400 dark:text-zinc-500">
             No architects found.
           </div>
         )}

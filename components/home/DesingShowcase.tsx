@@ -46,15 +46,15 @@ export default function DesignShowcase() {
           className="mb-14 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6"
         >
           <div>
-            <p className="text-sm uppercase tracking-[0.25em] text-yellow-600 font-semibold mb-3">
+            <p className="text-sm uppercase tracking-[0.25em] text-yellow-600 dark:text-yellow-500 font-semibold mb-3">
               Inspiration
             </p>
 
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight text-black">
+            <h2 className="text-4xl md:text-5xl font-black tracking-tight text-foreground">
               Recent Work by Keywee Architects
             </h2>
 
-            <p className="text-zinc-500 mt-4 max-w-2xl text-lg leading-relaxed">
+            <p className="text-zinc-500 dark:text-zinc-400 mt-4 max-w-2xl text-lg leading-relaxed">
               Explore beautifully crafted interiors designed by top architects
               and creative professionals from Keywee.
             </p>
@@ -85,7 +85,7 @@ export default function DesignShowcase() {
               }}
               transition={{ duration: 0.6 }}
               whileHover={{ y: -10 }}
-              className="group relative overflow-hidden rounded-[32px] h-[420px] cursor-pointer shadow-[0_15px_60px_rgba(0,0,0,0.08)]"
+              className="group relative overflow-hidden rounded-[32px] h-[420px] cursor-pointer shadow-[0_15px_60px_rgba(0,0,0,0.08)] dark:shadow-[0_15px_60px_rgba(0,0,0,0.4)]"
             >
               {/* Image */}
               <img

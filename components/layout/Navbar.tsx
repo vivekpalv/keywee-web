@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
+import { useTheme } from "next-themes";
 
 interface DecodedToken {
   id: string;
@@ -14,6 +15,7 @@ interface DecodedToken {
 
 export default function Navbar() {
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [userRoles, setUserRoles] = useState<string[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -62,7 +64,7 @@ export default function Navbar() {
     <nav 
       className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
         isScrolled 
-          ? "bg-[#FBFAF7]/90 backdrop-blur-md border-b border-zinc-200 py-3 sm:py-4 shadow-sm" 
+          ? "bg-background/90 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 py-3 sm:py-4 shadow-sm" 
           : "bg-transparent py-5 sm:py-6"
       }`}
     >
@@ -70,29 +72,44 @@ export default function Navbar() {
         
         {/* Logo */}
         <Link href="/" className="text-2xl font-extrabold tracking-tight z-50 shrink-0">
-          <span className="text-black">Key</span>
+          <span className="text-foreground">Key</span>
           <span className="text-[#EAB308]">wee</span>
         </Link>
 
         {/* Desktop Global Nav Targets */}
         <div className="hidden md:flex gap-8 items-center text-sm font-semibold absolute left-1/2 -translate-x-1/2">
           <Link href="/" className="text-[#EAB308]">Home</Link>
-          <Link href="#about" className="text-zinc-800 hover:text-black transition-colors">About Us</Link>
-          <Link href="#contact" className="text-zinc-800 hover:text-black transition-colors">Contact Us</Link>
-          <Link href="#blogs" className="text-zinc-800 hover:text-black transition-colors">Blogs</Link>
+          <Link href="#about" className="text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors">About Us</Link>
+          <Link href="#contact" className="text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors">Contact Us</Link>
+          <Link href="#blogs" className="text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors">Blogs</Link>
         </div>
 
         {/* Actions Container */}
         <div className="flex items-center gap-3 ml-auto">
           
+          {/* Theme Toggle Button */}
+          {mounted && (
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="p-2 rounded-full text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? (
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+              )}
+            </button>
+          )}
+
           {/* Main Auth Actions */}
           <div className="hidden sm:block">
             {!mounted ? (
-              <div className="h-9 w-32 animate-pulse bg-zinc-200/50 rounded-lg"></div>
+              <div className="h-9 w-32 animate-pulse bg-zinc-200/50 dark:bg-zinc-800/50 rounded-lg"></div>
             ) : !isLoggedIn ? (
               <Link 
                 href="/login" 
-                className="rounded-lg bg-black text-white px-5 py-2.5 text-xs font-bold transition-colors shadow-sm hover:bg-zinc-800 flex items-center justify-center"
+                className="rounded-lg bg-black dark:bg-white text-white dark:text-black px-5 py-2.5 text-xs font-bold transition-colors shadow-sm hover:bg-zinc-800 dark:hover:bg-zinc-200 flex items-center justify-center"
               >
                 Join as Architect
               </Link>
@@ -100,13 +117,13 @@ export default function Navbar() {
               <div className="flex items-center gap-2">
                 <Link 
                   href="/dashboard" 
-                  className="rounded-lg border border-[#EAB308] bg-[#FFF9E6] text-[#D97706] px-4 py-2 text-xs font-bold transition-colors hover:bg-yellow-100 shadow-sm"
+                  className="rounded-lg border border-[#EAB308] bg-[#FFF9E6] dark:bg-[#FFF9E6]/10 text-[#D97706] dark:text-[#EAB308] px-4 py-2 text-xs font-bold transition-colors hover:bg-yellow-100 dark:hover:bg-yellow-900/30 shadow-sm"
                 >
                   Dashboard
                 </Link>
                 <button 
                   onClick={handleLogout} 
-                  className="rounded-lg bg-zinc-100 text-zinc-600 px-4 py-2 text-xs font-bold transition-colors hover:bg-zinc-200"
+                  className="rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 px-4 py-2 text-xs font-bold transition-colors hover:bg-zinc-200 dark:hover:bg-zinc-700"
                 >
                   Logout
                 </button>
@@ -117,7 +134,7 @@ export default function Navbar() {
           {/* Mobile Hamburger Button */}
           <button 
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-1.5 text-zinc-900 hover:bg-zinc-100 rounded-md transition-colors focus:outline-none z-50"
+            className="md:hidden p-1.5 text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition-colors focus:outline-none z-50"
             aria-label="Toggle mobile menu"
           >
             {isMobileMenuOpen ? (
@@ -134,30 +151,31 @@ export default function Navbar() {
 
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" aria-hidden="true" />
+      {/* Optional: Remove or update this line if it flashes white in dark mode */}
+      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/50 dark:bg-zinc-900/50" aria-hidden="true" />
 
       {/* Mobile Menu Dropdown */}
       <div 
-        className={`md:hidden absolute top-full left-0 w-full bg-[#FBFAF7] border-b border-zinc-200 shadow-xl overflow-hidden transition-all duration-300 ease-in-out ${
+        className={`md:hidden absolute top-full left-0 w-full bg-background border-b border-zinc-200 dark:border-zinc-800 shadow-xl overflow-hidden transition-all duration-300 ease-in-out ${
           isMobileMenuOpen ? "max-h-[500px] opacity-100 visible" : "max-h-0 opacity-0 invisible"
         }`}
       >
         <div className="flex flex-col px-6 py-6 gap-6">
           <div className="flex flex-col gap-5 text-base font-semibold">
             <Link href="/" onClick={closeMenu} className="text-[#EAB308]">Home</Link>
-            <Link href="#about" onClick={closeMenu} className="text-zinc-800 hover:text-black">About Us</Link>
-            <Link href="#contact" onClick={closeMenu} className="text-zinc-800 hover:text-black">Contact Us</Link>
-            <Link href="#blogs" onClick={closeMenu} className="text-zinc-800 hover:text-black">Blogs</Link>
+            <Link href="#about" onClick={closeMenu} className="text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white">About Us</Link>
+            <Link href="#contact" onClick={closeMenu} className="text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white">Contact Us</Link>
+            <Link href="#blogs" onClick={closeMenu} className="text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white">Blogs</Link>
           </div>
 
-          <hr className="border-zinc-200" />
+          <hr className="border-zinc-200 dark:border-zinc-800" />
 
           <div className="w-full flex flex-col gap-3">
             {!isLoggedIn ? (
               <Link 
                 href="/login" 
                 onClick={closeMenu}
-                className="w-full rounded-lg bg-black text-white py-3.5 text-sm font-bold transition-colors shadow-sm hover:bg-zinc-800 text-center"
+                className="w-full rounded-lg bg-black dark:bg-white text-white dark:text-black py-3.5 text-sm font-bold transition-colors shadow-sm hover:bg-zinc-800 dark:hover:bg-zinc-200 text-center"
               >
                 Join as Architect
               </Link>
@@ -166,13 +184,13 @@ export default function Navbar() {
                 <Link 
                   href="/dashboard" 
                   onClick={closeMenu}
-                  className="w-full rounded-lg border border-[#EAB308] bg-[#FFF9E6] text-[#D97706] py-3.5 text-sm font-bold transition-colors shadow-sm hover:bg-yellow-100 text-center"
+                  className="w-full rounded-lg border border-[#EAB308] bg-[#FFF9E6] dark:bg-[#FFF9E6]/10 text-[#D97706] dark:text-[#EAB308] py-3.5 text-sm font-bold transition-colors shadow-sm hover:bg-yellow-100 dark:hover:bg-yellow-900/30 text-center"
                 >
                   Dashboard
                 </Link>
                 <button 
                   onClick={handleLogout} 
-                  className="w-full rounded-lg bg-zinc-100 text-zinc-600 py-3.5 text-sm font-bold transition-colors hover:bg-zinc-200 text-center"
+                  className="w-full rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 py-3.5 text-sm font-bold transition-colors hover:bg-zinc-200 dark:hover:bg-zinc-700 text-center"
                 >
                   Logout
                 </button>

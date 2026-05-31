@@ -79,7 +79,7 @@ export default function Hero() {
       >
         {/* Top Badge */}
         <motion.div
-          className="mb-4 rounded-full bg-[#FFF2D0]/90 backdrop-blur-xl px-5 py-2.5 text-sm font-medium text-[#6B3D00] flex items-center gap-2 border border-yellow-200/80 shadow-sm"
+          className="mb-4 rounded-full bg-[#FFF2D0]/90 dark:bg-yellow-900/30 backdrop-blur-xl px-5 py-2.5 text-sm font-medium text-[#6B3D00] dark:text-yellow-400 flex items-center gap-2 border border-yellow-200/80 dark:border-yellow-700/50 shadow-sm"
           variants={{
             hidden: { opacity: 0, y: SCROLL_ENTER.top.y },
             visible: {
@@ -95,7 +95,7 @@ export default function Hero() {
 
         {/* Heading */}
         <motion.h1
-          className="mb-4 text-3xl font-black tracking-tight text-[#111111] sm:text-4xl md:text-5xl lg:text-[3.75rem] xl:text-[4.25rem] leading-[1.05] md:whitespace-nowrap"
+          className="mb-4 text-3xl font-black tracking-tight text-foreground sm:text-4xl md:text-5xl lg:text-[3.75rem] xl:text-[4.25rem] leading-[1.05] md:whitespace-nowrap"
           variants={{
             hidden: { opacity: 0, y: SCROLL_ENTER.top.y },
             visible: {
@@ -120,7 +120,7 @@ export default function Hero() {
 
         {/* Subtitle */}
         <motion.p
-          className="max-w-2xl text-base sm:text-lg md:text-xl text-[#68635C] mb-0 font-normal leading-relaxed px-2"
+          className="max-w-2xl text-base sm:text-lg md:text-xl text-zinc-600 dark:text-zinc-400 mb-0 font-normal leading-relaxed px-2"
           variants={{
             hidden: { opacity: 0, y: SCROLL_ENTER.top.y },
             visible: {
@@ -169,8 +169,7 @@ export default function Hero() {
                   {IMAGES.map((src, idx) => (
                     <div
                       key={idx}
-                      // Removed shadow-[0_12px_30px_rgba(0,0,0,0.12)] from this class list
-                      className="relative overflow-hidden w-[130px] h-[130px] rounded-[24px] border-[3px] border-white bg-zinc-200 shrink-0 group cursor-pointer"
+                      className="relative overflow-hidden w-[130px] h-[130px] rounded-[24px] border-[3px] border-white dark:border-zinc-800 bg-zinc-200 dark:bg-zinc-700 shrink-0 group cursor-pointer"
                     >
                       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-gradient-to-br from-white/25 via-transparent to-transparent z-10 pointer-events-none" />
                       <img
@@ -226,9 +225,9 @@ export default function Hero() {
                   w-[160px] h-[160px] 
                   md:w-[200px] md:h-[200px]
                   rounded-[28px]
-                  border-[3px] border-white
-                  shadow-[0_20px_50px_rgba(0,0,0,0.14)]
-                  bg-zinc-200
+                  border-[3px] border-white dark:border-zinc-800
+                  shadow-[0_20px_50px_rgba(0,0,0,0.14)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)]
+                  bg-zinc-200 dark:bg-zinc-700
                   transition-transform duration-300
                   hover:-translate-y-2 hover:scale-[1.04]
                   cursor-pointer
@@ -258,7 +257,7 @@ export default function Hero() {
             style={{
               transformOrigin: "var(--mouse-x, 50%) var(--mouse-y, 50%)",
             }}
-            className="group relative overflow-hidden flex items-center gap-4 rounded-2xl bg-[#111111] px-7 py-4 text-[#F1F1F1] transition-all duration-300 hover:text-[#111111] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(250,204,21,0.25)] active:scale-[0.95] active:translate-y-0"
+            className="group relative overflow-hidden flex items-center gap-4 rounded-2xl bg-[#111111] dark:bg-zinc-800 border border-transparent dark:border-zinc-700 px-7 py-4 text-[#F1F1F1] transition-all duration-300 hover:text-white dark:hover:border-zinc-600 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(250,204,21,0.25)] active:scale-[0.95] active:translate-y-0"
           >
             <div
               className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
@@ -289,7 +288,7 @@ export default function Hero() {
             style={{
               transformOrigin: "var(--mouse-x, 50%) var(--mouse-y, 50%)",
             }}
-            className="group relative overflow-hidden flex items-center gap-4 rounded-2xl bg-[#111111] px-7 py-4 text-[#F1F1F1] transition-all duration-300 hover:text-[#111111] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(250,204,21,0.25)] active:scale-[0.95] active:translate-y-0"
+            className="group relative overflow-hidden flex items-center gap-4 rounded-2xl bg-[#111111] dark:bg-zinc-800 border border-transparent dark:border-zinc-700 px-7 py-4 text-[#F1F1F1] transition-all duration-300 hover:text-white dark:hover:border-zinc-600 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(250,204,21,0.25)] active:scale-[0.95] active:translate-y-0"
           >
             <div
               className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"

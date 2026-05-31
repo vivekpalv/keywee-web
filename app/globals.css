@@ -1,12 +1,29 @@
 @import "tailwindcss";
 
+/* 1. Tell Tailwind v4 to apply 'dark:' classes when .dark is present */
+@custom-variant dark (&:is(.dark *));
+
+/* 2. Light Mode Variables */
 :root {
-  /* This forces your warm cream Figma background globally */
   --background: #FBFAF7;
-  /* This forces charcoal/black text globally */
   --foreground: #171717;
+  --card-bg: #FFFFFF;
+  --text-muted: #71717a; /* zinc-500 */
+  --border-subtle: #f4f4f5; /* zinc-100 */
+  --accent-yellow: #EAB308;
 }
 
+/* 3. Dark Mode Variables (High Specificity - This fixes the bug!) */
+html.dark, .dark {
+  --background: #09090b; /* Deep zinc background */
+  --foreground: #ededed; /* Off-white text */
+  --card-bg: #18181b; 
+  --text-muted: #a1a1aa;
+  --border-subtle: #27272a;
+  --accent-yellow: #FACC15; /* Slightly brighter yellow for dark mode */
+}
+
+/* 4. Map to Tailwind Theme */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -14,12 +31,10 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* REMOVED: The @media (prefers-color-scheme: dark) block is stripped out 
-  to prevent your computer theme from changing the page colors.
-*/
-
+/* 5. Base Body Styles */
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
