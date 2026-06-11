@@ -180,9 +180,17 @@ export default function Dashboard() {
 
   // --- PROJECT LOGIC ---
   const openEditProject = (proj: ProjectItem) => {
+    // Safely extract the category ID, handling cases where the backend returns 
+    // it as `categoryId`, `category` (string), or a populated `category` object.
+    const extractedCategoryId = 
+      proj.categoryId || 
+      (proj as any).category?._id || 
+      (proj as any).category || 
+      "";
+
     setProjectForm({
       name: proj.name,
-      categoryId: proj.categoryId || "",
+      categoryId: extractedCategoryId,
       city: proj.city,
       state: proj.state,
       desc: proj.description || "",
