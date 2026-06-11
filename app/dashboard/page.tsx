@@ -33,6 +33,9 @@ export default function Dashboard() {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isUploadingMedia, setIsUploadingMedia] = useState(false);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
+  
+  // Custom Dropdown State
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
 
   // Edit Tracking States
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
@@ -192,6 +195,7 @@ export default function Dashboard() {
 
   const closeProjectModal = () => {
     setIsProjectModalOpen(false);
+    setIsCategoryDropdownOpen(false); // Reset dropdown state
     setEditingProjectId(null);
     setProjectForm({ name: "", categoryId: "", city: "", state: "", desc: "", tags: "" });
     setMediaItems([]);
@@ -231,6 +235,11 @@ export default function Dashboard() {
 
   const handleSaveProject = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!projectForm.categoryId) {
+      alert("Please select a project category.");
+      return;
+    }
+
     const token = localStorage.getItem("token");
     if (!token) return;
 
@@ -406,6 +415,9 @@ export default function Dashboard() {
     } catch (err) { alert("Error deleting qualification"); }
   };
 
+  // Lookup the currently selected category name for the custom dropdown
+  const selectedCategoryName = categories.find(c => c._id === projectForm.categoryId)?.name || "Select a category";
+
   // --- RENDER BLOCK ---
   if (loading) return (
     <div className="flex min-h-screen items-center justify-center bg-background gap-3">
@@ -540,23 +552,55 @@ export default function Dashboard() {
                   </label>
                   <input required placeholder="e.g. Modern Seaview Villa" value={projectForm.name} onChange={(e) => setProjectForm({ ...projectForm, name: e.target.value })} className="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 focus:border-[#EAB308] dark:focus:border-yellow-500 focus:ring-1 focus:ring-[#EAB308] rounded-xl p-3.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none transition-all" />
                 </div>
-                <div>
-                  <label htmlFor="category-select" className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide mb-2 block">
+
+                {/* --- CUSTOM DROPDOWN COMPONENT --- */}
+                <div className="relative">
+                  <label className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide mb-2 block">
                     Category <span className="text-red-500">*</span>
                   </label>
-                  <select
-                    id="category-select"
-                    required
-                    value={projectForm.categoryId}
-                    onChange={(e) => setProjectForm({ ...projectForm, categoryId: e.target.value })}
-                    className="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 focus:border-[#EAB308] dark:focus:border-yellow-500 focus:ring-1 focus:ring-[#EAB308] rounded-xl p-3.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none transition-all appearance-none cursor-pointer"
+                  <div 
+                    className="relative"
+                    tabIndex={0}
+                    onBlur={(e) => {
+                      // Close dropdown if clicking outside the wrapper
+                      if (!e.currentTarget.contains(e.relatedTarget)) {
+                        setIsCategoryDropdownOpen(false);
+                      }
+                    }}
                   >
-                    <option value="" disabled>Select a category</option>
-                    {categories.map((cat) => (
-                      <option key={cat._id} value={cat._id}>{cat.name}</option>
-                    ))}
-                  </select>
+                    <button
+                      type="button"
+                      onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+                      className={`flex items-center justify-between w-full bg-white dark:bg-zinc-900 border ${isCategoryDropdownOpen ? 'border-[#EAB308] dark:border-yellow-500 ring-1 ring-[#EAB308]' : 'border-zinc-300 dark:border-zinc-700'} rounded-xl p-3.5 text-sm ${projectForm.categoryId ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-500 dark:text-zinc-400'} outline-none transition-all cursor-pointer`}
+                    >
+                      <span className="truncate">{selectedCategoryName}</span>
+                      <svg className={`w-4 h-4 text-zinc-400 transition-transform duration-200 flex-shrink-0 ml-2 ${isCategoryDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+
+                    {isCategoryDropdownOpen && (
+                      <div className="absolute z-50 w-full mt-2 bg-white dark:bg-[#18181B] border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl max-h-60 overflow-y-auto py-1">
+                        {categories.length === 0 ? (
+                          <div className="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400 text-center">Loading...</div>
+                        ) : (
+                          categories.map((cat) => (
+                            <button
+                              key={cat._id}
+                              type="button"
+                              onClick={() => {
+                                setProjectForm({ ...projectForm, categoryId: cat._id });
+                                setIsCategoryDropdownOpen(false);
+                              }}
+                              className={`w-full text-left px-4 py-3 text-sm transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/50 ${projectForm.categoryId === cat._id ? 'text-[#EAB308] font-bold bg-yellow-50/50 dark:bg-yellow-900/10' : 'text-zinc-700 dark:text-zinc-300'}`}
+                            >
+                              {cat.name}
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
+                {/* --- END CUSTOM DROPDOWN --- */}
               </div>
 
               <div className="grid grid-cols-2 gap-5">
