@@ -33,7 +33,7 @@ export default function Dashboard() {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isUploadingMedia, setIsUploadingMedia] = useState(false);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
-  
+
   // Custom Dropdown State
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
 
@@ -180,22 +180,26 @@ export default function Dashboard() {
 
   // --- PROJECT LOGIC ---
   const openEditProject = (proj: ProjectItem) => {
-    // Safely extract the category ID, handling cases where the backend returns 
-    // it as `categoryId`, `category` (string), or a populated `category` object.
-    const extractedCategoryId = 
-      proj.categoryId || 
-      (proj as any).category?._id || 
-      (proj as any).category || 
-      "";
+    // Safely extract the category ID based on how the backend returns it
+    let extractedCategoryId = "";
+
+    if (typeof proj.category === "string") {
+      extractedCategoryId = proj.category; // Handles "category": "6a0d..."
+    } else if (proj.category && typeof proj.category === "object" && proj.category._id) {
+      extractedCategoryId = proj.category._id; // Handles populated category object
+    } else if (proj.categoryId) {
+      extractedCategoryId = proj.categoryId; // Fallback
+    }
 
     setProjectForm({
       name: proj.name,
-      categoryId: extractedCategoryId,
+      categoryId: extractedCategoryId, // Now perfectly populated!
       city: proj.city,
       state: proj.state,
       desc: proj.description || "",
       tags: proj.tags && proj.tags.length > 0 ? proj.tags.join(", ") : ""
     });
+
     setMediaItems(proj.media?.map((url, i) => ({ id: `existing-${i}`, url })) || []);
     setEditingProjectId(proj._id);
     setIsProjectModalOpen(true);
@@ -409,7 +413,7 @@ export default function Dashboard() {
         else setQualifications([...qualifications, data.qualification]);
         closeQualModal();
       } else alert(data.message);
-    } catch (err: any) { alert(err.message || "Error saving qualification"); } 
+    } catch (err: any) { alert(err.message || "Error saving qualification"); }
     finally { setIsUploadingMedia(false); }
   };
 
@@ -449,24 +453,24 @@ export default function Dashboard() {
         </div>
 
         {/* --- DECOUPLED UI COMPONENTS --- */}
-        <ProfileCard 
-          profile={profile} 
-          totalProjects={projects.length} 
-          onEditProfile={openEditProfile} 
+        <ProfileCard
+          profile={profile}
+          totalProjects={projects.length}
+          onEditProfile={openEditProfile}
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <ProjectsSection 
-            projects={projects} 
-            onAddProject={() => setIsProjectModalOpen(true)} 
-            onEditProject={openEditProject} 
-            onDeleteProject={handleDeleteProject} 
+          <ProjectsSection
+            projects={projects}
+            onAddProject={() => setIsProjectModalOpen(true)}
+            onEditProject={openEditProject}
+            onDeleteProject={handleDeleteProject}
           />
-          <QualificationsSection 
-            qualifications={qualifications} 
-            onAddQual={() => setIsQualModalOpen(true)} 
-            onEditQual={openEditQual} 
-            onDeleteQual={handleDeleteQualification} 
+          <QualificationsSection
+            qualifications={qualifications}
+            onAddQual={() => setIsQualModalOpen(true)}
+            onEditQual={openEditQual}
+            onDeleteQual={handleDeleteQualification}
           />
         </div>
 
@@ -552,7 +556,7 @@ export default function Dashboard() {
           <div className="bg-white dark:bg-zinc-900 rounded-[2rem] w-full max-w-2xl p-8 max-h-[90vh] overflow-y-auto shadow-2xl border border-zinc-200 dark:border-zinc-800">
             <h2 className="text-2xl font-extrabold mb-6 text-zinc-900 dark:text-zinc-100">{editingProjectId ? "Edit Project Details" : "Publish New Project"}</h2>
             <form onSubmit={handleSaveProject} className="flex flex-col gap-5">
-              
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
                   <label className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide mb-2 block">
@@ -566,7 +570,7 @@ export default function Dashboard() {
                   <label className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide mb-2 block">
                     Category <span className="text-red-500">*</span>
                   </label>
-                  <div 
+                  <div
                     className="relative"
                     tabIndex={0}
                     onBlur={(e) => {

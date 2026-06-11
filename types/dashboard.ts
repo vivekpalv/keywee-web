@@ -1,7 +1,8 @@
 export interface ProjectItem {
   _id: string;
   name: string;
-  categoryId?: string; // Added for category tracking
+  category?: string | { _id: string; name: string }; // Add this line to match your GET response
+  categoryId?: string; 
   city: string;
   state: string;
   description?: string;
