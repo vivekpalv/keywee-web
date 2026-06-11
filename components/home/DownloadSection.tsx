@@ -30,13 +30,13 @@ export default function DownloadSection() {
         className="relative z-10 flex flex-col items-center text-center max-w-3xl mx-auto"
       >
         {/* Headline */}
-        <h2 className="text-[28px] sm:text-3xl md:text-4xl font-bold text-[#18181B] tracking-tight mb-4">
+        <h2 className="text-[28px] sm:text-3xl md:text-4xl font-bold text-[#18181B] dark:text-white tracking-tight mb-4 transition-colors">
           Download <span className="text-[#EAB308]">Key</span>wee Meet your
           architect.
         </h2>
 
         {/* Subheadline */}
-        <p className="text-[#52525B] text-base sm:text-lg mb-8 font-medium">
+        <p className="text-[#52525B] dark:text-zinc-400 text-base sm:text-lg mb-8 font-medium transition-colors">
           Free to download. AI-matched in minutes. Available on iOS and Android.
         </p>
 
@@ -50,7 +50,7 @@ export default function DownloadSection() {
               transformOrigin:
                 "var(--mouse-x, 50%) var(--mouse-y, 50%)",
             }}
-            className="group relative overflow-hidden flex items-center gap-3 bg-[#111111] rounded-xl px-5 py-3 text-[#F1F1F1] w-[210px] justify-center transition-all duration-300 hover:text-[#111111] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(250,204,21,0.25)] active:scale-[0.95] active:translate-y-0"
+            className="group relative overflow-hidden flex items-center gap-3 bg-[#111111] dark:bg-[#1A1A1A] border border-transparent dark:border-zinc-800 rounded-xl px-5 py-3 text-[#F1F1F1] w-[210px] justify-center transition-all duration-300 hover:text-[#111111] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(250,204,21,0.25)] active:scale-[0.95] active:translate-y-0"
           >
             <div
               className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
@@ -63,7 +63,7 @@ export default function DownloadSection() {
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/3/31/Apple_logo_white.svg"
               alt="Apple"
-              className="relative z-10 w-7 h-8 transition-transform duration-300 group-hover:scale-110"
+              className="relative z-10 w-7 h-8 transition-all duration-300 group-hover:scale-110 group-hover:brightness-0"
             />
 
             <div className="relative z-10 text-left flex flex-col justify-center">
@@ -85,7 +85,7 @@ export default function DownloadSection() {
               transformOrigin:
                 "var(--mouse-x, 50%) var(--mouse-y, 50%)",
             }}
-            className="group relative overflow-hidden flex items-center gap-3 bg-[#111111] rounded-xl px-5 py-3 text-[#F1F1F1] w-[210px] justify-center transition-all duration-300 hover:text-[#111111] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(250,204,21,0.25)] active:scale-[0.95] active:translate-y-0"
+            className="group relative overflow-hidden flex items-center gap-3 bg-[#111111] dark:bg-[#1A1A1A] border border-transparent dark:border-zinc-800 rounded-xl px-5 py-3 text-[#F1F1F1] w-[210px] justify-center transition-all duration-300 hover:text-[#111111] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(250,204,21,0.25)] active:scale-[0.95] active:translate-y-0"
           >
             <div
               className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"

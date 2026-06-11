@@ -98,7 +98,6 @@ export default function Login() {
 
       const data = await res.json();
 
-      // Check for success or token existence depending on your backend's response structure
       if (data.success || data.token) {
         if (data.token) localStorage.setItem("token", data.token);
         router.push("/");
@@ -114,24 +113,24 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#FBFAF7] px-4 py-12 font-sans sm:px-6">
-      <div className={`w-full rounded-[2rem] border border-zinc-200 bg-white p-6 sm:p-10 shadow-sm transition-all duration-300 ${!isExisting && step === 2 ? 'max-w-3xl' : 'max-w-md'}`}>
+    <div className="flex min-h-screen items-center justify-center bg-[#FBFAF7] dark:bg-[#0A0A0A] px-4 py-12 font-sans sm:px-6 transition-colors duration-300">
+      <div className={`w-full rounded-[2rem] border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black p-6 sm:p-10 shadow-sm transition-all duration-300 ${!isExisting && step === 2 ? 'max-w-3xl' : 'max-w-md'}`}>
 
         <div className="mb-8 text-center">
           <Link href="/" className="text-2xl font-extrabold tracking-tight">
-            <span className="text-black">Key</span>
+            <span className="text-black dark:text-white">Key</span>
             <span className="text-[#EAB308]">wee</span>
           </Link>
-          <h1 className="mt-6 text-2xl font-bold text-black">
+          <h1 className="mt-6 text-2xl font-bold text-black dark:text-white">
             {step === 1 ? "Join as Architect" : (isExisting ? "Welcome Back" : "Architect Profile Setup")}
           </h1>
-          <p className="mt-2 text-sm text-zinc-500">
+          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
             {step === 1 ? "Enter your mobile number to get started" : "Enter the verification code to continue"}
           </p>
         </div>
 
         {error && (
-          <div className="mb-6 rounded-lg bg-red-50 p-3 text-center text-sm font-medium text-red-600">
+          <div className="mb-6 rounded-lg bg-red-50 dark:bg-red-950/30 p-3 text-center text-sm font-medium text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/50">
             {error}
           </div>
         )}
@@ -139,9 +138,9 @@ export default function Login() {
         {step === 1 ? (
           <form onSubmit={handleSendOtp} className="flex flex-col gap-5">
             <div>
-              <label className="mb-2 block text-sm font-semibold text-black">Mobile Number</label>
-              <div className="flex shadow-sm rounded-lg border border-zinc-300 overflow-hidden focus-within:border-[#EAB308] focus-within:ring-1 focus-within:ring-[#EAB308] transition-colors">
-                <span className="flex items-center justify-center bg-zinc-50 px-4 text-sm font-semibold text-zinc-600 border-r border-zinc-300">
+              <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Mobile Number</label>
+              <div className="flex shadow-sm rounded-lg border border-zinc-300 dark:border-zinc-700 overflow-hidden focus-within:border-[#EAB308] focus-within:ring-1 focus-within:ring-[#EAB308] transition-colors bg-transparent">
+                <span className="flex items-center justify-center bg-zinc-50 dark:bg-zinc-900 px-4 text-sm font-semibold text-zinc-600 dark:text-zinc-400 border-r border-zinc-300 dark:border-zinc-700">
                   +91
                 </span>
                 <input
@@ -149,16 +148,16 @@ export default function Login() {
                   required
                   maxLength={10}
                   value={mobile}
-                  onChange={(e) => setMobile(e.target.value.replace(/\D/g, ''))} // Numeric only
+                  onChange={(e) => setMobile(e.target.value.replace(/\D/g, ''))}
                   placeholder="Enter 10-digit number"
-                  className="w-full px-4 py-3 text-sm outline-none"
+                  className="w-full px-4 py-3 text-sm outline-none bg-transparent text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600"
                 />
               </div>
             </div>
             <button
               type="submit"
               disabled={loading || mobile.length !== 10}
-              className="mt-2 rounded-lg bg-black py-3.5 text-sm font-bold text-white transition-colors hover:bg-zinc-800 disabled:opacity-50"
+              className="mt-2 rounded-lg bg-black dark:bg-white py-3.5 text-sm font-bold text-white dark:text-black transition-colors hover:bg-zinc-800 dark:hover:bg-zinc-200 disabled:opacity-50"
             >
               {loading ? "Sending..." : "Send OTP"}
             </button>
@@ -166,10 +165,10 @@ export default function Login() {
         ) : (
           <form onSubmit={handleAuthSubmit} className="flex flex-col gap-5">
 
-            {/* OTP Field (Always shown in step 2) */}
-            <div className={`${!isExisting ? "mb-4 border-b border-zinc-100 pb-6" : ""}`}>
+            {/* OTP Field */}
+            <div className={`${!isExisting ? "mb-4 border-b border-zinc-100 dark:border-zinc-800 pb-6" : ""}`}>
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-semibold text-black">Enter OTP</label>
+                <label className="block text-sm font-semibold text-black dark:text-white">Enter OTP</label>
                 <button type="button" onClick={() => setStep(1)} className="text-[#EAB308] hover:underline text-xs font-semibold">Change Number</button>
               </div>
               <input
@@ -179,53 +178,38 @@ export default function Login() {
                 value={otp}
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                 placeholder="4-digit code"
-                className="w-full rounded-lg border border-zinc-300 px-4 py-3 text-sm tracking-widest outline-none transition-colors focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308] max-w-xs"
+                className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-3 text-sm tracking-widest text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none transition-colors focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308] max-w-xs"
               />
-              <p className="mt-2 text-xs font-medium text-zinc-500">Sent to +91 {mobile}</p>
+              <p className="mt-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">Sent to +91 {mobile}</p>
             </div>
 
-            {/* Registration Fields (Only shown if user doesn't exist) */}
+            {/* Registration Fields */}
             {!isExisting && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-black">Full Name</label>
-                  <input type="text" name="name" required value={regData.name} onChange={handleInputChange} placeholder="John Doe" className="w-full rounded-lg border border-zinc-300 px-4 py-2.5 text-sm outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
+                  <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Full Name</label>
+                  <input type="text" name="name" required value={regData.name} onChange={handleInputChange} placeholder="John Doe" className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-2.5 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-black">Email Address</label>
-                  <input type="email" name="email" required value={regData.email} onChange={handleInputChange} placeholder="john@example.com" className="w-full rounded-lg border border-zinc-300 px-4 py-2.5 text-sm outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
+                  <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Email Address</label>
+                  <input type="email" name="email" required value={regData.email} onChange={handleInputChange} placeholder="john@example.com" className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-2.5 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-black">Alternative Contact</label>
-                  <input type="tel" name="contact" required maxLength={10} value={regData.contact} onChange={(e) => setRegData({ ...regData, contact: e.target.value.replace(/\D/g, '') })} placeholder="10-digit number" className="w-full rounded-lg border border-zinc-300 px-4 py-2.5 text-sm outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
+                  <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Alternative Contact</label>
+                  <input type="tel" name="contact" required maxLength={10} value={regData.contact} onChange={(e) => setRegData({ ...regData, contact: e.target.value.replace(/\D/g, '') })} placeholder="10-digit number" className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-2.5 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
                 </div>
 
-                {/* <div>
-                  <label className="mb-2 block text-sm font-semibold text-black">Gender</label>
-                  <select name="gender" required value={regData.gender} onChange={handleInputChange} className="w-full rounded-lg border border-zinc-300 px-4 py-2.5 text-sm outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308] bg-white">
-                    <option value="MALE">Male</option>
-                    <option value="FEMALE">Female</option>
-                    <option value="OTHER">Other</option>
-                  </select>
-                </div> */}
-
-
                 <div>
-                  <label
-                    htmlFor="gender-select"
-                    className="mb-2 block text-sm font-semibold text-black"
-                  >
-                    Gender
-                  </label>
+                  <label htmlFor="gender-select" className="mb-2 block text-sm font-semibold text-black dark:text-white">Gender</label>
                   <select
-                    id="gender-select" // Links with htmlFor above
+                    id="gender-select"
                     name="gender"
                     required
                     value={regData.gender}
                     onChange={handleInputChange}
-                    className="w-full rounded-lg border border-zinc-300 px-4 py-2.5 text-sm outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308] bg-white"
+                    className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-black dark:text-white outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]"
                   >
                     <option value="MALE">Male</option>
                     <option value="FEMALE">Female</option>
@@ -234,18 +218,18 @@ export default function Login() {
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-black">Firm Name</label>
-                  <input type="text" name="firmName" required value={regData.firmName} onChange={handleInputChange} placeholder="Doe & Associates Design" className="w-full rounded-lg border border-zinc-300 px-4 py-2.5 text-sm outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
+                  <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Firm Name</label>
+                  <input type="text" name="firmName" required value={regData.firmName} onChange={handleInputChange} placeholder="Doe & Associates Design" className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-2.5 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-black">Years of Experience</label>
-                  <input type="number" name="experience" required min="0" value={regData.experience} onChange={handleInputChange} placeholder="e.g. 8" className="w-full rounded-lg border border-zinc-300 px-4 py-2.5 text-sm outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
+                  <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Years of Experience</label>
+                  <input type="number" name="experience" required min="0" value={regData.experience} onChange={handleInputChange} placeholder="e.g. 8" className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-2.5 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="mb-2 block text-sm font-semibold text-black">Professional Bio</label>
-                  <textarea name="bio" required rows={3} value={regData.bio} onChange={handleInputChange} placeholder="Tell us about your specialization and past work..." className="w-full rounded-lg border border-zinc-300 px-4 py-3 text-sm outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308] resize-none" />
+                  <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Professional Bio</label>
+                  <textarea name="bio" required rows={3} value={regData.bio} onChange={handleInputChange} placeholder="Tell us about your specialization and past work..." className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-3 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308] resize-none" />
                 </div>
               </div>
             )}
