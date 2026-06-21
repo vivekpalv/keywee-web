@@ -180,20 +180,19 @@ export default function Dashboard() {
 
   // --- PROJECT LOGIC ---
   const openEditProject = (proj: ProjectItem) => {
-    // Safely extract the category ID based on how the backend returns it
     let extractedCategoryId = "";
 
     if (typeof proj.category === "string") {
-      extractedCategoryId = proj.category; // Handles "category": "6a0d..."
+      extractedCategoryId = proj.category;
     } else if (proj.category && typeof proj.category === "object" && proj.category._id) {
-      extractedCategoryId = proj.category._id; // Handles populated category object
+      extractedCategoryId = proj.category._id;
     } else if (proj.categoryId) {
-      extractedCategoryId = proj.categoryId; // Fallback
+      extractedCategoryId = proj.categoryId;
     }
 
     setProjectForm({
       name: proj.name,
-      categoryId: extractedCategoryId, // Now perfectly populated!
+      categoryId: extractedCategoryId,
       city: proj.city,
       state: proj.state,
       desc: proj.description || "",
@@ -207,7 +206,7 @@ export default function Dashboard() {
 
   const closeProjectModal = () => {
     setIsProjectModalOpen(false);
-    setIsCategoryDropdownOpen(false); // Reset dropdown state
+    setIsCategoryDropdownOpen(false);
     setEditingProjectId(null);
     setProjectForm({ name: "", categoryId: "", city: "", state: "", desc: "", tags: "" });
     setMediaItems([]);
@@ -427,7 +426,6 @@ export default function Dashboard() {
     } catch (err) { alert("Error deleting qualification"); }
   };
 
-  // Lookup the currently selected category name for the custom dropdown
   const selectedCategoryName = categories.find(c => c._id === projectForm.categoryId)?.name || "Select a category";
 
   // --- RENDER BLOCK ---
@@ -441,26 +439,18 @@ export default function Dashboard() {
   if (error) return <div className="flex min-h-screen items-center justify-center text-red-500 bg-background">{error}</div>;
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans py-12 px-6 transition-colors duration-300">
+    <div className="min-h-screen bg-background text-foreground font-sans py-6 sm:py-12 px-4 sm:px-6 transition-colors duration-300">
       <div className="mx-auto max-w-6xl relative">
 
         {/* Header */}
-        {/* <div className="flex justify-between items-center border-b border-zinc-200 dark:border-zinc-800 pb-8 mb-10">
-          <h1 className="text-3xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight">Architect Dashboard</h1>
-          <Link href="/" className="text-xs font-bold border border-zinc-300 dark:border-zinc-700 rounded-lg px-4 py-2.5 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 shadow-sm transition-colors">
-            &larr; Back to Platform
-          </Link>
-        </div> */}
-        
-        {/* Header */}
-        <div className="flex justify-between items-center border-b border-zinc-200 dark:border-zinc-800 pb-8 mb-10">
-          <h1 className="text-3xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight">Architect Dashboard</h1>
-          <div className="flex gap-4">
-            <Link href="/chat" className="text-xs font-bold border border-transparent rounded-lg px-4 py-2.5 text-zinc-900 bg-[#EAB308] hover:bg-yellow-500 shadow-sm transition-colors flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-zinc-200 dark:border-zinc-800 pb-6 sm:pb-8 mb-8 sm:mb-10 gap-4 sm:gap-0">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight">Architect Dashboard</h1>
+          <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+            <Link href="/chat" className="text-xs font-bold border border-transparent rounded-lg px-4 py-2.5 text-zinc-900 bg-[#EAB308] hover:bg-yellow-500 shadow-sm transition-colors flex items-center justify-center flex-1 sm:flex-none gap-2">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
               Messages
             </Link>
-            <Link href="/" className="text-xs font-bold border border-zinc-300 dark:border-zinc-700 rounded-lg px-4 py-2.5 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 shadow-sm transition-colors">
+            <Link href="/" className="text-xs font-bold border border-zinc-300 dark:border-zinc-700 rounded-lg px-4 py-2.5 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 shadow-sm transition-colors flex items-center justify-center flex-1 sm:flex-none">
               &larr; Back to Platform
             </Link>
           </div>
@@ -473,7 +463,7 @@ export default function Dashboard() {
           onEditProfile={openEditProfile}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           <ProjectsSection
             projects={projects}
             onAddProject={() => setIsProjectModalOpen(true)}
@@ -493,11 +483,11 @@ export default function Dashboard() {
       {/* --- MODALS --- */}
       {isProfileModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-zinc-900 rounded-[2rem] w-full max-w-2xl p-8 max-h-[90vh] overflow-y-auto shadow-2xl border border-zinc-200 dark:border-zinc-800">
-            <h2 className="text-2xl font-extrabold mb-6 text-zinc-900 dark:text-zinc-100">Update Profile Details</h2>
-            <form onSubmit={handleSaveProfile} className="flex flex-col gap-5">
+          <div className="bg-white dark:bg-zinc-900 rounded-[2rem] w-full max-w-2xl p-5 sm:p-8 max-h-[90vh] overflow-y-auto shadow-2xl border border-zinc-200 dark:border-zinc-800">
+            <h2 className="text-xl sm:text-2xl font-extrabold mb-6 text-zinc-900 dark:text-zinc-100">Update Profile Details</h2>
+            <form onSubmit={handleSaveProfile} className="flex flex-col gap-4 sm:gap-5">
               <div className="flex flex-col items-center justify-center gap-3 mb-4">
-                <div className="w-28 h-28 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 overflow-hidden relative group cursor-pointer shadow-sm">
+                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 overflow-hidden relative group cursor-pointer shadow-sm">
                   {profileImagePreview ? (
                     <img src={profileImagePreview} alt="Avatar Preview" className="w-full h-full object-cover" />
                   ) : (
@@ -511,7 +501,7 @@ export default function Dashboard() {
                 <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Profile Image (Max 40MB)</span>
               </div>
 
-              <div className="grid grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                 <div>
                   <label className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide mb-2 block">Full Name</label>
                   <input required placeholder="Your Full Name" value={profileForm.name} onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })} className="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 focus:border-[#EAB308] dark:focus:border-yellow-500 rounded-xl p-3.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none transition-all" />
@@ -522,7 +512,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                 <div>
                   <label className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide mb-2 block">Work Email</label>
                   <input type="email" placeholder="Email Address" value={profileForm.email} onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })} className="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 focus:border-[#EAB308] dark:focus:border-yellow-500 rounded-xl p-3.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none transition-all" />
@@ -533,16 +523,16 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-5">
-                <div className="col-span-1">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+                <div>
                   <label htmlFor="experience" className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide mb-2 block">Experience (Yrs)</label>
                   <input id="experience" required type="number" min="0" placeholder="0" value={profileForm.experience} onChange={(e) => setProfileForm({ ...profileForm, experience: e.target.value })} className="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 focus:border-[#EAB308] dark:focus:border-yellow-500 rounded-xl p-3.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none transition-all" />
                 </div>
-                <div className="col-span-1">
+                <div>
                   <label className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide mb-2 block">City</label>
                   <input placeholder="City" value={profileForm.city} onChange={(e) => setProfileForm({ ...profileForm, city: e.target.value })} className="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 focus:border-[#EAB308] dark:focus:border-yellow-500 rounded-xl p-3.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none transition-all" />
                 </div>
-                <div className="col-span-1">
+                <div>
                   <label className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide mb-2 block">State</label>
                   <input placeholder="State" value={profileForm.state} onChange={(e) => setProfileForm({ ...profileForm, state: e.target.value })} className="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 focus:border-[#EAB308] dark:focus:border-yellow-500 rounded-xl p-3.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none transition-all" />
                 </div>
@@ -553,11 +543,11 @@ export default function Dashboard() {
                 <textarea placeholder="Write a brief professional bio..." value={profileForm.bio} onChange={(e) => setProfileForm({ ...profileForm, bio: e.target.value })} className="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 focus:border-[#EAB308] dark:focus:border-yellow-500 rounded-xl p-3.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none transition-all resize-none" rows={4} />
               </div>
 
-              <div className="flex gap-4 mt-6 pt-6 border-t border-zinc-100 dark:border-zinc-800">
-                <button type="button" onClick={closeProfileModal} disabled={isSavingProfile} className="flex-1 py-4 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-xl font-extrabold transition-colors disabled:opacity-50">Cancel</button>
-                <button type="submit" disabled={isSavingProfile} className="flex-1 py-4 flex items-center justify-center gap-2 bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-black rounded-xl font-extrabold transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+              <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 mt-6 pt-6 border-t border-zinc-100 dark:border-zinc-800">
+                <button type="button" onClick={closeProfileModal} disabled={isSavingProfile} className="flex-1 py-3 sm:py-4 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-xl font-extrabold transition-colors disabled:opacity-50">Cancel</button>
+                <button type="submit" disabled={isSavingProfile} className="flex-1 py-3 sm:py-4 flex items-center justify-center gap-2 bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-black rounded-xl font-extrabold transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
                   {isSavingProfile && <LoadingSpinner className="w-5 h-5 text-current mr-1" />}
-                  {isSavingProfile ? "Saving Profile..." : "Update Profile"}
+                  {isSavingProfile ? "Saving..." : "Update Profile"}
                 </button>
               </div>
             </form>
@@ -567,11 +557,11 @@ export default function Dashboard() {
 
       {isProjectModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-zinc-900 rounded-[2rem] w-full max-w-2xl p-8 max-h-[90vh] overflow-y-auto shadow-2xl border border-zinc-200 dark:border-zinc-800">
-            <h2 className="text-2xl font-extrabold mb-6 text-zinc-900 dark:text-zinc-100">{editingProjectId ? "Edit Project Details" : "Publish New Project"}</h2>
-            <form onSubmit={handleSaveProject} className="flex flex-col gap-5">
+          <div className="bg-white dark:bg-zinc-900 rounded-[2rem] w-full max-w-2xl p-5 sm:p-8 max-h-[90vh] overflow-y-auto shadow-2xl border border-zinc-200 dark:border-zinc-800">
+            <h2 className="text-xl sm:text-2xl font-extrabold mb-6 text-zinc-900 dark:text-zinc-100">{editingProjectId ? "Edit Project Details" : "Publish New Project"}</h2>
+            <form onSubmit={handleSaveProject} className="flex flex-col gap-4 sm:gap-5">
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                 <div>
                   <label className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide mb-2 block">
                     Project Title <span className="text-red-500">*</span>
@@ -588,7 +578,6 @@ export default function Dashboard() {
                     className="relative"
                     tabIndex={0}
                     onBlur={(e) => {
-                      // Close dropdown if clicking outside the wrapper
                       if (!e.currentTarget.contains(e.relatedTarget)) {
                         setIsCategoryDropdownOpen(false);
                       }
@@ -629,7 +618,7 @@ export default function Dashboard() {
                 {/* --- END CUSTOM DROPDOWN --- */}
               </div>
 
-              <div className="grid grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                 <div>
                   <label className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide mb-2 block">City</label>
                   <input required placeholder="e.g. Mumbai" value={projectForm.city} onChange={(e) => setProjectForm({ ...projectForm, city: e.target.value })} className="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 focus:border-[#EAB308] dark:focus:border-yellow-500 rounded-xl p-3.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none transition-all" />
@@ -653,7 +642,7 @@ export default function Dashboard() {
                 {mediaItems.length > 0 && (
                   <div className="flex flex-wrap gap-3 mb-4 bg-zinc-50 dark:bg-zinc-800 p-4 rounded-xl border border-zinc-100 dark:border-zinc-700">
                     {mediaItems.map((item, index) => (
-                      <div key={item.id} className="relative w-24 h-24 rounded-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden group shadow-sm bg-zinc-200 dark:bg-zinc-700">
+                      <div key={item.id} className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden group shadow-sm bg-zinc-200 dark:bg-zinc-700">
                         <img src={item.url} alt={`Preview ${index}`} className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-1.5">
                           <div className="flex justify-end">
@@ -669,10 +658,10 @@ export default function Dashboard() {
                   </div>
                 )}
                 <input type="file" id="media-upload" multiple accept="image/*" className="hidden" onChange={handleFileSelect} />
-                <label htmlFor="media-upload" className="w-full border-2 border-dashed border-zinc-300 dark:border-zinc-700 hover:border-[#EAB308] dark:hover:border-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900/10 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-colors text-zinc-500 dark:text-zinc-400 bg-white dark:bg-zinc-900">
+                <label htmlFor="media-upload" className="w-full border-2 border-dashed border-zinc-300 dark:border-zinc-700 hover:border-[#EAB308] dark:hover:border-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900/10 rounded-xl p-4 sm:p-6 flex flex-col items-center justify-center cursor-pointer transition-colors text-zinc-500 dark:text-zinc-400 bg-white dark:bg-zinc-900">
                   <div className="bg-zinc-50 dark:bg-zinc-800 p-2 rounded-full shadow-sm mb-2 text-xl">📸</div>
-                  <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-1">Click to browse images</span>
-                  <span className="text-xs">Supports High-Res JPG & PNG (Max 40MB total)</span>
+                  <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-1 text-center">Click to browse images</span>
+                  <span className="text-xs text-center">Supports High-Res JPG & PNG (Max 40MB total)</span>
                 </label>
               </div>
 
@@ -681,11 +670,11 @@ export default function Dashboard() {
                 <input placeholder="Modern, Minimalist, Commercial..." value={projectForm.tags} onChange={(e) => setProjectForm({ ...projectForm, tags: e.target.value })} className="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 focus:border-[#EAB308] dark:focus:border-yellow-500 rounded-xl p-3.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none transition-all" />
               </div>
 
-              <div className="flex gap-4 mt-6 pt-6 border-t border-zinc-100 dark:border-zinc-800">
-                <button type="button" onClick={closeProjectModal} disabled={isUploadingMedia} className="flex-1 py-4 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-xl font-extrabold transition-colors disabled:opacity-50">Cancel</button>
-                <button type="submit" disabled={isUploadingMedia} className="flex-1 py-4 flex items-center justify-center gap-2 bg-[#EAB308] hover:bg-yellow-600 text-white rounded-xl font-extrabold transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+              <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 mt-6 pt-6 border-t border-zinc-100 dark:border-zinc-800">
+                <button type="button" onClick={closeProjectModal} disabled={isUploadingMedia} className="flex-1 py-3 sm:py-4 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-xl font-extrabold transition-colors disabled:opacity-50">Cancel</button>
+                <button type="submit" disabled={isUploadingMedia} className="flex-1 py-3 sm:py-4 flex items-center justify-center gap-2 bg-[#EAB308] hover:bg-yellow-600 text-white rounded-xl font-extrabold transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
                   {isUploadingMedia && <LoadingSpinner className="w-5 h-5 text-white mr-1" />}
-                  {isUploadingMedia ? "Processing Uploads..." : editingProjectId ? "Save Changes" : "Publish Project"}
+                  {isUploadingMedia ? "Processing..." : editingProjectId ? "Save Changes" : "Publish Project"}
                 </button>
               </div>
             </form>
@@ -695,9 +684,9 @@ export default function Dashboard() {
 
       {isQualModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-zinc-900 rounded-[2rem] w-full max-w-md p-8 shadow-2xl border border-zinc-200 dark:border-zinc-800">
-            <h2 className="text-2xl font-extrabold mb-6 text-zinc-900 dark:text-zinc-100">{editingQualId ? "Edit Credential" : "Add Credential"}</h2>
-            <form onSubmit={handleSaveQualification} className="flex flex-col gap-5">
+          <div className="bg-white dark:bg-zinc-900 rounded-[2rem] w-full max-w-md p-5 sm:p-8 shadow-2xl border border-zinc-200 dark:border-zinc-800">
+            <h2 className="text-xl sm:text-2xl font-extrabold mb-6 text-zinc-900 dark:text-zinc-100">{editingQualId ? "Edit Credential" : "Add Credential"}</h2>
+            <form onSubmit={handleSaveQualification} className="flex flex-col gap-4 sm:gap-5">
               <div>
                 <label className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide mb-2 block">Degree Name</label>
                 <input required placeholder="e.g. B.Arch" value={qualForm.degree} onChange={(e) => setQualForm({ ...qualForm, degree: e.target.value })} className="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 focus:border-[#EAB308] dark:focus:border-yellow-500 rounded-xl p-3.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none transition-all" />
@@ -722,7 +711,7 @@ export default function Dashboard() {
                 <label className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide mb-2 block">
                   COA Certificate (Mandatory) <span className="text-red-500">*</span>
                 </label>
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                   {qualCertPreview ? (
                     <div className="w-16 h-16 rounded-xl border border-zinc-300 dark:border-zinc-700 overflow-hidden relative shadow-sm shrink-0">
                       <img src={qualCertPreview} className="w-full h-full object-cover" alt="Certificate Preview" />
@@ -731,15 +720,15 @@ export default function Dashboard() {
                     <div className="w-16 h-16 rounded-xl border border-dashed border-zinc-300 dark:border-zinc-700 flex items-center justify-center bg-zinc-50 dark:bg-zinc-800 text-2xl shrink-0">📄</div>
                   )}
                   <input type="file" id="cert-upload" accept="image/*,.pdf" className="hidden" onChange={handleQualCertSelect} />
-                  <label htmlFor="cert-upload" className="px-5 py-2.5 border border-zinc-300 dark:border-zinc-700 rounded-xl text-xs font-bold cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors shadow-sm text-zinc-900 dark:text-zinc-100 flex-1 text-center">
+                  <label htmlFor="cert-upload" className="w-full sm:w-auto px-5 py-3 sm:py-2.5 border border-zinc-300 dark:border-zinc-700 rounded-xl text-xs font-bold cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors shadow-sm text-zinc-900 dark:text-zinc-100 flex-1 text-center">
                     {qualCertPreview ? "Change Document" : "Upload Document (Max 40MB)"}
                   </label>
                 </div>
               </div>
 
-              <div className="flex gap-4 mt-6 pt-6 border-t border-zinc-100 dark:border-zinc-800">
-                <button type="button" onClick={closeQualModal} disabled={isUploadingMedia} className="flex-1 py-4 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-xl font-extrabold transition-colors disabled:opacity-50">Cancel</button>
-                <button type="submit" disabled={isUploadingMedia} className="flex-1 py-4 flex items-center justify-center gap-2 bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-black rounded-xl font-extrabold transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+              <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 mt-6 pt-6 border-t border-zinc-100 dark:border-zinc-800">
+                <button type="button" onClick={closeQualModal} disabled={isUploadingMedia} className="flex-1 py-3 sm:py-4 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-xl font-extrabold transition-colors disabled:opacity-50">Cancel</button>
+                <button type="submit" disabled={isUploadingMedia} className="flex-1 py-3 sm:py-4 flex items-center justify-center gap-2 bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-black rounded-xl font-extrabold transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
                   {isUploadingMedia && <LoadingSpinner className="w-5 h-5 text-current mr-1" />}
                   {isUploadingMedia ? "Processing..." : editingQualId ? "Update" : "Save Credential"}
                 </button>

@@ -169,11 +169,12 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans p-4 md:p-8 lg:p-12 transition-colors duration-300 flex flex-col">
-      <div className="mx-auto w-full max-w-6xl flex-1 flex flex-col h-[calc(100vh-2rem)] md:h-[calc(100vh-6rem)]">
+    // Uses h-[100dvh] so mobile keyboards don't push the input out of view
+    <div className="h-[100dvh] bg-background text-foreground font-sans p-0 sm:p-4 md:p-8 lg:p-12 transition-colors duration-300 flex flex-col">
+      <div className="mx-auto w-full max-w-6xl flex-1 flex flex-col h-full">
 
         {/* Header - Hidden on mobile if viewing an active chat to save vertical space */}
-        <div className={`flex justify-between items-center border-b border-zinc-200 dark:border-zinc-800 pb-4 md:pb-6 mb-4 md:mb-6 ${activeChat ? 'hidden md:flex' : 'flex'}`}>
+        <div className={`justify-between items-center px-4 sm:px-0 pt-4 sm:pt-0 border-b border-zinc-200 dark:border-zinc-800 pb-4 md:pb-6 mb-0 sm:mb-4 md:mb-6 ${activeChat ? 'hidden md:flex' : 'flex'}`}>
           <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight">Messages</h1>
           <Link href="/dashboard" className="text-xs font-bold border border-zinc-300 dark:border-zinc-700 rounded-lg px-4 py-2.5 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 shadow-sm transition-colors">
             &larr; <span className="hidden sm:inline">Back to Dashboard</span>
@@ -181,7 +182,8 @@ export default function ChatPage() {
         </div>
 
         {/* Chat Layout Container */}
-        <div className="flex-1 flex overflow-hidden border border-zinc-200 dark:border-zinc-800 rounded-2xl bg-white dark:bg-zinc-900 shadow-sm">
+        {/* Edge-to-edge on mobile (rounded-none, border-none), floated box on desktop */}
+        <div className="flex-1 flex overflow-hidden border-none sm:border border-zinc-200 dark:border-zinc-800 rounded-none sm:rounded-2xl bg-white dark:bg-zinc-900 shadow-none sm:shadow-sm">
 
           {/* Sidebar (Chat List) - Hidden on mobile when a chat is active */}
           <div className={`${activeChat ? 'hidden md:flex' : 'flex'} w-full md:w-1/3 lg:w-1/4 border-r border-zinc-200 dark:border-zinc-800 flex-col`}>
@@ -226,17 +228,17 @@ export default function ChatPage() {
             {activeChat ? (
               <>
                 {/* Active Chat Header */}
-                <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex items-center shadow-sm z-10 shrink-0">
+                <div className="p-3 sm:p-4 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex items-center shadow-sm z-10 shrink-0">
                   {/* Mobile Back Button */}
                   <button
                     type="button"
                     aria-label="Back to conversations list"
                     title="Back to conversations"
                     onClick={() => setActiveChat(null)}
-                    className="md:hidden mr-3 p-2 -ml-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-white rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                    className="md:hidden mr-2 sm:mr-3 p-2 -ml-1 sm:-ml-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-white rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                   >
                     <svg
-                      className="w-5 h-5"
+                      className="w-5 h-5 sm:w-6 sm:h-6"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -251,15 +253,15 @@ export default function ChatPage() {
                     </svg>
                   </button>
 
-                  <div className="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center text-lg mr-3 shrink-0">👤</div>
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center text-lg mr-3 shrink-0">👤</div>
                   <div className="truncate">
-                    <h3 className="font-bold text-zinc-900 dark:text-zinc-100 truncate">{activeChat.user.name || activeChat.user.mobile}</h3>
-                    <p className="text-xs text-zinc-500 truncate">{activeChat.user.roles.join(', ')}</p>
+                    <h3 className="font-bold text-zinc-900 dark:text-zinc-100 truncate text-sm sm:text-base">{activeChat.user.name || activeChat.user.mobile}</h3>
+                    <p className="text-[10px] sm:text-xs text-zinc-500 truncate">{activeChat.user.roles.join(', ')}</p>
                   </div>
                 </div>
 
                 {/* Messages Area */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-4">
                   {loadingMessages ? (
                     <div className="flex h-full items-center justify-center"><LoadingSpinner className="w-8 h-8 text-zinc-500" /></div>
                   ) : messages.length === 0 ? (
@@ -270,7 +272,7 @@ export default function ChatPage() {
                       return (
                         <div key={index} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                           {/* 'break-words' and 'whitespace-pre-wrap' ensure long text doesn't overflow */}
-                          <div className={`max-w-[85%] md:max-w-[70%] rounded-2xl px-4 py-2.5 md:px-5 md:py-3 text-sm break-words whitespace-pre-wrap ${isMe ? 'bg-[#EAB308] text-white rounded-br-none' : 'bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 rounded-bl-none shadow-sm'}`}>
+                          <div className={`max-w-[85%] md:max-w-[70%] rounded-2xl px-4 py-2.5 md:px-5 md:py-3 text-[13px] sm:text-sm break-words whitespace-pre-wrap ${isMe ? 'bg-[#EAB308] text-white rounded-br-none' : 'bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 rounded-bl-none shadow-sm'}`}>
                             {msg.message}
                           </div>
                         </div>
@@ -293,10 +295,13 @@ export default function ChatPage() {
                     <button
                       type="submit"
                       disabled={!messageInput.trim()}
-                      className="bg-black dark:bg-white text-white dark:text-black rounded-xl px-5 md:px-6 font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shrink-0"
+                      className="bg-black dark:bg-white text-white dark:text-black rounded-xl px-4 md:px-6 font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shrink-0"
                     >
                       <span className="hidden sm:inline">Send</span>
-                      <svg className="w-5 h-5 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                      {/* Paper airplane icon for mobile */}
+                      <svg className="w-5 h-5 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                      </svg>
                     </button>
                   </form>
                 </div>
