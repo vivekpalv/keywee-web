@@ -209,14 +209,16 @@ export default function Login() {
         ) : (
           <form onSubmit={handleAuthSubmit} className="flex flex-col gap-5">
 
-            {/* OTP Field (4 Boxes) */}
-            <div className={`${!isExisting ? "mb-4 border-b border-zinc-100 dark:border-zinc-800 pb-6" : ""}`}>
-              <div className="flex items-center justify-between mb-3">
-                <label className="block text-sm font-semibold text-black dark:text-white">Enter OTP</label>
-                <button type="button" onClick={() => { setStep(1); setOtp(["", "", "", ""]); }} className="text-[#EAB308] hover:underline text-xs font-semibold">Change Number</button>
+            {/* OTP Field (4 Boxes) - Centered */}
+            <div className={`flex flex-col items-center justify-center w-full ${!isExisting ? "mb-4 border-b border-zinc-100 dark:border-zinc-800 pb-6" : ""}`}>
+              
+              {/* Label centered */}
+              <div className="mb-4">
+                <label className="text-sm font-semibold text-black dark:text-white">Enter OTP</label>
               </div>
 
-              <div className="flex gap-3 max-w-xs">
+              {/* OTP inputs centered */}
+              <div className="flex justify-center gap-3 w-full">
                 {otp.map((digit, index) => (
                   <input
                     key={index}
@@ -227,16 +229,24 @@ export default function Login() {
                     inputMode="numeric"
                     maxLength={1}
                     value={digit}
-                    // FIX: Added aria-label for accessibility compliance
                     aria-label={`OTP digit ${index + 1}`}
                     onChange={(e) => handleOtpChange(index, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(index, e)}
                     onPaste={handleOtpPaste}
-                    className="w-12 h-12 text-center text-lg font-semibold rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent text-black dark:text-white outline-none transition-colors focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]"
+                    className="w-12 h-12 sm:w-14 sm:h-14 text-center text-xl font-bold rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent text-black dark:text-white outline-none transition-all focus:border-[#EAB308] focus:ring-2 focus:ring-[#EAB308]/50"
                   />
                 ))}
               </div>
-              <p className="mt-3 text-xs font-medium text-zinc-500 dark:text-zinc-400">Sent to +91 {mobile}</p>
+
+              {/* Helper text and Change Number link centered */}
+              <div className="mt-4 flex flex-col items-center gap-2">
+                <p className="text-center text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                  Sent to +91 {mobile}
+                </p>
+                <button type="button" onClick={() => { setStep(1); setOtp(["", "", "", ""]); }} className="text-[#EAB308] hover:underline text-xs font-semibold">
+                  Change Number
+                </button>
+              </div>
             </div>
 
             {/* Registration Fields */}
