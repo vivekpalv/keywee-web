@@ -159,7 +159,7 @@ export default function Navbar() {
       <div 
         // FIX: The dropdown background is set to a solid color specifically for the mobile menu.
         className={`md:hidden absolute top-full left-0 w-full bg-[#FBFAF7] dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 shadow-xl overflow-hidden transition-all duration-300 ease-in-out ${
-          isMobileMenuOpen ? "max-h-[500px] opacity-100 visible" : "max-h-0 opacity-0 invisible"
+          isMobileMenuOpen ? "max-h-125 opacity-100 visible" : "max-h-0 opacity-0 invisible"
         }`}
       >
         <div className="flex flex-col px-6 py-6 gap-6">

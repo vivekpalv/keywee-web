@@ -132,7 +132,7 @@ export default function ProjectDetailsPage() {
           
           {/* Main Hero Image */}
           {project.media && project.media.length > 0 ? (
-            <div className="w-full h-[400px] sm:h-[500px] rounded-[2rem] overflow-hidden shadow-sm border border-zinc-200 bg-zinc-100">
+            <div className="w-full h-100 sm:h-125 rounded-4xl overflow-hidden shadow-sm border border-zinc-200 bg-zinc-100">
               <img 
                 src={project.media[0]} 
                 alt={project.name} 
@@ -140,13 +140,13 @@ export default function ProjectDetailsPage() {
               />
             </div>
           ) : (
-            <div className="w-full h-[300px] rounded-[2rem] border-2 border-dashed border-zinc-200 bg-zinc-50 flex items-center justify-center text-zinc-400 font-bold uppercase tracking-widest text-sm">
+            <div className="w-full h-75 rounded-4xl border-2 border-dashed border-zinc-200 bg-zinc-50 flex items-center justify-center text-zinc-400 font-bold uppercase tracking-widest text-sm">
               No Media Uploaded
             </div>
           )}
 
           {/* Project Overview */}
-          <div className="bg-white rounded-[2rem] border border-zinc-200 p-8 shadow-sm">
+          <div className="bg-white rounded-4xl border border-zinc-200 p-8 shadow-sm">
             <h2 className="text-2xl font-extrabold text-zinc-900 mb-4">Project Overview</h2>
             <p className="text-base text-zinc-600 leading-relaxed whitespace-pre-wrap font-medium">
               {project.description || "No description provided for this project."}
@@ -178,7 +178,7 @@ export default function ProjectDetailsPage() {
           <div className="sticky top-8 flex flex-col gap-6">
             
             {/* Architect Card */}
-            <div className="bg-white rounded-[2rem] border border-zinc-200 p-8 shadow-sm">
+            <div className="bg-white rounded-4xl border border-zinc-200 p-8 shadow-sm">
               <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-4">Designed By</span>
               
               <div className="flex items-center gap-3 mb-2">

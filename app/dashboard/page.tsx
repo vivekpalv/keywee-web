@@ -482,8 +482,8 @@ export default function Dashboard() {
 
       {/* --- MODALS --- */}
       {isProfileModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-zinc-900 rounded-[2rem] w-full max-w-2xl p-5 sm:p-8 max-h-[90vh] overflow-y-auto shadow-2xl border border-zinc-200 dark:border-zinc-800">
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-zinc-900 rounded-4xl w-full max-w-2xl p-5 sm:p-8 max-h-[90vh] overflow-y-auto shadow-2xl border border-zinc-200 dark:border-zinc-800">
             <h2 className="text-xl sm:text-2xl font-extrabold mb-6 text-zinc-900 dark:text-zinc-100">Update Profile Details</h2>
             <form onSubmit={handleSaveProfile} className="flex flex-col gap-4 sm:gap-5">
               <div className="flex flex-col items-center justify-center gap-3 mb-4">
@@ -556,8 +556,8 @@ export default function Dashboard() {
       )}
 
       {isProjectModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-zinc-900 rounded-[2rem] w-full max-w-2xl p-5 sm:p-8 max-h-[90vh] overflow-y-auto shadow-2xl border border-zinc-200 dark:border-zinc-800">
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-zinc-900 rounded-4xl w-full max-w-2xl p-5 sm:p-8 max-h-[90vh] overflow-y-auto shadow-2xl border border-zinc-200 dark:border-zinc-800">
             <h2 className="text-xl sm:text-2xl font-extrabold mb-6 text-zinc-900 dark:text-zinc-100">{editingProjectId ? "Edit Project Details" : "Publish New Project"}</h2>
             <form onSubmit={handleSaveProject} className="flex flex-col gap-4 sm:gap-5">
 
@@ -589,7 +589,7 @@ export default function Dashboard() {
                       className={`flex items-center justify-between w-full bg-white dark:bg-zinc-900 border ${isCategoryDropdownOpen ? 'border-[#EAB308] dark:border-yellow-500 ring-1 ring-[#EAB308]' : 'border-zinc-300 dark:border-zinc-700'} rounded-xl p-3.5 text-sm ${projectForm.categoryId ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-500 dark:text-zinc-400'} outline-none transition-all cursor-pointer`}
                     >
                       <span className="truncate">{selectedCategoryName}</span>
-                      <svg className={`w-4 h-4 text-zinc-400 transition-transform duration-200 flex-shrink-0 ml-2 ${isCategoryDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                      <svg className={`w-4 h-4 text-zinc-400 transition-transform duration-200 shrink-0 ml-2 ${isCategoryDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
 
                     {isCategoryDropdownOpen && (
@@ -683,8 +683,8 @@ export default function Dashboard() {
       )}
 
       {isQualModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-zinc-900 rounded-[2rem] w-full max-w-md p-5 sm:p-8 shadow-2xl border border-zinc-200 dark:border-zinc-800">
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-zinc-900 rounded-4xl w-full max-w-md p-5 sm:p-8 shadow-2xl border border-zinc-200 dark:border-zinc-800">
             <h2 className="text-xl sm:text-2xl font-extrabold mb-6 text-zinc-900 dark:text-zinc-100">{editingQualId ? "Edit Credential" : "Add Credential"}</h2>
             <form onSubmit={handleSaveQualification} className="flex flex-col gap-4 sm:gap-5">
               <div>
