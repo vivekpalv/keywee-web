@@ -65,7 +65,8 @@ export default function Navbar() {
       className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
         isScrolled 
           ? "bg-background/90 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 py-3 sm:py-4 shadow-sm" 
-          : "bg-transparent py-5 sm:py-6"
+          // FIX: Added a condition that makes the nav solid ONLY on mobile (md:bg-transparent resets it for desktop) when the menu is open
+          : `py-5 sm:py-6 ${isMobileMenuOpen ? "bg-[#FBFAF7] dark:bg-zinc-950 md:bg-transparent" : "bg-transparent"}`
       }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6">
@@ -156,7 +157,8 @@ export default function Navbar() {
 
       {/* Mobile Menu Dropdown */}
       <div 
-        className={`md:hidden absolute top-full left-0 w-full bg-background border-b border-zinc-200 dark:border-zinc-800 shadow-xl overflow-hidden transition-all duration-300 ease-in-out ${
+        // FIX: The dropdown background is set to a solid color specifically for the mobile menu.
+        className={`md:hidden absolute top-full left-0 w-full bg-[#FBFAF7] dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 shadow-xl overflow-hidden transition-all duration-300 ease-in-out ${
           isMobileMenuOpen ? "max-h-[500px] opacity-100 visible" : "max-h-0 opacity-0 invisible"
         }`}
       >

@@ -147,7 +147,7 @@ export default function BecomeArchitect() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-[#FBFAF7] px-4 py-12 font-sans">
-      <div className="w-full max-w-2xl rounded-[2rem] border border-zinc-200 bg-white p-8 shadow-sm sm:p-10">
+      <div className="w-full max-w-2xl rounded-4xl border border-zinc-200 bg-white p-8 shadow-sm sm:p-10">
         
         {/* Brand Header */}
         <div className="mb-8 text-center">
