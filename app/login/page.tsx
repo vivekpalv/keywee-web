@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -15,7 +15,9 @@ export default function Login() {
 
   // Form States
   const [mobile, setMobile] = useState("");
-  const [otp, setOtp] = useState("");
+  // Changed OTP state to an array of 4 strings
+  const [otp, setOtp] = useState<string[]>(["", "", "", ""]);
+  const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   // Registration Data mapping exactly to /register-architect payload
   const [regData, setRegData] = useState({
@@ -59,10 +61,52 @@ export default function Login() {
     }
   };
 
+  // --- OTP Handlers ---
+  const handleOtpChange = (index: number, value: string) => {
+    // Prevent non-numeric input
+    if (!/^\d*$/.test(value)) return;
+
+    const newOtp = [...otp];
+    // Keep only the last typed character
+    newOtp[index] = value.slice(-1);
+    setOtp(newOtp);
+
+    // Auto-focus next input
+    if (value && index < 3) {
+      otpRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      // Auto-focus previous input on backspace if current is empty
+      otpRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData("text/plain").slice(0, 4).replace(/\D/g, "");
+    if (pastedData) {
+      const newOtp = [...otp];
+      for (let i = 0; i < pastedData.length; i++) {
+        newOtp[i] = pastedData[i];
+      }
+      setOtp(newOtp);
+      // Focus the last filled input or the next empty one
+      const focusIndex = Math.min(pastedData.length, 3);
+      otpRefs.current[focusIndex]?.focus();
+    }
+  };
+  // --------------------
+
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
+
+    // Combine the 4 boxes into a single string
+    const otpValue = otp.join("");
 
     try {
       let res;
@@ -74,7 +118,7 @@ export default function Login() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             mobile: Number(mobile),
-            otp: Number(otp)
+            otp: Number(otpValue)
           }),
         });
       } else {
@@ -85,7 +129,7 @@ export default function Login() {
           body: JSON.stringify({
             name: regData.name,
             mobile: Number(mobile),
-            otp: Number(otp),
+            otp: Number(otpValue),
             gender: regData.gender,
             contact: regData.contact,
             email: regData.email,
@@ -114,7 +158,7 @@ export default function Login() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#FBFAF7] dark:bg-[#0A0A0A] px-4 py-12 font-sans sm:px-6 transition-colors duration-300">
-      <div className={`w-full rounded-[2rem] border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black p-6 sm:p-10 shadow-sm transition-all duration-300 ${!isExisting && step === 2 ? 'max-w-3xl' : 'max-w-md'}`}>
+      <div className={`w-full rounded-4xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black p-6 sm:p-10 shadow-sm transition-all duration-300 ${!isExisting && step === 2 ? 'max-w-3xl' : 'max-w-md'}`}>
 
         <div className="mb-8 text-center">
           <Link href="/" className="text-2xl font-extrabold tracking-tight">
@@ -165,22 +209,34 @@ export default function Login() {
         ) : (
           <form onSubmit={handleAuthSubmit} className="flex flex-col gap-5">
 
-            {/* OTP Field */}
+            {/* OTP Field (4 Boxes) */}
             <div className={`${!isExisting ? "mb-4 border-b border-zinc-100 dark:border-zinc-800 pb-6" : ""}`}>
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-3">
                 <label className="block text-sm font-semibold text-black dark:text-white">Enter OTP</label>
-                <button type="button" onClick={() => setStep(1)} className="text-[#EAB308] hover:underline text-xs font-semibold">Change Number</button>
+                <button type="button" onClick={() => { setStep(1); setOtp(["", "", "", ""]); }} className="text-[#EAB308] hover:underline text-xs font-semibold">Change Number</button>
               </div>
-              <input
-                type="text"
-                required
-                maxLength={4}
-                value={otp}
-                onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                placeholder="4-digit code"
-                className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-3 text-sm tracking-widest text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none transition-colors focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308] max-w-xs"
-              />
-              <p className="mt-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">Sent to +91 {mobile}</p>
+
+              <div className="flex gap-3 max-w-xs">
+                {otp.map((digit, index) => (
+                  <input
+                    key={index}
+                    ref={(el) => {
+                      otpRefs.current[index] = el;
+                    }}
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={1}
+                    value={digit}
+                    // FIX: Added aria-label for accessibility compliance
+                    aria-label={`OTP digit ${index + 1}`}
+                    onChange={(e) => handleOtpChange(index, e.target.value)}
+                    onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                    onPaste={handleOtpPaste}
+                    className="w-12 h-12 text-center text-lg font-semibold rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent text-black dark:text-white outline-none transition-colors focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]"
+                  />
+                ))}
+              </div>
+              <p className="mt-3 text-xs font-medium text-zinc-500 dark:text-zinc-400">Sent to +91 {mobile}</p>
             </div>
 
             {/* Registration Fields */}
@@ -236,7 +292,7 @@ export default function Login() {
 
             <button
               type="submit"
-              disabled={loading || otp.length < 4}
+              disabled={loading || otp.join("").length < 4}
               className="mt-4 w-full rounded-lg bg-[#EAB308] hover:bg-yellow-600 py-3.5 text-sm font-bold text-white transition-colors disabled:opacity-50"
             >
               {loading ? "Processing..." : (isExisting ? "Secure Login" : "Register Profile")}
