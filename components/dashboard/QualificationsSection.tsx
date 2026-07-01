@@ -30,7 +30,7 @@ export default function QualificationsSection({ qualifications, onAddQual, onEdi
           {sortedQuals.map((qual) => (
             <div key={qual._id} className="relative group">
               {/* Timeline Dot */}
-              <div className="absolute -left-[35px] sm:-left-[43px] top-1.5 h-4 w-4 rounded-full bg-white dark:bg-zinc-900 border-4 border-[#EAB308] group-hover:scale-125 transition-transform" />
+              <div className="absolute -left-8.75 sm:-left-10.75 top-1.5 h-4 w-4 rounded-full bg-white dark:bg-zinc-900 border-4 border-[#EAB308] group-hover:scale-125 transition-transform" />
               
               <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-sm relative hover:border-[#EAB308]/50 transition-colors">
                 <div className="flex items-start justify-between mb-2">

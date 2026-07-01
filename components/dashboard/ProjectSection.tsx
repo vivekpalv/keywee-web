@@ -27,7 +27,7 @@ export default function ProjectsSection({ projects, onAddProject, onEditProject,
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {projects.map((proj) => (
-            <div key={proj._id} className="group rounded-[1.5rem] border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm flex flex-col overflow-hidden hover:shadow-md transition-shadow">
+            <div key={proj._id} className="group rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm flex flex-col overflow-hidden hover:shadow-md transition-shadow">
               <Link href={`/projects/${proj._id}`} className="block h-48 w-full bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden cursor-pointer">
                 {proj.media && proj.media.length > 0 ? (
                   <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style={{ backgroundImage: `url('${proj.media[0]}')` }} />

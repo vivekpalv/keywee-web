@@ -53,7 +53,7 @@ export default function PlanCard({ plan, isSelected, onSelect }: PlanCardProps) 
           </span>
         </div>
 
-        <p className="text-sm text-zinc-500 dark:text-neutral-400 min-h-[40px] mb-6">
+        <p className="text-sm text-zinc-500 dark:text-neutral-400 min-h-10 mb-6">
           {plan.desc}
         </p>
 

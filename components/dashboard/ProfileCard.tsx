@@ -23,7 +23,7 @@ export default function ProfileCard({ profile, totalProjects, onEditProfile }: P
   const completionPercentage = Math.round((completedCount / completionFields.length) * 100);
 
   return (
-    <div className="rounded-[2rem] border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8 mb-12 shadow-sm relative overflow-hidden group">
+    <div className="rounded-4xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8 mb-12 shadow-sm relative overflow-hidden group">
       
       <div className="absolute top-6 right-6">
         <button onClick={onEditProfile} className="text-xs font-bold border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 rounded-lg px-4 py-2 transition-colors shadow-sm">
@@ -34,7 +34,7 @@ export default function ProfileCard({ profile, totalProjects, onEditProfile }: P
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mt-2">
         <div className="md:col-span-7 flex flex-col justify-center border-b md:border-b-0 md:border-r border-zinc-100 dark:border-zinc-800 pb-6 md:pb-0 md:pr-8 pt-4 md:pt-0">
           <div className="flex items-start gap-5 mb-4">
-            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-zinc-100 dark:bg-zinc-800 border-4 border-[#FFF9E6] dark:border-yellow-900/30 shadow-sm flex-shrink-0 overflow-hidden flex items-center justify-center relative">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-zinc-100 dark:bg-zinc-800 border-4 border-[#FFF9E6] dark:border-yellow-900/30 shadow-sm shrink-0 overflow-hidden flex items-center justify-center relative">
               {archDetails?.profilePictureUrl ? (
                 <img src={archDetails.profilePictureUrl} alt="Profile" className="w-full h-full object-cover" />
               ) : (
