@@ -10,9 +10,20 @@ interface ProfileCardProps {
 export default function ProfileCard({ profile, totalProjects, onEditProfile }: ProfileCardProps) {
   const archDetails = profile?.architectDetails;
 
+  // Calculate a simple profile completion score
+  const completionFields = [
+    profile?.name,
+    archDetails?.firmName,
+    archDetails?.bio,
+    archDetails?.profilePictureUrl,
+    archDetails?.city,
+    archDetails?.experience
+  ];
+  const completedCount = completionFields.filter(Boolean).length;
+  const completionPercentage = Math.round((completedCount / completionFields.length) * 100);
+
   return (
     <div className="rounded-[2rem] border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8 mb-12 shadow-sm relative overflow-hidden group">
-      <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-yellow-400 to-yellow-600" />
       
       <div className="absolute top-6 right-6">
         <button onClick={onEditProfile} className="text-xs font-bold border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 rounded-lg px-4 py-2 transition-colors shadow-sm">
@@ -30,7 +41,7 @@ export default function ProfileCard({ profile, totalProjects, onEditProfile }: P
                 <span className="text-3xl">👤</span>
               )}
             </div>
-            <div className="pt-2">
+            <div className="pt-2 w-full">
               <div className="flex items-center gap-3 mb-1">
                 <h2 className="text-3xl font-extrabold text-zinc-900 dark:text-zinc-100 capitalize leading-none">{profile?.name}</h2>
                 {archDetails?.verified && (
@@ -38,6 +49,21 @@ export default function ProfileCard({ profile, totalProjects, onEditProfile }: P
                 )}
               </div>
               <p className="text-sm font-bold text-[#EAB308] uppercase tracking-wide mt-1.5">{archDetails?.firmName || "Independent Professional"}</p>
+              
+              {/* Profile Completion Bar */}
+              <div className="mt-4 max-w-xs">
+                <div className="flex justify-between text-[10px] font-bold text-zinc-500 mb-1.5 uppercase tracking-wider">
+                  <span>Profile Setup</span>
+                  <span className={completionPercentage === 100 ? "text-green-500" : "text-[#EAB308]"}>{completionPercentage}%</span>
+                </div>
+                <div className="h-1.5 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                  <div 
+                    className={`h-full rounded-full transition-all duration-1000 ${completionPercentage === 100 ? 'bg-green-500' : 'bg-[#EAB308]'}`} 
+                    style={{ width: `${completionPercentage}%` }}
+                  />
+                </div>
+              </div>
+
             </div>
           </div>
           <div className="mt-2 text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed font-medium bg-zinc-50 dark:bg-zinc-800/50 p-4 rounded-xl border border-zinc-100 dark:border-zinc-700/50">
@@ -58,15 +84,11 @@ export default function ProfileCard({ profile, totalProjects, onEditProfile }: P
           </div>
           <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3 mt-2">
             <span className="text-zinc-400 font-medium">📍 Headquarters:</span>
-            <span className="capitalize">{archDetails?.city}, {archDetails?.state}</span>
+            <span className="capitalize">{archDetails?.city || "-"}, {archDetails?.state || "-"}</span>
           </div>
           <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
             <span className="text-zinc-400 font-medium">📞 Direct Line:</span>
-            <span>{archDetails?.contact || profile?.mobile}</span>
-          </div>
-          <div className="flex items-center justify-between pb-1">
-            <span className="text-zinc-400 font-medium">✉️ Work Email:</span>
-            <span className="text-zinc-900 dark:text-zinc-100 truncate max-w-[200px]">{archDetails?.email || "Not Provided"}</span>
+            <span>{archDetails?.contact || profile?.mobile || "-"}</span>
           </div>
         </div>
       </div>

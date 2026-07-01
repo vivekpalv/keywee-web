@@ -1,0 +1,1 @@
+export const BASE_URL = "https://backend.keywee.in/api/v1/";
