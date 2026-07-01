@@ -446,26 +446,45 @@ export default function Dashboard() {
       <div className="mx-auto max-w-6xl relative">
 
         {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-zinc-200 dark:border-zinc-800 pb-6 sm:pb-8 mb-8 sm:mb-10 gap-4 sm:gap-0">
-          <div>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-zinc-200 dark:border-zinc-800 pb-6 sm:pb-8 mb-8 sm:mb-10 gap-5 sm:gap-0">
+
+          {/* Title Area (Spans full width on mobile) */}
+          <div className="w-full sm:w-auto">
+            {/* Greeting sits independently on top */}
             <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-1">{greeting},</p>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight">
-              Architect Dashboard
-            </h1>
+            
+            {/* Title and Mobile Back Button locked in the same flex row */}
+            <div className="flex justify-between items-center w-full">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight leading-none">
+                Architect Dashboard
+              </h1>
+
+              {/* Mobile-Only Back Button */}
+              <Link href="/" className="sm:hidden flex items-center justify-center px-3 py-1.5 rounded-lg text-[10px] font-bold border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 shadow-sm transition-colors shrink-0 ml-3">
+                &larr; Back
+              </Link>
+            </div>
           </div>
-          <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-            {/* Added Premium Subscription Plans Button Here */}
-            <Link href="/plans" className="text-xs font-bold border border-zinc-800 dark:border-zinc-200 rounded-lg px-4 py-2.5 text-white dark:text-black bg-zinc-900 dark:bg-zinc-100 hover:bg-black dark:hover:bg-white shadow-sm transition-all flex items-center justify-center flex-1 sm:flex-none gap-2 ring-1 ring-zinc-800 dark:ring-zinc-200">
-              Membership Plans
+
+          {/* Action Buttons (Plans & Messages sit cleanly side-by-side on mobile) */}
+          <div className="grid grid-cols-2 sm:flex sm:flex-row w-full sm:w-auto gap-3">
+
+            {/* Membership Plans - Shortens to just "Plans" on mobile so it fits perfectly */}
+            <Link href="/plans" className="col-span-1 sm:col-auto flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-3 sm:py-2.5 rounded-lg text-xs font-bold text-white dark:text-black bg-zinc-900 dark:bg-zinc-100 hover:bg-black dark:hover:bg-white shadow-sm transition-all ring-1 ring-zinc-800 dark:ring-zinc-200">
+              <span><span className="hidden sm:inline">Membership </span>Plans</span>
             </Link>
 
-            <Link href="/chat" className="text-xs font-bold border border-transparent rounded-lg px-4 py-2.5 text-zinc-900 bg-[#EAB308] hover:bg-yellow-500 shadow-sm transition-colors flex items-center justify-center flex-1 sm:flex-none gap-2">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-              Messages
+            {/* Messages */}
+            <Link href="/chat" className="col-span-1 sm:col-auto flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-3 sm:py-2.5 rounded-lg text-xs font-bold text-zinc-900 bg-[#EAB308] hover:bg-yellow-500 shadow-sm transition-colors">
+              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+              <span>Messages</span>
             </Link>
-            <Link href="/" className="text-xs font-bold border border-zinc-300 dark:border-zinc-700 rounded-lg px-4 py-2.5 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 shadow-sm transition-colors flex items-center justify-center flex-1 sm:flex-none">
-              &larr; Back to Platform
+
+            {/* Desktop-Only Back Button */}
+            <Link href="/" className="hidden sm:flex items-center justify-center gap-2 px-4 py-3 sm:py-2.5 rounded-lg text-xs font-bold border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 shadow-sm transition-colors text-center whitespace-nowrap">
+              &larr; Back
             </Link>
+
           </div>
         </div>
 
