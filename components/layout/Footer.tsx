@@ -47,7 +47,8 @@ export default function Footer() {
             <div className="flex flex-col gap-3 text-xs font-medium text-zinc-500 dark:text-zinc-400">
               <Link href="/help" className="hover:text-black dark:hover:text-white transition-colors">Help Center</Link>
               <Link href="/faq" className="hover:text-black dark:hover:text-white transition-colors">FAQs</Link>
-              <Link href="/privacy" className="hover:text-black dark:hover:text-white transition-colors">Privacy Policy</Link>
+              {/* Pointed Privacy Policy to your /policies page */}
+              <Link href="/policies" className="hover:text-black dark:hover:text-white transition-colors">Privacy Policy</Link>
               <Link href="/terms" className="hover:text-black dark:hover:text-white transition-colors">Terms of Service</Link>
             </div>
           </div>

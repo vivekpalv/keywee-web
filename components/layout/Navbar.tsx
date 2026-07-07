@@ -65,7 +65,6 @@ export default function Navbar() {
       className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
         isScrolled 
           ? "bg-background/90 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 py-3 sm:py-4 shadow-sm" 
-          // FIX: Added a condition that makes the nav solid ONLY on mobile (md:bg-transparent resets it for desktop) when the menu is open
           : `py-5 sm:py-6 ${isMobileMenuOpen ? "bg-[#FBFAF7] dark:bg-zinc-950 md:bg-transparent" : "bg-transparent"}`
       }`}
     >
@@ -77,11 +76,11 @@ export default function Navbar() {
           <span className="text-[#EAB308]">wee</span>
         </Link>
 
-        {/* Desktop Global Nav Targets */}
+        {/* Desktop Global Nav Targets - Updated hrefs here */}
         <div className="hidden md:flex gap-8 items-center text-sm font-semibold absolute left-1/2 -translate-x-1/2">
           <Link href="/" className="text-[#EAB308]">Home</Link>
-          <Link href="#about" className="text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors">About Us</Link>
-          <Link href="#contact" className="text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors">Contact Us</Link>
+          <Link href="/about" className="text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors">About Us</Link>
+          <Link href="/contact" className="text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors">Contact Us</Link>
           <Link href="#blogs" className="text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors">Blogs</Link>
         </div>
 
@@ -152,12 +151,10 @@ export default function Navbar() {
 
       </div>
 
-      {/* Optional: Remove or update this line if it flashes white in dark mode */}
       <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/50 dark:bg-zinc-900/50" aria-hidden="true" />
 
-      {/* Mobile Menu Dropdown */}
+      {/* Mobile Menu Dropdown - Updated hrefs here */}
       <div 
-        // FIX: The dropdown background is set to a solid color specifically for the mobile menu.
         className={`md:hidden absolute top-full left-0 w-full bg-[#FBFAF7] dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 shadow-xl overflow-hidden transition-all duration-300 ease-in-out ${
           isMobileMenuOpen ? "max-h-125 opacity-100 visible" : "max-h-0 opacity-0 invisible"
         }`}
@@ -165,8 +162,8 @@ export default function Navbar() {
         <div className="flex flex-col px-6 py-6 gap-6">
           <div className="flex flex-col gap-5 text-base font-semibold">
             <Link href="/" onClick={closeMenu} className="text-[#EAB308]">Home</Link>
-            <Link href="#about" onClick={closeMenu} className="text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white">About Us</Link>
-            <Link href="#contact" onClick={closeMenu} className="text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white">Contact Us</Link>
+            <Link href="/about" onClick={closeMenu} className="text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white">About Us</Link>
+            <Link href="/contact" onClick={closeMenu} className="text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white">Contact Us</Link>
             <Link href="#blogs" onClick={closeMenu} className="text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white">Blogs</Link>
           </div>
 
