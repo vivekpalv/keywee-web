@@ -3,14 +3,10 @@
 import { Clock3, MapPin, ArrowRight } from "lucide-react";
 
 const cities = [
-  { name: "Gurugram", active: true },
-  { name: "Delhi", active: false },
-  { name: "Noida", active: false },
-  { name: "Mumbai", active: false },
-  { name: "Bangalore", active: false },
-  { name: "Hyderabad", active: false },
-  { name: "Pune", active: false },
-  { name: "Chennai", active: false },
+  { name: "India", active: true },
+  { name: "Dubai", active: false },
+  { name: "Europe", active: false },
+  { name: "Russia", active: false },
 ];
 
 export default function LiveArea() {
@@ -24,7 +20,7 @@ export default function LiveArea() {
             Where <span className="text-[#EAB308]">Keywee</span> is Live
           </h2>
           <p className="mt-3 md:mt-4 text-zinc-500 dark:text-zinc-400 text-sm sm:text-base md:text-xl font-medium max-w-xs sm:max-w-none mx-auto">
-            Starting in Gurugram. Expanding to a city near you.
+            Starting in India. Expanding to your Country.
           </p>
         </div>
 
@@ -102,7 +98,7 @@ export default function LiveArea() {
             <div className="flex items-center gap-2">
               <span className="text-zinc-500 dark:text-zinc-400">Want</span>
               <span className="text-[#EAB308]">Keywee</span>
-              <span className="text-zinc-500 dark:text-zinc-400">in your city?</span>
+              <span className="text-zinc-500 dark:text-zinc-400">in your country?</span>
             </div>
 
             <button className="group inline-flex items-center gap-1 text-xs md:text-base font-medium text-[#EAB308] underline underline-offset-4 hover:text-yellow-600 dark:hover:text-yellow-500 transition-all duration-300">

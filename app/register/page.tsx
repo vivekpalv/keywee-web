@@ -12,19 +12,16 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Form Field States
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
   const [otp, setOtp] = useState("");
   const [gender, setGender] = useState("MALE");
 
-  // Format phone inputs cleanly to allow only digits
   const handleMobileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, "");
     setMobile(value);
   };
 
-  // Format OTP inputs cleanly to allow only digits
   const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, "");
     setOtp(value);
@@ -79,7 +76,8 @@ export default function Register() {
         if (data.token) {
           localStorage.setItem("token", data.token);
         }
-        router.push("/");
+        // --- ROUTE TO SKIPPABLE PLANS PAGE ON NEW REGISTRATION ---
+        router.push("/plans?skippable=true");
       } else {
         setError(data.message || "Registration failed. Invalid OTP.");
       }
@@ -94,7 +92,6 @@ export default function Register() {
     <div className="flex min-h-screen items-center justify-center bg-[#FBFAF7] px-6 font-sans">
       <div className="w-full max-w-md rounded-[2rem] border border-zinc-200 bg-white p-10 shadow-sm">
         
-        {/* Brand Header */}
         <div className="mb-8 text-center">
           <Link href="/" className="text-2xl font-extrabold tracking-tight">
             <span className="text-black">Key</span>
@@ -104,14 +101,12 @@ export default function Register() {
           <p className="mt-2 text-sm text-zinc-500">Join as a homeowner or client</p>
         </div>
 
-        {/* Global Error Banner */}
         {error && (
           <div className="mb-6 rounded-lg bg-red-50 p-3 text-center text-sm font-medium text-red-600">
             {error}
           </div>
         )}
 
-        {/* Step 1: Gather Profile & Trigger Handshake */}
         {step === 1 ? (
           <form onSubmit={handleSendOtp} className="flex flex-col gap-4">
             <div>
@@ -170,8 +165,6 @@ export default function Register() {
             </button>
           </form>
         ) : (
-          
-          /* Step 2: Verification Challenge */
           <form onSubmit={handleRegister} className="flex flex-col gap-5">
             <div>
               <label htmlFor="reg-otp" className="mb-2 block text-sm font-semibold text-black">
@@ -208,7 +201,6 @@ export default function Register() {
           </form>
         )}
 
-        {/* Footer Navigation Elements */}
         <div className="mt-8 text-center text-sm font-medium text-zinc-600">
           <p>
             Already have an account?{" "}

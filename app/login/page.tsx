@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { fetchUserPayments } from "@/services/payment.service";
 
 const API_BASE_URL = "https://backend.keywee.in/api/v1";
 
@@ -15,14 +16,12 @@ export default function Login() {
 
   // Form States
   const [mobile, setMobile] = useState("");
-  // Changed OTP state to an array of 4 strings
   const [otp, setOtp] = useState<string[]>(["", "", "", ""]);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  // Registration Data mapping exactly to /register-architect payload
   const [regData, setRegData] = useState({
     name: "",
-    gender: "MALE", // Default value
+    gender: "MALE",
     contact: "",
     email: "",
     firmName: "",
@@ -61,17 +60,11 @@ export default function Login() {
     }
   };
 
-  // --- OTP Handlers ---
   const handleOtpChange = (index: number, value: string) => {
-    // Prevent non-numeric input
     if (!/^\d*$/.test(value)) return;
-
     const newOtp = [...otp];
-    // Keep only the last typed character
     newOtp[index] = value.slice(-1);
     setOtp(newOtp);
-
-    // Auto-focus next input
     if (value && index < 3) {
       otpRefs.current[index + 1]?.focus();
     }
@@ -79,7 +72,6 @@ export default function Login() {
 
   const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
-      // Auto-focus previous input on backspace if current is empty
       otpRefs.current[index - 1]?.focus();
     }
   };
@@ -93,36 +85,28 @@ export default function Login() {
         newOtp[i] = pastedData[i];
       }
       setOtp(newOtp);
-      // Focus the last filled input or the next empty one
       const focusIndex = Math.min(pastedData.length, 3);
       otpRefs.current[focusIndex]?.focus();
     }
   };
-  // --------------------
 
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    // Combine the 4 boxes into a single string
     const otpValue = otp.join("");
 
     try {
       let res;
 
       if (isExisting) {
-        // --- LOGIN EXISTING USER ---
         res = await fetch(`${API_BASE_URL}/auth/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            mobile: Number(mobile),
-            otp: Number(otpValue)
-          }),
+          body: JSON.stringify({ mobile: Number(mobile), otp: Number(otpValue) }),
         });
       } else {
-        // --- REGISTER NEW ARCHITECT ---
         res = await fetch(`${API_BASE_URL}/auth/register-architect`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -144,7 +128,26 @@ export default function Login() {
 
       if (data.success || data.token) {
         if (data.token) localStorage.setItem("token", data.token);
-        router.push("/");
+
+        // --- NEW PAYMENT REDIRECT LOGIC ---
+        if (isExisting) {
+          try {
+            // Check if existing user has ever bought a plan
+            const payments = await fetchUserPayments();
+            if (payments.length === 0) {
+              router.push("/plans?skippable=true");
+            } else {
+              router.push("/");
+            }
+          } catch (err) {
+            // Fallback to dashboard if payment check fails
+            router.push("/");
+          }
+        } else {
+          // New registration: We know they have 0 payments, skip API call
+          router.push("/plans?skippable=true");
+        }
+        
         router.refresh();
       } else {
         setError(data.message || (isExisting ? "Invalid OTP or login failed." : "Registration failed."));
@@ -208,23 +211,15 @@ export default function Login() {
           </form>
         ) : (
           <form onSubmit={handleAuthSubmit} className="flex flex-col gap-5">
-
-            {/* OTP Field (4 Boxes) - Centered */}
             <div className={`flex flex-col items-center justify-center w-full ${!isExisting ? "mb-4 border-b border-zinc-100 dark:border-zinc-800 pb-6" : ""}`}>
-              
-              {/* Label centered */}
               <div className="mb-4">
                 <label className="text-sm font-semibold text-black dark:text-white">Enter OTP</label>
               </div>
-
-              {/* OTP inputs centered */}
               <div className="flex justify-center gap-3 w-full">
                 {otp.map((digit, index) => (
                   <input
                     key={index}
-                    ref={(el) => {
-                      otpRefs.current[index] = el;
-                    }}
+                    ref={(el) => { otpRefs.current[index] = el; }}
                     type="text"
                     inputMode="numeric"
                     maxLength={1}
@@ -237,8 +232,6 @@ export default function Login() {
                   />
                 ))}
               </div>
-
-              {/* Helper text and Change Number link centered */}
               <div className="mt-4 flex flex-col items-center gap-2">
                 <p className="text-center text-xs font-medium text-zinc-500 dark:text-zinc-400">
                   Sent to +91 {mobile}
@@ -249,50 +242,36 @@ export default function Login() {
               </div>
             </div>
 
-            {/* Registration Fields */}
             {!isExisting && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Full Name</label>
                   <input type="text" name="name" required value={regData.name} onChange={handleInputChange} placeholder="John Doe" className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-2.5 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
                 </div>
-
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Email Address</label>
                   <input type="email" name="email" required value={regData.email} onChange={handleInputChange} placeholder="john@example.com" className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-2.5 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
                 </div>
-
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Alternative Contact</label>
                   <input type="tel" name="contact" required maxLength={10} value={regData.contact} onChange={(e) => setRegData({ ...regData, contact: e.target.value.replace(/\D/g, '') })} placeholder="10-digit number" className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-2.5 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
                 </div>
-
                 <div>
                   <label htmlFor="gender-select" className="mb-2 block text-sm font-semibold text-black dark:text-white">Gender</label>
-                  <select
-                    id="gender-select"
-                    name="gender"
-                    required
-                    value={regData.gender}
-                    onChange={handleInputChange}
-                    className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-black dark:text-white outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]"
-                  >
+                  <select id="gender-select" name="gender" required value={regData.gender} onChange={handleInputChange} className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-black dark:text-white outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]">
                     <option value="MALE">Male</option>
                     <option value="FEMALE">Female</option>
                     <option value="OTHER">Other</option>
                   </select>
                 </div>
-
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Firm Name</label>
                   <input type="text" name="firmName" required value={regData.firmName} onChange={handleInputChange} placeholder="Doe & Associates Design" className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-2.5 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
                 </div>
-
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Years of Experience</label>
                   <input type="number" name="experience" required min="0" value={regData.experience} onChange={handleInputChange} placeholder="e.g. 8" className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-2.5 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
                 </div>
-
                 <div className="sm:col-span-2">
                   <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Professional Bio</label>
                   <textarea name="bio" required rows={3} value={regData.bio} onChange={handleInputChange} placeholder="Tell us about your specialization and past work..." className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-3 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308] resize-none" />

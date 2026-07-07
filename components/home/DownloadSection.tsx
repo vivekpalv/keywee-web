@@ -20,7 +20,7 @@ export default function DownloadSection() {
   };
 
   return (
-    <section className="relative -mt-12 pt-20 pb-28 px-6 w-full flex items-center justify-center min-h-[400px] z-10">
+    <section className="relative -mt-12 py-24 px-6 w-full flex items-center justify-center min-h-[400px] z-10">
       {/* Content Container */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
