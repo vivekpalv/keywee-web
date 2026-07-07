@@ -36,11 +36,11 @@ export default function LiveArea() {
             >
               {/* Active Glow */}
               {city.active && (
-                <div className="absolute inset-0 bg-gradient-to-br from-yellow-200/60 dark:from-yellow-600/20 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-linear-to-br from-yellow-200/60 dark:from-yellow-600/20 via-transparent to-transparent pointer-events-none" />
               )}
 
               {/* Hover Shine */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-700 bg-gradient-to-r from-transparent via-white/40 dark:via-white/5 to-transparent -translate-x-full group-hover:translate-x-full" />
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-700 bg-linear-to-r from-transparent via-white/40 dark:via-white/5 to-transparent -translate-x-full group-hover:translate-x-full" />
 
               <div className="relative flex items-center justify-between gap-3 md:gap-4">
 
@@ -49,7 +49,7 @@ export default function LiveArea() {
 
                   {/* Icon */}
                   <div
-                    className={`flex h-12 w-12 md:h-[58px] md:w-[58px] items-center justify-center rounded-2xl md:rounded-[18px] shrink-0 transition-all duration-300 ${city.active
+                    className={`flex h-12 w-12 md:h-14.5 md:w-14.5 items-center justify-center rounded-2xl md:rounded-[18px] shrink-0 transition-all duration-300 ${city.active
                         ? "bg-[#DDA700] dark:bg-yellow-600 text-white shadow-md"
                         : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
                       }`}

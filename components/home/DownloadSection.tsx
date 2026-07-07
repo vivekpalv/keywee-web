@@ -20,7 +20,7 @@ export default function DownloadSection() {
   };
 
   return (
-    <section className="relative -mt-12 py-24 px-6 w-full flex items-center justify-center min-h-[400px] z-10">
+    <section className="relative -mt-12 py-24 px-6 w-full flex items-center justify-center min-h-100 z-10">
       {/* Content Container */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -50,7 +50,7 @@ export default function DownloadSection() {
               transformOrigin:
                 "var(--mouse-x, 50%) var(--mouse-y, 50%)",
             }}
-            className="group relative overflow-hidden flex items-center gap-3 bg-[#111111] dark:bg-[#1A1A1A] border border-transparent dark:border-zinc-800 rounded-xl px-5 py-3 text-[#F1F1F1] w-[210px] justify-center transition-all duration-300 hover:text-[#111111] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(250,204,21,0.25)] active:scale-[0.95] active:translate-y-0"
+            className="group relative overflow-hidden flex items-center gap-3 bg-[#111111] dark:bg-[#1A1A1A] border border-transparent dark:border-zinc-800 rounded-xl px-5 py-3 text-[#F1F1F1] w-52.5 justify-center transition-all duration-300 hover:text-[#111111] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(250,204,21,0.25)] active:scale-[0.95] active:translate-y-0"
           >
             <div
               className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
@@ -85,7 +85,7 @@ export default function DownloadSection() {
               transformOrigin:
                 "var(--mouse-x, 50%) var(--mouse-y, 50%)",
             }}
-            className="group relative overflow-hidden flex items-center gap-3 bg-[#111111] dark:bg-[#1A1A1A] border border-transparent dark:border-zinc-800 rounded-xl px-5 py-3 text-[#F1F1F1] w-[210px] justify-center transition-all duration-300 hover:text-[#111111] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(250,204,21,0.25)] active:scale-[0.95] active:translate-y-0"
+            className="group relative overflow-hidden flex items-center gap-3 bg-[#111111] dark:bg-[#1A1A1A] border border-transparent dark:border-zinc-800 rounded-xl px-5 py-3 text-[#F1F1F1] w-52.5 justify-center transition-all duration-300 hover:text-[#111111] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(250,204,21,0.25)] active:scale-[0.95] active:translate-y-0"
           >
             <div
               className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"

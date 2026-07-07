@@ -14,7 +14,7 @@ export default function Footer() {
               <span className="text-foreground">Key</span>
               <span className="text-[#EAB308]">wee</span>
             </Link>
-            <p className="mt-4 text-xs font-medium text-zinc-500 dark:text-zinc-400 leading-relaxed max-w-[200px]">
+            <p className="mt-4 text-xs font-medium text-zinc-500 dark:text-zinc-400 leading-relaxed max-w-50">
               Connecting homeowners with expert architects through AI-powered matching.
             </p>
           </div>
