@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { BASE_URL } from "@/utils/api";
 
-const API_BASE_URL = "https://backend.keywee.in/api/v1";
+const API_BASE_URL = BASE_URL; 
 
 // --- Interfaces ---
 interface ArchitectInfo {
@@ -43,7 +44,7 @@ export default function ProjectDetailsPage() {
       }
 
       try {
-        const res = await fetch(`${API_BASE_URL}/user/projects/${id}`, {
+        const res = await fetch(`${API_BASE_URL}user/projects/${id}`, {
           headers: {
             "Authorization": `Bearer ${token}`
           }

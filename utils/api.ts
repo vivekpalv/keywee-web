@@ -2,8 +2,8 @@
 import axios from 'axios';
 
 // 1. Export the raw BASE_URL for any legacy fetch() calls you still have
-// export const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://backend.keywee.in/api/v1/";
-export const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api/v1/";
+export const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://backend.keywee.in/api/v1/";
+// export const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api/v1/";
 
 // 2. Create a pre-configured Axios instance
 export const apiClient = axios.create({
