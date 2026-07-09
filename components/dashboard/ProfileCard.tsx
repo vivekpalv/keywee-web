@@ -17,10 +17,22 @@ export default function ProfileCard({ profile, totalProjects, onEditProfile }: P
     archDetails?.bio,
     archDetails?.profilePictureUrl,
     archDetails?.city,
-    archDetails?.experience
+    archDetails?.experience,
+    archDetails?.minBudget, // Added budget to completion fields
+    archDetails?.maxBudget
   ];
   const completedCount = completionFields.filter(Boolean).length;
   const completionPercentage = Math.round((completedCount / completionFields.length) * 100);
+
+  // Helper to format large numbers to Indian Rupee string (e.g. 5000000 -> ₹50,00,000)
+  const formatCurrency = (value: number | undefined) => {
+    if (value === undefined || value === null) return "N/A";
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
+    }).format(value);
+  };
 
   return (
     <div className="rounded-4xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8 mb-12 shadow-sm relative overflow-hidden group">
@@ -89,6 +101,17 @@ export default function ProfileCard({ profile, totalProjects, onEditProfile }: P
           <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
             <span className="text-zinc-400 font-medium">📞 Direct Line:</span>
             <span>{archDetails?.contact || profile?.mobile || "-"}</span>
+          </div>
+          {/* NEW BUDGET DISPLAY */}
+          <div className="flex flex-col border-b border-zinc-100 dark:border-zinc-800 pb-3">
+            <div className="flex items-center justify-between">
+              <span className="text-zinc-400 font-medium">💰 Target Budget:</span>
+              <span className="font-mono text-xs font-bold text-[#EAB308]">
+                {archDetails?.minBudget || archDetails?.maxBudget 
+                  ? `${formatCurrency(archDetails.minBudget)} - ${formatCurrency(archDetails.maxBudget)}`
+                  : "Not Specified"}
+              </span>
+            </div>
           </div>
         </div>
       </div>

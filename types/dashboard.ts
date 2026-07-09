@@ -1,7 +1,7 @@
 export interface ProjectItem {
   _id: string;
   name: string;
-  category?: string | { _id: string; name: string }; // Add this line to match your GET response
+  category?: string | { _id: string; name: string }; 
   categoryId?: string; 
   city: string;
   state: string;
@@ -34,6 +34,8 @@ export interface UserProfile {
     state?: string;
     verified?: boolean;
     profilePictureUrl?: string;
+    minBudget?: number; // Added to fix TS error
+    maxBudget?: number; // Added to fix TS error
   };
 }
 
@@ -48,4 +50,3 @@ export interface CategoryItem {
   name: string;
   iconUrl: string;
 }
-

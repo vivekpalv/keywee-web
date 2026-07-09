@@ -19,6 +19,7 @@ export default function Login() {
   const [otp, setOtp] = useState<string[]>(["", "", "", ""]);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
+  // Initialize min and max with full default values (e.g., 10 Lakhs to 50 Lakhs)
   const [regData, setRegData] = useState({
     name: "",
     gender: "MALE",
@@ -27,10 +28,25 @@ export default function Login() {
     firmName: "",
     bio: "",
     experience: "",
+    min: 1000000,
+    max: 5000000
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setRegData({ ...regData, [e.target.name]: e.target.value });
+  };
+
+  // Budget Change Handlers
+  const handleMinBudgetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value);
+    // Prevent the min value from crossing the max value
+    setRegData({ ...regData, min: Math.min(value, regData.max - 1) });
+  };
+
+  const handleMaxBudgetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value);
+    // Prevent the max value from crossing the min value
+    setRegData({ ...regData, max: Math.max(value, regData.min + 1) });
   };
 
   const handleSendOtp = async (e: React.FormEvent) => {
@@ -119,7 +135,9 @@ export default function Login() {
             email: regData.email,
             firmName: regData.firmName,
             bio: regData.bio,
-            experience: Number(regData.experience)
+            experience: Number(regData.experience),
+            min: Number(regData.min),
+            max: Number(regData.max)
           }),
         });
       }
@@ -129,10 +147,8 @@ export default function Login() {
       if (data.success || data.token) {
         if (data.token) localStorage.setItem("token", data.token);
 
-        // --- NEW PAYMENT REDIRECT LOGIC ---
         if (isExisting) {
           try {
-            // Check if existing user has ever bought a plan
             const payments = await fetchUserPayments();
             if (payments.length === 0) {
               router.push("/plans?skippable=true");
@@ -140,11 +156,9 @@ export default function Login() {
               router.push("/");
             }
           } catch (err) {
-            // Fallback to dashboard if payment check fails
             router.push("/");
           }
         } else {
-          // New registration: We know they have 0 payments, skip API call
           router.push("/plans?skippable=true");
         }
         
@@ -272,6 +286,83 @@ export default function Login() {
                   <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Years of Experience</label>
                   <input type="number" name="experience" required min="0" value={regData.experience} onChange={handleInputChange} placeholder="e.g. 8" className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-2.5 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
                 </div>
+
+                {/* --- Interactive Dual Seek Bar with Full Values --- */}
+                <div className="sm:col-span-2 mt-2">
+                  <div className="flex justify-between items-center mb-4">
+                    <label className="text-sm font-semibold text-black dark:text-white">
+                      Project Budget Range
+                    </label>
+                  </div>
+                  
+                  {/* Number Input Fields */}
+                  <div className="flex items-center gap-4 mb-5">
+                    <div className="flex-1 flex items-center bg-transparent border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 focus-within:border-[#EAB308] focus-within:ring-1 focus-within:ring-[#EAB308] transition-all">
+                      <span className="text-zinc-500 font-semibold mr-1">₹</span>
+                      <input 
+                        type="number" 
+                        name="min"
+                        min="0"
+                        value={regData.min} 
+                        onChange={handleMinBudgetChange}
+                        className="w-full bg-transparent text-sm font-bold text-black dark:text-white outline-none"
+                      />
+                    </div>
+                    <span className="text-zinc-400 font-medium text-sm">to</span>
+                    <div className="flex-1 flex items-center bg-transparent border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 focus-within:border-[#EAB308] focus-within:ring-1 focus-within:ring-[#EAB308] transition-all">
+                      <span className="text-zinc-500 font-semibold mr-1">₹</span>
+                      <input 
+                        type="number" 
+                        name="max"
+                        min={regData.min + 1}
+                        value={regData.max} 
+                        onChange={handleMaxBudgetChange}
+                        className="w-full bg-transparent text-sm font-bold text-black dark:text-white outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Dual Seek Bar (Max visual slider set to 10,000,000 / 1 Crore) */}
+                  <div className="relative h-2 w-full bg-zinc-200 dark:bg-zinc-800 rounded-full flex items-center mt-2">
+                    {/* Yellow Active Track between the two thumbs */}
+                    <div
+                      className="absolute h-2 bg-[#EAB308] rounded-full pointer-events-none transition-all duration-75"
+                      style={{
+                        // Cap the visual track at 0 and 100% so it doesn't break UI if user types larger values
+                        left: `${Math.min(100, Math.max(0, (regData.min / 10000000) * 100))}%`,
+                        right: `${100 - Math.min(100, Math.max(0, (regData.max / 10000000) * 100))}%`,
+                      }}
+                    ></div>
+                    
+                    {/* Minimum Slider */}
+                    <input
+                      type="range"
+                      min="0"
+                      max="10000000"
+                      step="100000" // Steps of 1 Lakh
+                      value={Math.min(regData.min, 10000000)} // Cap slider visual position
+                      onChange={handleMinBudgetChange}
+                      className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#EAB308] [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-md [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-[#EAB308] [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:shadow-md z-20"
+                    />
+                    
+                    {/* Maximum Slider */}
+                    <input
+                      type="range"
+                      min="0"
+                      max="10000000"
+                      step="100000" // Steps of 1 Lakh
+                      value={Math.min(regData.max, 10000000)} // Cap slider visual position
+                      onChange={handleMaxBudgetChange}
+                      className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#EAB308] [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-md [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-[#EAB308] [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:shadow-md z-30"
+                    />
+                  </div>
+                  
+                  <div className="flex justify-between text-xs font-medium text-zinc-400 mt-3">
+                    <span>₹0</span>
+                    <span>₹1,00,00,000+</span>
+                  </div>
+                </div>
+
                 <div className="sm:col-span-2">
                   <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Professional Bio</label>
                   <textarea name="bio" required rows={3} value={regData.bio} onChange={handleInputChange} placeholder="Tell us about your specialization and past work..." className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-3 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308] resize-none" />

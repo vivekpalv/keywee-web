@@ -45,7 +45,19 @@ export default function Dashboard() {
   const [projectForm, setProjectForm] = useState({ name: "", categoryId: "", city: "", state: "", desc: "", tags: "" });
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [qualForm, setQualForm] = useState({ degree: "", university: "", yearOfPassing: "", coaNo: "", coaCertUrl: "" });
-  const [profileForm, setProfileForm] = useState({ name: "", firmName: "", email: "", contact: "", experience: "", bio: "", city: "", state: "", profilePictureUrl: "" });
+  const [profileForm, setProfileForm] = useState({ 
+    name: "", 
+    firmName: "", 
+    email: "", 
+    contact: "", 
+    experience: "", 
+    bio: "", 
+    city: "", 
+    state: "", 
+    profilePictureUrl: "",
+    minBudget: 0,
+    maxBudget: 0
+  });
 
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
   const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
@@ -104,7 +116,9 @@ export default function Dashboard() {
       bio: ad?.bio || "",
       city: ad?.city || "",
       state: ad?.state || "",
-      profilePictureUrl: ad?.profilePictureUrl || ""
+      profilePictureUrl: ad?.profilePictureUrl || "",
+      minBudget: ad?.minBudget || 0,
+      maxBudget: ad?.maxBudget || 10000000 // Default to 1Cr if 0/undefined
     });
     setProfileImagePreview(ad?.profilePictureUrl || null);
     setProfileImageFile(null);
@@ -130,10 +144,26 @@ export default function Dashboard() {
     }
   };
 
+  // --- Dashboard Budget Handlers ---
+  const handleProfileMinBudgetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value);
+    setProfileForm({ ...profileForm, minBudget: Math.min(value, profileForm.maxBudget - 1) });
+  };
+
+  const handleProfileMaxBudgetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value);
+    setProfileForm({ ...profileForm, maxBudget: Math.max(value, profileForm.minBudget + 1) });
+  };
+
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
     if (!token) return;
+
+    if (profileForm.minBudget > profileForm.maxBudget) {
+      alert("Minimum budget cannot be greater than maximum budget.");
+      return;
+    }
 
     setIsSavingProfile(true);
     try {
@@ -158,12 +188,20 @@ export default function Dashboard() {
       }
 
       const payload = {
-        ...profileForm,
-        experience: Number(profileForm.experience),
-        profilePictureUrl: finalProfilePicUrl
+        name: profileForm.name,
+        contact: profileForm.contact,
+        gender: profile?.gender || "MALE", 
+        firmName: profileForm.firmName,
+        bio: profileForm.bio,
+        city: profileForm.city,
+        state: profileForm.state,
+        profilePictureUrl: finalProfilePicUrl,
+        minBudget: Number(profileForm.minBudget),
+        maxBudget: Number(profileForm.maxBudget),
+        experience: Number(profileForm.experience)
       };
 
-      const res = await fetch(`${API_BASE_URL}/user/architect-profile`, {
+      const res = await fetch(`${API_BASE_URL}/user/update`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
         body: JSON.stringify(payload)
@@ -171,7 +209,23 @@ export default function Dashboard() {
       const data = await res.json();
 
       if (data.success) {
-        setProfile(prev => prev ? { ...prev, name: data.user.name, architectDetails: data.architectDetails } : null);
+        setProfile(prev => prev ? { 
+          ...prev, 
+          name: payload.name,
+          mobile: payload.contact,
+          architectDetails: {
+            ...prev.architectDetails,
+            firmName: payload.firmName,
+            bio: payload.bio,
+            city: payload.city,
+            state: payload.state,
+            profilePictureUrl: payload.profilePictureUrl,
+            minBudget: payload.minBudget,
+            maxBudget: payload.maxBudget,
+            experience: payload.experience,
+            contact: payload.contact
+          } as any
+        } : null);
         closeProfileModal();
       } else alert(data.message);
     } catch (err: any) { alert(err.message || "Error saving profile details"); }
@@ -431,7 +485,6 @@ export default function Dashboard() {
   const currentHour = new Date().getHours();
   const greeting = currentHour < 12 ? "Good morning" : currentHour < 18 ? "Good afternoon" : "Good evening";
 
-  // --- RENDER BLOCK ---
   if (loading) return (
     <div className="flex min-h-screen items-center justify-center bg-background gap-3">
       <LoadingSpinner className="w-6 h-6 text-foreground" />
@@ -445,56 +498,37 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background text-foreground font-sans py-6 sm:py-12 px-4 sm:px-6 transition-colors duration-300">
       <div className="mx-auto max-w-6xl relative">
 
-        {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-zinc-200 dark:border-zinc-800 pb-6 sm:pb-8 mb-8 sm:mb-10 gap-5 sm:gap-0">
-
-          {/* Title Area (Spans full width on mobile) */}
           <div className="w-full sm:w-auto">
-            {/* Greeting sits independently on top */}
             <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-1">{greeting},</p>
-            
-            {/* Title and Mobile Back Button locked in the same flex row */}
             <div className="flex justify-between items-center w-full">
               <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight leading-none">
                 Architect Dashboard
               </h1>
-
-              {/* Mobile-Only Back Button */}
               <Link href="/" className="sm:hidden flex items-center justify-center px-3 py-1.5 rounded-lg text-[10px] font-bold border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 shadow-sm transition-colors shrink-0 ml-3">
                 &larr; Back
               </Link>
             </div>
           </div>
 
-          {/* Action Buttons (Plans, Messages & Billing) */}
           <div className="grid grid-cols-2 sm:flex sm:flex-row w-full sm:w-auto gap-3">
-
-            {/* Membership Plans - Shortens to just "Plans" on mobile so it fits perfectly */}
             <Link href="/plans" className="col-span-1 sm:col-auto flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-3 sm:py-2.5 rounded-lg text-xs font-bold text-white dark:text-black bg-zinc-900 dark:bg-zinc-100 hover:bg-black dark:hover:bg-white shadow-sm transition-all ring-1 ring-zinc-800 dark:ring-zinc-200">
               <span><span className="hidden sm:inline">Membership </span>Plans</span>
             </Link>
-
-            {/* Messages */}
             <Link href="/chat" className="col-span-1 sm:col-auto flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-3 sm:py-2.5 rounded-lg text-xs font-bold text-zinc-900 bg-[#EAB308] hover:bg-yellow-500 shadow-sm transition-colors">
               <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
               <span>Messages</span>
             </Link>
-
-            {/* Billing & Payments - Spans full width on mobile so it sits neatly under the first two */}
             <Link href="/payments" className="col-span-2 sm:col-auto flex items-center justify-center gap-1.5 sm:gap-2 px-4 py-3 sm:py-2.5 rounded-lg text-xs font-bold border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 shadow-sm transition-colors">
               <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
               <span>Billing History</span>
             </Link>
-
-            {/* Desktop-Only Back Button */}
             <Link href="/" className="hidden sm:flex items-center justify-center gap-2 px-4 py-3 sm:py-2.5 rounded-lg text-xs font-bold border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 shadow-sm transition-colors text-center whitespace-nowrap">
               &larr; Back
             </Link>
-
           </div>
         </div>
 
-        {/* --- DECOUPLED UI COMPONENTS --- */}
         <ProfileCard
           profile={profile}
           totalProjects={projects.length}
@@ -518,7 +552,7 @@ export default function Dashboard() {
 
       </div>
 
-      {/* --- MODALS --- */}
+      {/* --- PROFILE MODAL --- */}
       {isProfileModalOpen && (
         <div className="fixed inset-0 z-100 flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm p-4">
           <div className="bg-white dark:bg-zinc-900 rounded-4xl w-full max-w-2xl p-5 sm:p-8 max-h-[90vh] overflow-y-auto shadow-2xl border border-zinc-200 dark:border-zinc-800">
@@ -573,6 +607,80 @@ export default function Dashboard() {
                 <div>
                   <label className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide mb-2 block">State</label>
                   <input placeholder="State" value={profileForm.state} onChange={(e) => setProfileForm({ ...profileForm, state: e.target.value })} className="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 focus:border-[#EAB308] dark:focus:border-yellow-500 rounded-xl p-3.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none transition-all" />
+                </div>
+              </div>
+
+              {/* INTERACTIVE SEEK BAR IN DASHBOARD MODAL */}
+              <div className="sm:col-span-2 mt-2">
+                <div className="flex justify-between items-center mb-4">
+                  <label className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide">
+                    Project Budget Range
+                  </label>
+                </div>
+                
+                {/* Number Input Fields */}
+                <div className="flex items-center gap-4 mb-5">
+                  <div className="flex-1 flex items-center bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-xl px-3 py-2 focus-within:border-[#EAB308] focus-within:ring-1 focus-within:ring-[#EAB308] transition-all">
+                    <span className="text-zinc-500 font-semibold mr-1 text-sm">₹</span>
+                    <input 
+                      type="number" 
+                      name="min"
+                      min="0"
+                      value={profileForm.minBudget} 
+                      onChange={handleProfileMinBudgetChange}
+                      className="w-full bg-transparent text-sm font-bold text-black dark:text-white outline-none"
+                    />
+                  </div>
+                  <span className="text-zinc-400 font-medium text-sm">to</span>
+                  <div className="flex-1 flex items-center bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-xl px-3 py-2 focus-within:border-[#EAB308] focus-within:ring-1 focus-within:ring-[#EAB308] transition-all">
+                    <span className="text-zinc-500 font-semibold mr-1 text-sm">₹</span>
+                    <input 
+                      type="number" 
+                      name="max"
+                      min={profileForm.minBudget + 1}
+                      value={profileForm.maxBudget} 
+                      onChange={handleProfileMaxBudgetChange}
+                      className="w-full bg-transparent text-sm font-bold text-black dark:text-white outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Dual Seek Bar (Max visual slider set to 10,000,000 / 1 Crore) */}
+                <div className="relative h-2 w-full bg-zinc-200 dark:bg-zinc-800 rounded-full flex items-center mt-2">
+                  <div
+                    className="absolute h-2 bg-[#EAB308] rounded-full pointer-events-none transition-all duration-75"
+                    style={{
+                      left: `${Math.min(100, Math.max(0, (profileForm.minBudget / 10000000) * 100))}%`,
+                      right: `${100 - Math.min(100, Math.max(0, (profileForm.maxBudget / 10000000) * 100))}%`,
+                    }}
+                  ></div>
+                  
+                  {/* Minimum Slider */}
+                  <input
+                    type="range"
+                    min="0"
+                    max="10000000"
+                    step="100000"
+                    value={Math.min(profileForm.minBudget, 10000000)}
+                    onChange={handleProfileMinBudgetChange}
+                    className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#EAB308] [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-md [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-[#EAB308] [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:shadow-md z-20"
+                  />
+                  
+                  {/* Maximum Slider */}
+                  <input
+                    type="range"
+                    min="0"
+                    max="10000000"
+                    step="100000"
+                    value={Math.min(profileForm.maxBudget, 10000000)}
+                    onChange={handleProfileMaxBudgetChange}
+                    className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#EAB308] [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-md [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-[#EAB308] [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:shadow-md z-30"
+                  />
+                </div>
+                
+                <div className="flex justify-between text-[10px] font-medium text-zinc-400 mt-3">
+                  <span>₹0</span>
+                  <span>₹1,00,00,000+</span>
                 </div>
               </div>
 
