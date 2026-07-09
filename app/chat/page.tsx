@@ -6,8 +6,9 @@ import Link from "next/link";
 import { io, Socket } from "socket.io-client";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { jwtDecode } from "jwt-decode";
+import { BASE_URL } from "@/utils/api";
 
-const API_BASE_URL = "https://backend.keywee.in/api/v1";
+const API_BASE_URL = BASE_URL;
 const SOCKET_URL = "https://backend.keywee.in";
 
 // Types based on JSON schemas
@@ -106,7 +107,7 @@ export default function ChatPage() {
     // Fetch Chat List
     const fetchChatUsers = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/user/chat`, {
+        const res = await fetch(`${API_BASE_URL}user/chat`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
@@ -139,7 +140,7 @@ export default function ChatPage() {
     }
 
     try {
-      const res = await fetch(`${API_BASE_URL}/user/chat/${chat.roomId}`, {
+      const res = await fetch(`${API_BASE_URL}user/chat/${chat.roomId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -12,9 +12,17 @@ import QualificationsSection from "@/components/dashboard/QualificationsSection"
 
 // Types
 import { UserProfile, ProjectItem, QualificationItem, MediaItem, CategoryItem } from "@/types/dashboard";
+import { BASE_URL } from "@/utils/api";
 
-const API_BASE_URL = "https://backend.keywee.in/api/v1";
+const API_BASE_URL = BASE_URL;
 const MAX_FILE_SIZE_BYTES = 40 * 1024 * 1024; // 40MB limit in bytes
+
+interface LocationSuggestion {
+  place_id: number;
+  display_name: string;
+  lat: string;
+  lon: string;
+}
 
 export default function Dashboard() {
   const router = useRouter();
@@ -41,6 +49,12 @@ export default function Dashboard() {
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
   const [editingQualId, setEditingQualId] = useState<string | null>(null);
 
+  // Location Autocomplete States
+  const [suggestions, setSuggestions] = useState<LocationSuggestion[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   // Form States
   const [projectForm, setProjectForm] = useState({ name: "", categoryId: "", city: "", state: "", desc: "", tags: "" });
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
@@ -54,6 +68,9 @@ export default function Dashboard() {
     bio: "", 
     city: "", 
     state: "", 
+    address: "",
+    lat: 0,
+    long: 0,
     profilePictureUrl: "",
     minBudget: 0,
     maxBudget: 0
@@ -72,10 +89,10 @@ export default function Dashboard() {
 
       try {
         const [userRes, catRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/user/me`, {
+          fetch(`${API_BASE_URL}user/me`, {
             headers: { "Authorization": `Bearer ${token}` }
           }),
-          fetch(`${API_BASE_URL}/user/category`, {
+          fetch(`${API_BASE_URL}user/category`, {
             headers: { "Authorization": `Bearer ${token}` }
           })
         ]);
@@ -104,6 +121,51 @@ export default function Dashboard() {
     fetchDashboardData();
   }, [router]);
 
+  // Click outside listener for location dropdown
+  useEffect(() => {
+    const handleClickOutside = () => setShowDropdown(false);
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
+
+  // --- LOCATION AUTOCOMPLETE LOGIC ---
+  const fetchLocationSuggestions = async (query: string) => {
+    if (!query || query.length < 3) {
+      setSuggestions([]);
+      setIsSearching(false);
+      return;
+    }
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=jsonv2&limit=5`);
+      const data = await res.json();
+      setSuggestions(data);
+    } catch (err) {
+      console.error("Failed to fetch locations", err);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setProfileForm({ ...profileForm, address: value, lat: 0, long: 0 });
+    setShowDropdown(true);
+    setIsSearching(true);
+    if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    searchTimeoutRef.current = setTimeout(() => fetchLocationSuggestions(value), 500);
+  };
+
+  const selectLocation = (suggestion: LocationSuggestion) => {
+    setProfileForm({
+      ...profileForm,
+      address: suggestion.display_name,
+      lat: Number(suggestion.lat),
+      long: Number(suggestion.lon)
+    });
+    setShowDropdown(false);
+    setSuggestions([]);
+  };
+
   // --- PROFILE LOGIC ---
   const openEditProfile = () => {
     const ad = profile?.architectDetails;
@@ -116,6 +178,9 @@ export default function Dashboard() {
       bio: ad?.bio || "",
       city: ad?.city || "",
       state: ad?.state || "",
+      address: (ad as any)?.address || "", // Map address if it exists
+      lat: (ad as any)?.lat || 0,
+      long: (ad as any)?.long || 0,
       profilePictureUrl: ad?.profilePictureUrl || "",
       minBudget: ad?.minBudget || 0,
       maxBudget: ad?.maxBudget || 10000000 // Default to 1Cr if 0/undefined
@@ -173,7 +238,7 @@ export default function Dashboard() {
         const formData = new FormData();
         formData.append("images", profileImageFile);
 
-        const uploadRes = await fetch(`${API_BASE_URL}/user/images`, {
+        const uploadRes = await fetch(`${API_BASE_URL}user/images`, {
           method: "POST",
           headers: { "Authorization": `Bearer ${token}` },
           body: formData
@@ -195,13 +260,16 @@ export default function Dashboard() {
         bio: profileForm.bio,
         city: profileForm.city,
         state: profileForm.state,
+        address: profileForm.address,
+        lat: profileForm.lat,
+        long: profileForm.long,
         profilePictureUrl: finalProfilePicUrl,
         minBudget: Number(profileForm.minBudget),
         maxBudget: Number(profileForm.maxBudget),
         experience: Number(profileForm.experience)
       };
 
-      const res = await fetch(`${API_BASE_URL}/user/update`, {
+      const res = await fetch(`${API_BASE_URL}user/update`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
         body: JSON.stringify(payload)
@@ -219,6 +287,9 @@ export default function Dashboard() {
             bio: payload.bio,
             city: payload.city,
             state: payload.state,
+            address: payload.address,
+            lat: payload.lat,
+            long: payload.long,
             profilePictureUrl: payload.profilePictureUrl,
             minBudget: payload.minBudget,
             maxBudget: payload.maxBudget,
@@ -318,7 +389,7 @@ export default function Dashboard() {
         const formData = new FormData();
         filesToUpload.forEach(file => formData.append("images", file));
 
-        const uploadRes = await fetch(`${API_BASE_URL}/user/images`, {
+        const uploadRes = await fetch(`${API_BASE_URL}user/images`, {
           method: "POST",
           headers: { "Authorization": `Bearer ${token}` },
           body: formData
@@ -348,8 +419,8 @@ export default function Dashboard() {
 
       const method = editingProjectId ? "PUT" : "POST";
       const url = editingProjectId
-        ? `${API_BASE_URL}/user/projects/${editingProjectId}`
-        : `${API_BASE_URL}/user/projects`;
+        ? `${API_BASE_URL}user/projects/${editingProjectId}`
+        : `${API_BASE_URL}user/projects`;
 
       const res = await fetch(url, {
         method: method,
@@ -371,7 +442,7 @@ export default function Dashboard() {
     if (!confirm("Are you sure you want to delete this project?")) return;
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`${API_BASE_URL}/user/projects/${id}`, { method: "DELETE", headers: { "Authorization": `Bearer ${token}` } });
+      const res = await fetch(`${API_BASE_URL}user/projects/${id}`, { method: "DELETE", headers: { "Authorization": `Bearer ${token}` } });
       const data = await res.json();
       if (data.success) setProjects(projects.filter(p => p._id !== id));
       else alert(data.message);
@@ -433,7 +504,7 @@ export default function Dashboard() {
         const formData = new FormData();
         formData.append("images", qualCertFile);
 
-        const uploadRes = await fetch(`${API_BASE_URL}/user/images`, {
+        const uploadRes = await fetch(`${API_BASE_URL}user/images`, {
           method: "POST",
           headers: { "Authorization": `Bearer ${token}` },
           body: formData
@@ -452,7 +523,7 @@ export default function Dashboard() {
       };
 
       const method = editingQualId ? "PUT" : "POST";
-      const url = editingQualId ? `${API_BASE_URL}/user/qualifications/${editingQualId}` : `${API_BASE_URL}/user/qualifications`;
+      const url = editingQualId ? `${API_BASE_URL}user/qualifications/${editingQualId}` : `${API_BASE_URL}user/qualifications`;
 
       const res = await fetch(url, {
         method: method,
@@ -474,7 +545,7 @@ export default function Dashboard() {
     if (!confirm("Remove this qualification?")) return;
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`${API_BASE_URL}/user/qualifications/${id}`, { method: "DELETE", headers: { "Authorization": `Bearer ${token}` } });
+      const res = await fetch(`${API_BASE_URL}user/qualifications/${id}`, { method: "DELETE", headers: { "Authorization": `Bearer ${token}` } });
       const data = await res.json();
       if (data.success) setQualifications(qualifications.filter(q => q._id !== id));
     } catch (err) { alert("Error deleting qualification"); }
@@ -554,7 +625,7 @@ export default function Dashboard() {
 
       {/* --- PROFILE MODAL --- */}
       {isProfileModalOpen && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm p-4">
           <div className="bg-white dark:bg-zinc-900 rounded-4xl w-full max-w-2xl p-5 sm:p-8 max-h-[90vh] overflow-y-auto shadow-2xl border border-zinc-200 dark:border-zinc-800">
             <h2 className="text-xl sm:text-2xl font-extrabold mb-6 text-zinc-900 dark:text-zinc-100">Update Profile Details</h2>
             <form onSubmit={handleSaveProfile} className="flex flex-col gap-4 sm:gap-5">
@@ -610,7 +681,47 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {/* INTERACTIVE SEEK BAR IN DASHBOARD MODAL */}
+              {/* NEW ADDRESS AUTOCOMPLETE FIELD */}
+              <div className="relative sm:col-span-2" onClick={(e) => e.stopPropagation()}>
+                <label className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide mb-2 block">
+                  Office Address
+                </label>
+                <input 
+                  type="text" 
+                  value={profileForm.address} 
+                  onChange={handleLocationChange}
+                  onFocus={() => { if(profileForm.address) setShowDropdown(true) }}
+                  placeholder="Search and select your office address..." 
+                  className="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 focus:border-[#EAB308] dark:focus:border-yellow-500 rounded-xl p-3.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none transition-all" 
+                />
+                
+                {showDropdown && (profileForm.address.length >= 3) && (
+                  <div className="absolute z-[101] w-full mt-1 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+                    {isSearching ? (
+                      <div className="p-3 text-sm text-zinc-500 dark:text-zinc-400 text-center">Searching...</div>
+                    ) : suggestions.length > 0 ? (
+                      <ul className="py-1">
+                        {suggestions.map((item) => (
+                          <li 
+                            key={item.place_id}
+                            onClick={() => selectLocation(item)}
+                            className="px-4 py-2.5 text-sm text-black dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer transition-colors border-b border-zinc-100 dark:border-zinc-800 last:border-0"
+                          >
+                            {item.display_name}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="p-3 text-sm text-zinc-500 dark:text-zinc-400 text-center">No locations found.</div>
+                    )}
+                  </div>
+                )}
+                {/* Helper text showing lat/long validation */}
+                {profileForm.lat !== 0 && profileForm.long !== 0 && (
+                  <p className="mt-1.5 text-[10px] text-green-600 dark:text-green-400 font-medium">✓ Valid location coordinates captured.</p>
+                )}
+              </div>
+
               <div className="sm:col-span-2 mt-2">
                 <div className="flex justify-between items-center mb-4">
                   <label className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide">
@@ -618,7 +729,6 @@ export default function Dashboard() {
                   </label>
                 </div>
                 
-                {/* Number Input Fields */}
                 <div className="flex items-center gap-4 mb-5">
                   <div className="flex-1 flex items-center bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-xl px-3 py-2 focus-within:border-[#EAB308] focus-within:ring-1 focus-within:ring-[#EAB308] transition-all">
                     <span className="text-zinc-500 font-semibold mr-1 text-sm">₹</span>
@@ -645,7 +755,6 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                {/* Dual Seek Bar (Max visual slider set to 10,000,000 / 1 Crore) */}
                 <div className="relative h-2 w-full bg-zinc-200 dark:bg-zinc-800 rounded-full flex items-center mt-2">
                   <div
                     className="absolute h-2 bg-[#EAB308] rounded-full pointer-events-none transition-all duration-75"
@@ -655,7 +764,6 @@ export default function Dashboard() {
                     }}
                   ></div>
                   
-                  {/* Minimum Slider */}
                   <input
                     type="range"
                     min="0"
@@ -666,7 +774,6 @@ export default function Dashboard() {
                     className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#EAB308] [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-md [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-[#EAB308] [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:shadow-md z-20"
                   />
                   
-                  {/* Maximum Slider */}
                   <input
                     type="range"
                     min="0"

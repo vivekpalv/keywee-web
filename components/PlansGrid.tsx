@@ -3,6 +3,7 @@
 
 import React, { useState } from 'react';
 import PlanCard, { Plan } from './PlanCard';
+import { BASE_URL } from '@/utils/api';
 
 export default function PlansGrid({ plans }: { plans: Plan[] }) {
   // Auto-select the yearly plan by default, otherwise select the first plan
@@ -19,7 +20,7 @@ export default function PlansGrid({ plans }: { plans: Plan[] }) {
 
     try {
       // 1. Initialize Order at your backend
-      const response = await fetch(`https://backend.keywee.in/api/v1/user/subscription/${selectedPlanId}`, {
+      const response = await fetch(`${BASE_URL}user/subscription/${selectedPlanId}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

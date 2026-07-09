@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { BASE_URL } from "@/utils/api";
 
 interface Architect {
   _id: string;
@@ -41,7 +42,7 @@ export default function TopArchitects() {
     const fetchArchitects = async () => {
       try {
         const res = await fetch(
-          "https://backend.keywee.in/api/v1/public/architects?page=1&limit=4&verified=false&minExperience=3"
+          `${BASE_URL}public/architects?page=1&limit=4&verified=false&minExperience=3`
         );
 
         if (!res.ok) throw new Error("Failed to fetch architects");

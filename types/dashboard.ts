@@ -36,6 +36,7 @@ export interface UserProfile {
     profilePictureUrl?: string;
     minBudget?: number; // Added to fix TS error
     maxBudget?: number; // Added to fix TS error
+    
   };
 }
 

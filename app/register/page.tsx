@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { BASE_URL } from "@/utils/api";
 
-const API_BASE_URL = "https://backend.keywee.in/api/v1";
+const API_BASE_URL = BASE_URL;
 
 export default function Register() {
   const router = useRouter();
@@ -33,7 +34,7 @@ export default function Register() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/auth/sendOtp`, {
+      const res = await fetch(`${API_BASE_URL}auth/sendOtp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mobile: Number(mobile), type: "REGISTER" }),
@@ -59,7 +60,7 @@ export default function Register() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/auth/register`, {
+      const res = await fetch(`${API_BASE_URL}auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 

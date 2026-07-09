@@ -1,11 +1,19 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { fetchUserPayments } from "@/services/payment.service";
+import { BASE_URL } from "@/utils/api";
 
-const API_BASE_URL = "https://backend.keywee.in/api/v1";
+const API_BASE_URL = BASE_URL;
+
+interface LocationSuggestion {
+  place_id: number;
+  display_name: string;
+  lat: string;
+  lon: string;
+}
 
 export default function Login() {
   const router = useRouter();
@@ -19,7 +27,12 @@ export default function Login() {
   const [otp, setOtp] = useState<string[]>(["", "", "", ""]);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  // Initialize min and max with full default values (e.g., 10 Lakhs to 50 Lakhs)
+  // Location Autocomplete States
+  const [suggestions, setSuggestions] = useState<LocationSuggestion[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const [regData, setRegData] = useState({
     name: "",
     gender: "MALE",
@@ -28,6 +41,9 @@ export default function Login() {
     firmName: "",
     bio: "",
     experience: "",
+    address: "", // Changed from location to match your API updates
+    lat: 0,
+    long: 0,
     min: 1000000,
     max: 5000000
   });
@@ -36,16 +52,68 @@ export default function Login() {
     setRegData({ ...regData, [e.target.name]: e.target.value });
   };
 
+  // --- Location Autocomplete Logic ---
+  const fetchLocationSuggestions = async (query: string) => {
+    if (!query || query.length < 3) {
+      setSuggestions([]);
+      setIsSearching(false);
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=jsonv2&limit=5`
+      );
+      const data = await res.json();
+      setSuggestions(data);
+    } catch (err) {
+      console.error("Failed to fetch locations", err);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    
+    // Reset lat/long if user edits the text field
+    setRegData({ ...regData, address: value, lat: 0, long: 0 });
+    setShowDropdown(true);
+    setIsSearching(true);
+
+    if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+
+    searchTimeoutRef.current = setTimeout(() => {
+      fetchLocationSuggestions(value);
+    }, 500);
+  };
+
+  const selectLocation = (suggestion: LocationSuggestion) => {
+    setRegData({
+      ...regData,
+      address: suggestion.display_name, // Saves full string to pass on update forms later
+      lat: Number(suggestion.lat),
+      long: Number(suggestion.lon)
+    });
+    setShowDropdown(false);
+    setSuggestions([]);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = () => setShowDropdown(false);
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
+  // -----------------------------------
+
   // Budget Change Handlers
   const handleMinBudgetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
-    // Prevent the min value from crossing the max value
     setRegData({ ...regData, min: Math.min(value, regData.max - 1) });
   };
 
   const handleMaxBudgetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
-    // Prevent the max value from crossing the min value
     setRegData({ ...regData, max: Math.max(value, regData.min + 1) });
   };
 
@@ -55,7 +123,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/auth/sendOtp`, {
+      const res = await fetch(`${API_BASE_URL}auth/sendOtp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mobile: Number(mobile) }),
@@ -109,21 +177,26 @@ export default function Login() {
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
+    
+    if (!isExisting && (regData.lat === 0 || regData.long === 0)) {
+      setError("Please select a valid address from the dropdown suggestions.");
+      return;
+    }
 
+    setLoading(true);
     const otpValue = otp.join("");
 
     try {
       let res;
 
       if (isExisting) {
-        res = await fetch(`${API_BASE_URL}/auth/login`, {
+        res = await fetch(`${API_BASE_URL}auth/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ mobile: Number(mobile), otp: Number(otpValue) }),
         });
       } else {
-        res = await fetch(`${API_BASE_URL}/auth/register-architect`, {
+        res = await fetch(`${API_BASE_URL}auth/register-architect`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -137,7 +210,10 @@ export default function Login() {
             bio: regData.bio,
             experience: Number(regData.experience),
             min: Number(regData.min),
-            max: Number(regData.max)
+            max: Number(regData.max),
+            address: regData.address, // Now passing the full string along with lat/long
+            lat: regData.lat,
+            long: regData.long
           }),
         });
       }
@@ -287,7 +363,48 @@ export default function Login() {
                   <input type="number" name="experience" required min="0" value={regData.experience} onChange={handleInputChange} placeholder="e.g. 8" className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-2.5 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
                 </div>
 
-                {/* --- Interactive Dual Seek Bar with Full Values --- */}
+                {/* --- Interactive Address Autocomplete --- */}
+                <div className="sm:col-span-2 relative">
+                  <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Office Address</label>
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <input 
+                      type="text" 
+                      name="address"
+                      required 
+                      value={regData.address} 
+                      onChange={handleLocationChange}
+                      onFocus={() => { if(regData.address) setShowDropdown(true) }}
+                      placeholder="e.g. Cyber Hub, Gurugram" 
+                      className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-2.5 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" 
+                    />
+                    
+                    {/* Dropdown UI */}
+                    {showDropdown && (regData.address.length >= 3) && (
+                      <div className="absolute z-50 w-full mt-1 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                        {isSearching ? (
+                          <div className="p-3 text-sm text-zinc-500 dark:text-zinc-400 text-center">Searching...</div>
+                        ) : suggestions.length > 0 ? (
+                          <ul className="py-1">
+                            {suggestions.map((item) => (
+                              <li 
+                                key={item.place_id}
+                                onClick={() => selectLocation(item)}
+                                className="px-4 py-2.5 text-sm text-black dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer transition-colors border-b border-zinc-100 dark:border-zinc-800 last:border-0"
+                              >
+                                {item.display_name}
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <div className="p-3 text-sm text-zinc-500 dark:text-zinc-400 text-center">No locations found.</div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <p className="mt-1 text-xs text-zinc-500">Select an address from the suggestions to capture coordinate data.</p>
+                </div>
+
+                {/* --- Interactive Dual Seek Bar --- */}
                 <div className="sm:col-span-2 mt-2">
                   <div className="flex justify-between items-center mb-4">
                     <label className="text-sm font-semibold text-black dark:text-white">
@@ -295,7 +412,6 @@ export default function Login() {
                     </label>
                   </div>
                   
-                  {/* Number Input Fields */}
                   <div className="flex items-center gap-4 mb-5">
                     <div className="flex-1 flex items-center bg-transparent border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 focus-within:border-[#EAB308] focus-within:ring-1 focus-within:ring-[#EAB308] transition-all">
                       <span className="text-zinc-500 font-semibold mr-1">₹</span>
@@ -322,38 +438,33 @@ export default function Login() {
                     </div>
                   </div>
 
-                  {/* Dual Seek Bar (Max visual slider set to 10,000,000 / 1 Crore) */}
                   <div className="relative h-2 w-full bg-zinc-200 dark:bg-zinc-800 rounded-full flex items-center mt-2">
-                    {/* Yellow Active Track between the two thumbs */}
                     <div
                       className="absolute h-2 bg-[#EAB308] rounded-full pointer-events-none transition-all duration-75"
                       style={{
-                        // Cap the visual track at 0 and 100% so it doesn't break UI if user types larger values
                         left: `${Math.min(100, Math.max(0, (regData.min / 10000000) * 100))}%`,
                         right: `${100 - Math.min(100, Math.max(0, (regData.max / 10000000) * 100))}%`,
                       }}
                     ></div>
                     
-                    {/* Minimum Slider */}
                     <input
                       type="range"
                       min="0"
                       max="10000000"
-                      step="100000" // Steps of 1 Lakh
-                      value={Math.min(regData.min, 10000000)} // Cap slider visual position
+                      step="100000"
+                      value={Math.min(regData.min, 10000000)}
                       onChange={handleMinBudgetChange}
-                      className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#EAB308] [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-md [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-[#EAB308] [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:shadow-md z-20"
+                      className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#EAB308] [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-shadow] z-20"
                     />
                     
-                    {/* Maximum Slider */}
                     <input
                       type="range"
                       min="0"
                       max="10000000"
-                      step="100000" // Steps of 1 Lakh
-                      value={Math.min(regData.max, 10000000)} // Cap slider visual position
+                      step="100000"
+                      value={Math.min(regData.max, 10000000)}
                       onChange={handleMaxBudgetChange}
-                      className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#EAB308] [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-md [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-[#EAB308] [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:shadow-md z-30"
+                      className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#EAB308] [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-shadow] z-30"
                     />
                   </div>
                   

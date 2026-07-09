@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { BASE_URL } from "@/utils/api";
 
-const API_BASE_URL = "https://backend.keywee.in/api/v1";
+const API_BASE_URL = BASE_URL; // Ensure this is imported or defined correctly
 
 export default function BecomeArchitect() {
   const router = useRouter();
@@ -51,7 +52,7 @@ export default function BecomeArchitect() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/auth/sendOtp`, {
+      const res = await fetch(`${API_BASE_URL}auth/sendOtp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mobile: Number(mobile), type: "REGISTER" }),
@@ -81,7 +82,7 @@ export default function BecomeArchitect() {
     try {
       if (hasToken && token) {
         // FLOW A: Existing Client Upgrading Later 
-        const res = await fetch(`${API_BASE_URL}/user/become-architect`, {
+        const res = await fetch(`${API_BASE_URL}user/become-architect`, {
           method: "POST",
           headers: { 
             "Content-Type": "application/json",
@@ -109,7 +110,7 @@ export default function BecomeArchitect() {
 
       } else {
         // FLOW B: Cold Pipeline Initial Sign-up directly as Architect
-        const res = await fetch(`${API_BASE_URL}/auth/register-architect`, {
+        const res = await fetch(`${API_BASE_URL}auth/register-architect`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
