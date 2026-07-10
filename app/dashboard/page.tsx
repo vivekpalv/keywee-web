@@ -63,7 +63,7 @@ export default function Dashboard() {
         } else setError("Failed to load profile.");
         if (catData.success) setCategories(catData.categories || []);
 
-      } catch (err) { setError("Network error."); } 
+      } catch (err) { setError("Network error."); }
       finally { setLoading(false); }
     };
     fetchDashboardData();
@@ -109,17 +109,17 @@ export default function Dashboard() {
               <Link href="/" className="sm:hidden flex px-3 py-1.5 rounded-lg text-[10px] font-bold border shadow-sm shrink-0 ml-3">&larr; Back</Link>
             </div>
           </div>
-          <div className="grid grid-cols-2 sm:flex sm:flex-row w-full sm:w-auto gap-3">
-            <Link href="/plans" className="col-span-1 sm:col-auto flex items-center justify-center gap-1.5 px-2 py-3 rounded-lg text-xs font-bold text-white bg-zinc-900">Plans</Link>
-            <Link href="/chat" className="col-span-1 sm:col-auto flex items-center justify-center gap-1.5 px-2 py-3 rounded-lg text-xs font-bold text-zinc-900 bg-[#EAB308]">Messages</Link>
-            <Link href="/payments" className="col-span-2 sm:col-auto flex items-center justify-center gap-1.5 px-4 py-3 rounded-lg text-xs font-bold border shadow-sm">Billing History</Link>
+          <div className="flex flex-wrap items-center gap-3">
+            <Link href="/plans" className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-zinc-900 text-white text-sm font-semibold shadow-sm hover:opacity-90 transition">Plans</Link>
+            <Link href="/chat" className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-yellow-500 text-zinc-900 text-sm font-semibold shadow-sm hover:bg-yellow-400 transition">Messages</Link>
+            <Link href="/payments" className="inline-flex items-center justify-center px-6 py-3 rounded-xl border text-sm font-semibold shadow-sm hover:bg-zinc-50 transition">Billing History</Link>
           </div>
         </div>
 
-        <ProfileCard 
-          profile={profile} 
-          totalProjects={projects.length} 
-          onEditProfile={() => setIsProfileModalOpen(true)} 
+        <ProfileCard
+          profile={profile}
+          totalProjects={projects.length}
+          onEditProfile={() => setIsProfileModalOpen(true)}
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
@@ -139,21 +139,21 @@ export default function Dashboard() {
       </div>
 
       {/* RENDER MODALS OUTSIDE MAIN LAYOUT */}
-      <ProfileModal 
-        isOpen={isProfileModalOpen} 
-        onClose={() => setIsProfileModalOpen(false)} 
+      <ProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
         profile={profile}
         onSuccess={(updatedPayload) => {
-          setProfile(prev => prev ? { 
+          setProfile(prev => prev ? {
             ...prev, name: updatedPayload.name, mobile: updatedPayload.contact,
             architectDetails: { ...prev.architectDetails, ...updatedPayload } as any
           } : null);
         }}
       />
 
-      <ProjectModal 
-        isOpen={isProjectModalOpen} 
-        onClose={() => setIsProjectModalOpen(false)} 
+      <ProjectModal
+        isOpen={isProjectModalOpen}
+        onClose={() => setIsProjectModalOpen(false)}
         project={editingProject}
         categories={categories}
         onSuccess={(project, isEdit) => {
@@ -162,9 +162,9 @@ export default function Dashboard() {
         }}
       />
 
-      <QualificationModal 
-        isOpen={isQualModalOpen} 
-        onClose={() => setIsQualModalOpen(false)} 
+      <QualificationModal
+        isOpen={isQualModalOpen}
+        onClose={() => setIsQualModalOpen(false)}
         qual={editingQual}
         onSuccess={(qual, isEdit) => {
           if (isEdit) setQualifications(qualifications.map(q => q._id === qual._id ? qual : q));
