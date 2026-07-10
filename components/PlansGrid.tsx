@@ -12,7 +12,7 @@ export default function PlansGrid({ plans }: { plans: Plan[] }) {
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Hardcoded token for API call (Consider moving to context or session in production)
-  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMGQ0MTA5ZTAyYzFjYTg0NDllYWE4YyIsInJvbGVzIjpbIkNMSUVOVCIsIkFSQ0hJVEVDVCIsIkFETUlOIl0sImlhdCI6MTc4MjQ3MjgzNiwiZXhwIjoxNzg1MDY0ODM2fQ.x6BkKeynUea2QOrXqpXGZC4_oOBrQdW2uIkQ5WDkJ70";
+  const token = localStorage.getItem("token");
 
   const handlePurchase = async () => {
     if (!selectedPlanId || isProcessing) return;
