@@ -1,9 +1,13 @@
 // app/contact/page.tsx
+import Footer from "@/components/layout/Footer";
+import Navbar from "@/components/layout/Navbar";
 import React from "react";
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-[#FBFAF7] dark:bg-[#0A0A0A] text-zinc-900 dark:text-zinc-100 py-16 px-6 sm:px-12 transition-colors duration-300">
+    <>
+    <Navbar />
+    <div className="min-h-screen bg-[#FBFAF7] dark:bg-[#0A0A0A] text-zinc-900 dark:text-zinc-100 pt-28 py-16 px-6 sm:px-12 transition-colors duration-300">
       <div className="max-w-3xl mx-auto space-y-8">
         <div className="border-b border-zinc-200 dark:border-zinc-800 pb-6 text-center sm:text-left">
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Contact Us</h1>
@@ -68,5 +72,7 @@ export default function ContactPage() {
         </div>
       </div>
     </div>
+    <Footer />
+    </>
   );
 }
