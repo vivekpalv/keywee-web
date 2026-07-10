@@ -85,7 +85,7 @@ export default function DesignShowcase() {
               }}
               transition={{ duration: 0.6 }}
               whileHover={{ y: -10 }}
-              className="group relative overflow-hidden rounded-[32px] h-[420px] cursor-pointer shadow-[0_15px_60px_rgba(0,0,0,0.08)] dark:shadow-[0_15px_60px_rgba(0,0,0,0.4)]"
+              className="group relative overflow-hidden rounded-4xl h-105 cursor-pointer shadow-[0_15px_60px_rgba(0,0,0,0.08)] dark:shadow-[0_15px_60px_rgba(0,0,0,0.4)]"
             >
               {/* Image */}
               <img
@@ -98,7 +98,7 @@ export default function DesignShowcase() {
               <div className="absolute inset-0 opacity-[0.06] bg-[url('/noise.png')]" />
 
               {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent" />
 
               {/* Top Floating Tag */}
               <div className="absolute top-5 left-5 z-20">
@@ -108,7 +108,7 @@ export default function DesignShowcase() {
               </div>
 
               {/* Hover Glow */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-700 bg-gradient-to-br from-yellow-400/10 via-transparent to-transparent" />
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-700 bg-linear-to-br from-yellow-400/10 via-transparent to-transparent" />
 
               {/* Content */}
               <div className="absolute bottom-0 left-0 p-7 z-20">
@@ -122,7 +122,7 @@ export default function DesignShowcase() {
                     {project.title}
                   </h3>
 
-                  <p className="text-zinc-300 mt-3 text-sm leading-relaxed max-w-[260px]">
+                  <p className="text-zinc-300 mt-3 text-sm leading-relaxed max-w-65">
                     Elegant spatial planning with premium materials, warm
                     textures, and timeless modern aesthetics.
                   </p>
@@ -130,7 +130,7 @@ export default function DesignShowcase() {
               </div>
 
               {/* Border Glow */}
-              <div className="absolute inset-0 rounded-[32px] ring-1 ring-transparent group-hover:ring-yellow-300/30 transition duration-500" />
+              <div className="absolute inset-0 rounded-4xl ring-1 ring-transparent group-hover:ring-yellow-300/30 transition duration-500" />
             </motion.div>
           ))}
         </motion.div>

@@ -140,7 +140,7 @@ export default function ProfileModal({ isOpen, onClose, profile, onSuccess }: Pr
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-100 flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm p-4">
       <div className="bg-white dark:bg-zinc-900 rounded-4xl w-full max-w-2xl p-5 sm:p-8 max-h-[90vh] overflow-y-auto shadow-2xl border border-zinc-200 dark:border-zinc-800">
         <h2 className="text-xl sm:text-2xl font-extrabold mb-6 text-zinc-900 dark:text-zinc-100">Update Profile Details</h2>
         <form onSubmit={handleSave} className="flex flex-col gap-4 sm:gap-5">
@@ -196,7 +196,7 @@ export default function ProfileModal({ isOpen, onClose, profile, onSuccess }: Pr
             <label className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide mb-2 block">Office Address</label>
             <input type="text" value={form.address} onChange={handleLocationChange} onFocus={() => { if(form.address) setShowDropdown(true) }} placeholder="Search and select your office address..." className="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 focus:border-[#EAB308] rounded-xl p-3.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none transition-all" />
             {showDropdown && (form.address.length >= 3) && (
-              <div className="absolute z-[101] w-full mt-1 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+              <div className="absolute z-101 w-full mt-1 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl max-h-60 overflow-y-auto">
                 {isSearching ? (
                   <div className="p-3 text-sm text-zinc-500 text-center">Searching...</div>
                 ) : suggestions.length > 0 ? (
