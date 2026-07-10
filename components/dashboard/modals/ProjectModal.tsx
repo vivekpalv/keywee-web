@@ -220,7 +220,7 @@ export default function ProjectModal({ isOpen, onClose, project, categories, onS
   const selectedCategoryName = categories.find(c => c._id === form.categoryId)?.name || "Select a category";
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-100 flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm p-4">
       <div className="bg-white dark:bg-zinc-900 rounded-4xl w-full max-w-2xl p-5 sm:p-8 max-h-[90vh] overflow-y-auto shadow-2xl border border-zinc-200 dark:border-zinc-800">
         <h2 className="text-xl sm:text-2xl font-extrabold mb-6 text-zinc-900 dark:text-zinc-100">{project ? "Edit Project" : "Publish Project"}</h2>
         
@@ -360,7 +360,7 @@ export default function ProjectModal({ isOpen, onClose, project, categories, onS
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={handleTagInputKeyDown}
                 placeholder={form.tags.length === 0 ? "Type a tag and press Enter..." : "Add more tags..."}
-                className="flex-1 bg-transparent min-w-[150px] outline-none text-sm p-1 text-zinc-900 dark:text-zinc-100"
+                className="flex-1 bg-transparent min-w-37.5 outline-none text-sm p-1 text-zinc-900 dark:text-zinc-100"
               />
             </div>
             
