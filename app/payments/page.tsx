@@ -35,7 +35,7 @@ export default function PaymentsPage() {
       style: 'currency',
       currency: currency || 'INR',
       maximumFractionDigits: 0,
-    }).format(amount); // Assuming amount from API is in native format, or if it's already divided, remove / 100
+    }).format(amount);
   };
 
   // Format date helper
