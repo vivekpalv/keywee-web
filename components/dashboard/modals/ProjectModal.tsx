@@ -16,29 +16,95 @@ interface ProjectModalProps {
 
 export default function ProjectModal({ isOpen, onClose, project, categories, onSuccess }: ProjectModalProps) {
   const [isSaving, setIsSaving] = useState(false);
+  
+  // Dropdown states
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+  const [isSubCategoryDropdownOpen, setIsSubCategoryDropdownOpen] = useState(false);
+  
+  // Subcategory states
+  const [availableSubCategories, setAvailableSubCategories] = useState<CategoryItem[]>([]);
+  const [isLoadingSubCategories, setIsLoadingSubCategories] = useState(false);
+  
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   
-  const [form, setForm] = useState({ name: "", categoryId: "", city: "", state: "", desc: "", tags: "" });
+  // Tag specific states
+  const [tagInput, setTagInput] = useState("");
+  const [suggestedTags, setSuggestedTags] = useState<string[]>([
+    "Modern", "Minimalist", "Spacious", "Luxury", "Cozy", "Urban", "Eco-friendly"
+  ]); // These can later be dynamically fetched from your API
+  
+  const [form, setForm] = useState<{
+    name: string;
+    categoryId: string;
+    subCategories: string[];
+    city: string;
+    state: string;
+    desc: string;
+    tags: string[]; // Changed to string array
+  }>({ name: "", categoryId: "", subCategories: [], city: "", state: "", desc: "", tags: [] });
 
+  // 1. Initialize Form State
   useEffect(() => {
     if (isOpen) {
+      setTagInput(""); // Reset tag input when modal opens
       if (project) {
         const catId = typeof project.category === "string" ? project.category : (project.category as any)?._id || project.categoryId || "";
+        
+        const existingSubCats = project.subCategories?.map((sc: any) => typeof sc === 'string' ? sc : sc._id) || [];
+
         setForm({
-          name: project.name, categoryId: catId, city: project.city, state: project.state,
-          desc: project.description || "", tags: project.tags?.join(", ") || ""
+          name: project.name, 
+          categoryId: catId, 
+          subCategories: existingSubCats,
+          city: project.city, 
+          state: project.state,
+          desc: project.description || "", 
+          tags: project.tags || [] // directly use the array
         });
         setMediaItems(project.media?.map((url, i) => ({ id: `existing-${i}`, url })) || []);
       } else {
-        setForm({ name: "", categoryId: "", city: "", state: "", desc: "", tags: "" });
+        setForm({ name: "", categoryId: "", subCategories: [], city: "", state: "", desc: "", tags: [] });
         setMediaItems([]);
       }
     }
   }, [isOpen, project]);
 
+  // 2. Fetch Subcategories when Category changes
+  useEffect(() => {
+    const fetchSubCategories = async () => {
+      if (!form.categoryId) {
+        setAvailableSubCategories([]);
+        return;
+      }
+      
+      const token = localStorage.getItem("token");
+      setIsLoadingSubCategories(true);
+      
+      try {
+        const res = await fetch(`${API_BASE_URL}user/category?parentId=${form.categoryId}`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+          setAvailableSubCategories(data.categories || []);
+        } else {
+          setAvailableSubCategories([]);
+        }
+      } catch (err) {
+        console.error("Failed to fetch subcategories:", err);
+        setAvailableSubCategories([]);
+      } finally {
+        setIsLoadingSubCategories(false);
+      }
+    };
+
+    fetchSubCategories();
+  }, [form.categoryId]);
+
   if (!isOpen) return null;
 
+  // --- Handlers ---
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const newFiles = Array.from(e.target.files);
@@ -53,6 +119,7 @@ export default function ProjectModal({ isOpen, onClose, project, categories, onS
   };
 
   const removeMedia = (id: string) => setMediaItems(mediaItems.filter(item => item.id !== id));
+  
   const moveMedia = (index: number, dir: 'left' | 'right') => {
     const newIndex = dir === 'left' ? index - 1 : index + 1;
     if (newIndex < 0 || newIndex >= mediaItems.length) return;
@@ -61,9 +128,48 @@ export default function ProjectModal({ isOpen, onClose, project, categories, onS
     setMediaItems(items);
   };
 
+  const toggleSubCategory = (subCatId: string) => {
+    setForm(prev => {
+      const isSelected = prev.subCategories.includes(subCatId);
+      return {
+        ...prev,
+        subCategories: isSelected 
+          ? prev.subCategories.filter(id => id !== subCatId) 
+          : [...prev.subCategories, subCatId]
+      };
+    });
+  };
+
+  // --- Tag Logic Handlers ---
+  const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault(); // Stop form submission
+      addTag(tagInput);
+    }
+  };
+
+  const addTag = (tagToAdd: string) => {
+    const trimmedTag = tagToAdd.trim();
+    if (trimmedTag && !form.tags.includes(trimmedTag)) {
+      setForm((prev) => ({ ...prev, tags: [...prev.tags, trimmedTag] }));
+    }
+    setTagInput("");
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setForm((prev) => ({
+      ...prev,
+      tags: prev.tags.filter((tag) => tag !== tagToRemove)
+    }));
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.categoryId) return alert("Select a category.");
+
+    if (mediaItems.length < 3) return alert("Please upload a minimum of 3 photos.");
+    if (form.tags.length < 3) return alert("Please provide a minimum of 3 tags.");
+
     const token = localStorage.getItem("token");
     if (!token) return;
 
@@ -84,32 +190,49 @@ export default function ProjectModal({ isOpen, onClose, project, categories, onS
       let uploadIdx = 0;
       const finalMediaUrls = mediaItems.map(item => item.file ? uploadedUrls[uploadIdx++] : item.url);
 
-      const payload = { ...form, media: finalMediaUrls, tags: form.tags ? form.tags.split(',').map(s => s.trim()).filter(Boolean) : [] };
+      const payload = { 
+        ...form, 
+        media: finalMediaUrls 
+      };
+      
       const url = project ? `${API_BASE_URL}user/projects/${project._id}` : `${API_BASE_URL}user/projects`;
 
-      const res = await fetch(url, { method: project ? "PUT" : "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }, body: JSON.stringify(payload) });
+      const res = await fetch(url, { 
+        method: project ? "PUT" : "POST", 
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }, 
+        body: JSON.stringify(payload) 
+      });
       const data = await res.json();
 
       if (data.success) {
         onSuccess(data.project, !!project);
         onClose();
-      } else alert(data.message);
-    } catch (err: any) { alert(err.message || "Error saving project"); } 
-    finally { setIsSaving(false); }
+      } else {
+        alert(data.message);
+      }
+    } catch (err: any) { 
+      alert(err.message || "Error saving project"); 
+    } finally { 
+      setIsSaving(false); 
+    }
   };
 
   const selectedCategoryName = categories.find(c => c._id === form.categoryId)?.name || "Select a category";
 
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm p-4">
       <div className="bg-white dark:bg-zinc-900 rounded-4xl w-full max-w-2xl p-5 sm:p-8 max-h-[90vh] overflow-y-auto shadow-2xl border border-zinc-200 dark:border-zinc-800">
         <h2 className="text-xl sm:text-2xl font-extrabold mb-6 text-zinc-900 dark:text-zinc-100">{project ? "Edit Project" : "Publish Project"}</h2>
+        
         <form onSubmit={handleSave} className="flex flex-col gap-4 sm:gap-5">
+          {/* Title */}
+          <div>
+            <label className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide mb-2 block">Project Title <span className="text-red-500">*</span></label>
+            <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 focus:border-[#EAB308] rounded-xl p-3.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none" />
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-            <div>
-              <label className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide mb-2 block">Project Title <span className="text-red-500">*</span></label>
-              <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 focus:border-[#EAB308] rounded-xl p-3.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none" />
-            </div>
+            {/* Main Category */}
             <div className="relative">
               <label className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide mb-2 block">Category <span className="text-red-500">*</span></label>
               <div className="relative" tabIndex={0} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setIsCategoryDropdownOpen(false); }}>
@@ -119,10 +242,59 @@ export default function ProjectModal({ isOpen, onClose, project, categories, onS
                 {isCategoryDropdownOpen && (
                   <div className="absolute z-50 w-full mt-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl max-h-60 overflow-y-auto py-1">
                     {categories.map((cat) => (
-                      <button key={cat._id} type="button" onClick={() => { setForm({ ...form, categoryId: cat._id }); setIsCategoryDropdownOpen(false); }} className="w-full text-left px-4 py-3 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800">
+                      <button 
+                        key={cat._id} 
+                        type="button" 
+                        onClick={() => { 
+                          setForm({ ...form, categoryId: cat._id, subCategories: [] }); 
+                          setIsCategoryDropdownOpen(false); 
+                        }} 
+                        className="w-full text-left px-4 py-3 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                      >
                         {cat.name}
                       </button>
                     ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Sub Categories (Multi-select) */}
+            <div className="relative">
+              <label className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide mb-2 block">Sub Categories</label>
+              <div className="relative" tabIndex={0} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setIsSubCategoryDropdownOpen(false); }}>
+                <button 
+                  type="button" 
+                  disabled={!form.categoryId}
+                  onClick={() => setIsSubCategoryDropdownOpen(!isSubCategoryDropdownOpen)} 
+                  className={`flex items-center justify-between w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-xl p-3.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none ${!form.categoryId ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  <span className="truncate">
+                    {form.subCategories.length > 0 
+                      ? `${form.subCategories.length} selected` 
+                      : (form.categoryId ? "Select subcategories" : "Select category first")}
+                  </span>
+                </button>
+                
+                {isSubCategoryDropdownOpen && form.categoryId && (
+                  <div className="absolute z-50 w-full mt-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl max-h-60 overflow-y-auto py-1">
+                    {isLoadingSubCategories ? (
+                      <div className="px-4 py-3 text-sm text-zinc-500 text-center">Loading...</div>
+                    ) : availableSubCategories.length === 0 ? (
+                      <div className="px-4 py-3 text-sm text-zinc-500 text-center">No subcategories found</div>
+                    ) : (
+                      availableSubCategories.map((subCat) => (
+                        <label key={subCat._id} className="flex items-center px-4 py-3 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer">
+                          <input 
+                            type="checkbox" 
+                            checked={form.subCategories.includes(subCat._id)}
+                            onChange={() => toggleSubCategory(subCat._id)}
+                            className="mr-3 w-4 h-4 rounded border-zinc-300 text-[#EAB308] focus:ring-[#EAB308]"
+                          />
+                          {subCat.name}
+                        </label>
+                      ))
+                    )}
                   </div>
                 )}
               </div>
@@ -146,7 +318,9 @@ export default function ProjectModal({ isOpen, onClose, project, categories, onS
           </div>
 
           <div>
-            <label className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide mb-2 block">Media Sequence</label>
+            <label className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide mb-2 block">
+              Media Sequence (Min 3 required) <span className="text-red-500">*</span>
+            </label>
             {mediaItems.length > 0 && (
               <div className="flex flex-wrap gap-3 mb-4 bg-zinc-50 dark:bg-zinc-800 p-4 rounded-xl">
                 {mediaItems.map((item, index) => (
@@ -169,9 +343,45 @@ export default function ProjectModal({ isOpen, onClose, project, categories, onS
             </label>
           </div>
 
+          {/* New Tag Input Component */}
           <div>
-            <label className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide mb-2 block">Tags</label>
-            <input value={form.tags} onChange={(e) => setForm({ ...form, tags: e.target.value })} placeholder="Modern, Minimalist..." className="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 focus:border-[#EAB308] rounded-xl p-3.5 text-sm outline-none" />
+            <label className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide mb-2 block">
+              Tags (Min 3 required) <span className="text-red-500">*</span>
+            </label>
+            <div className="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 focus-within:border-[#EAB308] rounded-xl p-2.5 flex flex-wrap gap-2 items-center transition-colors">
+              {form.tags.map((tag) => (
+                <div key={tag} className="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 rounded-lg text-sm text-zinc-800 dark:text-zinc-200">
+                  <span>{tag}</span>
+                  <button type="button" onClick={() => removeTag(tag)} className="hover:text-red-500 text-zinc-400 font-medium">✕</button>
+                </div>
+              ))}
+              <input 
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={handleTagInputKeyDown}
+                placeholder={form.tags.length === 0 ? "Type a tag and press Enter..." : "Add more tags..."}
+                className="flex-1 bg-transparent min-w-[150px] outline-none text-sm p-1 text-zinc-900 dark:text-zinc-100"
+              />
+            </div>
+            
+            {/* Suggested Tags Area */}
+            {suggestedTags.length > 0 && (
+              <div className="mt-3">
+                <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wide mb-2 block">Suggestions:</span>
+                <div className="flex flex-wrap gap-2">
+                  {suggestedTags.filter(tag => !form.tags.includes(tag)).map(tag => (
+                    <button 
+                      key={tag}
+                      type="button"
+                      onClick={() => addTag(tag)}
+                      className="px-2.5 py-1 text-xs border border-zinc-200 dark:border-zinc-700 rounded-full text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors"
+                    >
+                      + {tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex gap-4 mt-6 pt-6 border-t border-zinc-100 dark:border-zinc-800">

@@ -8,6 +8,7 @@ export interface ProjectItem {
   description?: string;
   media?: string[];
   tags?: string[];
+  subCategories?: string[] | any[];
 }
 
 export interface QualificationItem {
