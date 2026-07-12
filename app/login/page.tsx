@@ -7,6 +7,7 @@ import { fetchUserPayments } from "@/services/payment.service";
 import { BASE_URL } from "@/utils/api";
 
 const API_BASE_URL = BASE_URL;
+const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024; // 2MB limit in bytes
 
 interface LocationSuggestion {
   place_id: number;
@@ -26,6 +27,10 @@ export default function Login() {
   const [mobile, setMobile] = useState("");
   const [otp, setOtp] = useState<string[]>(["", "", "", ""]);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // Profile Image States
+  const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
+  const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
 
   // Location Autocomplete States
   const [suggestions, setSuggestions] = useState<LocationSuggestion[]>([]);
@@ -53,6 +58,48 @@ export default function Login() {
 
   const handleCoordinateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRegData({ ...regData, [e.target.name]: e.target.value });
+  };
+
+  // --- Profile Image Logic with 1:1 Validation ---
+  const handleProfileImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setError("");
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      
+      // Size Validation (2MB)
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        setError("Profile image must be less than 2MB.");
+        e.target.value = '';
+        return;
+      }
+
+      // Aspect Ratio Validation (1:1)
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
+      
+      img.onload = () => {
+        const isSquare = img.width === img.height;
+        // Allow a slight tolerance (e.g., 5px) for imprecise crops, but enforce strict square if preferred
+        if (Math.abs(img.width - img.height) > 5) {
+            setError("Profile image must have a 1:1 (square) aspect ratio.");
+            URL.revokeObjectURL(objectUrl);
+            e.target.value = '';
+            setProfileImageFile(null);
+            setProfileImagePreview(null);
+            return;
+        }
+        
+        setProfileImageFile(file);
+        setProfileImagePreview(objectUrl);
+      };
+      
+      img.onerror = () => {
+        setError("Invalid image file.");
+        URL.revokeObjectURL(objectUrl);
+      };
+      
+      img.src = objectUrl;
+    }
   };
 
   // --- Location Autocomplete Logic ---
@@ -180,8 +227,13 @@ export default function Login() {
     e.preventDefault();
     setError("");
     
-    // Strict Validation for Lat/Long
+    // Strict Validation for New Registrations
     if (!isExisting) {
+      if (!profileImageFile) {
+        setError("A profile image is required.");
+        return;
+      }
+
       const numericLat = Number(regData.lat);
       const numericLong = Number(regData.long);
       
@@ -195,20 +247,53 @@ export default function Login() {
     const otpValue = otp.join("");
 
     try {
-      let res;
-
       if (isExisting) {
-        res = await fetch(`${API_BASE_URL}auth/login`, {
+        // Login Flow
+        const res = await fetch(`${API_BASE_URL}auth/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ mobile: Number(mobile), otp: Number(otpValue) }),
         });
+        const data = await res.json();
+        
+        if (data.success || data.token) {
+            if (data.token) localStorage.setItem("token", data.token);
+            try {
+                const payments = await fetchUserPayments();
+                if (payments.length === 0) {
+                    router.push("/plans?skippable=true");
+                } else {
+                    router.push("/");
+                }
+            } catch (err) {
+                router.push("/");
+            }
+            router.refresh();
+        } else {
+            setError(data.message || "Invalid OTP or login failed.");
+            setLoading(false);
+        }
+
       } else {
-        res = await fetch(`${API_BASE_URL}auth/register-architect`, {
+        // Registration Flow
+        
+        // 1. First Verify OTP by hitting register-architect. If OTP fails, we don't upload the image.
+        // But the API registers the user immediately. So we need to upload the image first if we don't have a separate OTP verification endpoint.
+        
+        // Assuming we upload the image first, then register. 
+        // Note: Your image upload route requires a Bearer token according to the cURL, 
+        // but during registration, the user doesn't have a token yet. 
+        // If the `/api/v1/user/images` endpoint strictly requires a token, you MUST register the user first, 
+        // get the token, upload the image, and then call a PUT update.
+        // Assuming the image upload requires auth based on the provided cURL:
+
+        // Step A: Register the user with a blank/temporary profileUrl
+        const regRes = await fetch(`${API_BASE_URL}auth/register-architect`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             name: regData.name,
+            profileUrl: "", // Temporary blank, will update right after
             mobile: Number(mobile),
             otp: Number(otpValue),
             gender: regData.gender,
@@ -223,35 +308,50 @@ export default function Login() {
             long: Number(regData.long)
           }),
         });
-      }
-
-      const data = await res.json();
-
-      if (data.success || data.token) {
-        if (data.token) localStorage.setItem("token", data.token);
-
-        if (isExisting) {
-          try {
-            const payments = await fetchUserPayments();
-            if (payments.length === 0) {
-              router.push("/plans?skippable=true");
-            } else {
-              router.push("/");
-            }
-          } catch (err) {
-            router.push("/");
-          }
-        } else {
-          router.push("/plans?skippable=true");
-        }
         
-        router.refresh();
-      } else {
-        setError(data.message || (isExisting ? "Invalid OTP or login failed." : "Registration failed."));
+        const regDataResponse = await regRes.json();
+
+        if (regDataResponse.success || regDataResponse.token) {
+            const token = regDataResponse.token;
+            if (token) localStorage.setItem("token", token);
+
+            // Step B: Upload the Image now that we have a token
+            if (profileImageFile && token) {
+                const formData = new FormData();
+                formData.append("images", profileImageFile);
+
+                const uploadRes = await fetch(`${API_BASE_URL}user/images`, {
+                    method: "POST",
+                    headers: { "Authorization": `Bearer ${token}` },
+                    body: formData
+                });
+                
+                const uploadData = await uploadRes.json();
+                
+                if (uploadData.success && uploadData.urls && uploadData.urls.length > 0) {
+                    const finalProfileUrl = uploadData.urls[0];
+                    
+                    // Step C: Update the user's profile with the uploaded image URL
+                    await fetch(`${API_BASE_URL}user/update`, {
+                        method: "PUT",
+                        headers: { 
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}` 
+                        },
+                        body: JSON.stringify({ profilePictureUrl: finalProfileUrl }) // Assuming your update controller handles this
+                    });
+                }
+            }
+
+            router.push("/plans?skippable=true");
+            router.refresh();
+        } else {
+            setError(regDataResponse.message || "Registration failed.");
+            setLoading(false);
+        }
       }
     } catch (err) {
       setError("Server error. Please try again later.");
-    } finally {
       setLoading(false);
     }
   };
@@ -341,6 +441,35 @@ export default function Login() {
 
             {!isExisting && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                
+                {/* --- Profile Image Upload Section --- */}
+                <div className="sm:col-span-2 flex flex-col items-center justify-center gap-3 mb-2">
+                    <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-zinc-100 dark:bg-zinc-800 border-2 border-dashed border-zinc-300 dark:border-zinc-700 overflow-hidden relative group cursor-pointer shadow-sm hover:border-[#EAB308] transition-colors">
+                        {profileImagePreview ? (
+                            <img src={profileImagePreview} alt="Avatar Preview" className="w-full h-full object-cover" />
+                        ) : (
+                            <div className="w-full h-full flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-500">
+                                <span className="text-2xl mb-1">📷</span>
+                            </div>
+                        )}
+                        <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span className="text-white text-[10px] font-bold tracking-wide uppercase">Upload</span>
+                        </div>
+                        <input 
+                            type="file" 
+                            accept="image/*" 
+                            required // HTML5 validation (acts as fallback to manual state check)
+                            aria-label="Upload profile image" 
+                            className="absolute inset-0 opacity-0 cursor-pointer" 
+                            onChange={handleProfileImageSelect} 
+                        />
+                    </div>
+                    <div className="text-center flex flex-col gap-0.5">
+                        <span className="text-[10px] font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">Profile Photo <span className="text-red-500">*</span></span>
+                        <span className="text-[10px] text-zinc-500 font-medium">Max 2MB. Must be 1:1 Square.</span>
+                    </div>
+                </div>
+
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Full Name</label>
                   <input type="text" name="name" required value={regData.name} onChange={handleInputChange} placeholder="John Doe" className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-2.5 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
@@ -361,7 +490,7 @@ export default function Login() {
                   <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Firm Name</label>
                   <input type="text" name="firmName" required value={regData.firmName} onChange={handleInputChange} placeholder="Doe & Associates Design" className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-2.5 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
                 </div>
-                <div>
+                <div className="sm:col-span-2">
                   <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Years of Experience</label>
                   <input type="number" name="experience" required min="0" value={regData.experience} onChange={handleInputChange} placeholder="e.g. 8" className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-2.5 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
                 </div>
@@ -526,7 +655,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading || otp.join("").length < 4}
-              className="mt-4 w-full rounded-lg bg-[#EAB308] hover:bg-yellow-600 py-3.5 text-sm font-bold text-white transition-colors disabled:opacity-50"
+              className="mt-4 w-full rounded-lg bg-[#EAB308] hover:bg-yellow-600 py-3.5 text-sm font-bold text-white transition-colors disabled:opacity-50 flex items-center justify-center"
             >
               {loading ? "Processing..." : (isExisting ? "Secure Login" : "Register Profile")}
             </button>
