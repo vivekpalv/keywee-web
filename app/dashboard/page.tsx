@@ -9,6 +9,7 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import ProfileCard from "@/components/dashboard/ProfileCard";
 import ProjectsSection from "@/components/dashboard/ProjectSection";
 import QualificationsSection from "@/components/dashboard/QualificationsSection";
+import RatingsSection from "@/components/dashboard/RatingsSection"; // NEW IMPORT
 
 // Extracted Modals
 import ProfileModal from "@/components/dashboard/modals/ProfileModal";
@@ -16,7 +17,7 @@ import ProjectModal from "@/components/dashboard/modals/ProjectModal";
 import QualificationModal from "@/components/dashboard/modals/QualificationModal";
 
 // Types & API
-import { UserProfile, ProjectItem, QualificationItem, CategoryItem } from "@/types/dashboard";
+import { UserProfile, ProjectItem, QualificationItem, CategoryItem, RatingItem } from "@/types/dashboard";
 import { BASE_URL } from "@/utils/api";
 
 const API_BASE_URL = BASE_URL;
@@ -29,6 +30,7 @@ export default function Dashboard() {
   const [projects, setProjects] = useState<ProjectItem[]>([]);
   const [qualifications, setQualifications] = useState<QualificationItem[]>([]);
   const [categories, setCategories] = useState<CategoryItem[]>([]);
+  const [ratings, setRatings] = useState<RatingItem[]>([]); // NEW STATE
 
   // UI States
   const [loading, setLoading] = useState(true);
@@ -41,7 +43,7 @@ export default function Dashboard() {
   const [editingQual, setEditingQual] = useState<QualificationItem | null>(null);
   const [isQualModalOpen, setIsQualModalOpen] = useState(false);
 
-  // --- Initial Data Fetch ---
+  // --- Initial Data Fetch (Profile, Projects, Quals, Categories) ---
   useEffect(() => {
     const fetchDashboardData = async () => {
       const token = localStorage.getItem("token");
@@ -50,7 +52,7 @@ export default function Dashboard() {
       try {
         const [userRes, catRes] = await Promise.all([
           fetch(`${API_BASE_URL}user/me`, { headers: { "Authorization": `Bearer ${token}` } }),
-          fetch(`${API_BASE_URL}user/category?childWithParent=false`, { headers: { "Authorization": `Bearer ${token}` } })
+          fetch(`${API_BASE_URL}user/category?parent=null`, { headers: { "Authorization": `Bearer ${token}` } }) // Updated to fetch only parents
         ]);
 
         const userData = await userRes.json();
@@ -68,6 +70,26 @@ export default function Dashboard() {
     };
     fetchDashboardData();
   }, [router]);
+
+  // --- Secondary Data Fetch (Ratings) ---
+  useEffect(() => {
+    const fetchRatings = async () => {
+      const architectId = profile?.architectDetails?._id;
+      if (!architectId) return;
+
+      try {
+        const res = await fetch(`${API_BASE_URL}public/ratings/${architectId}`);
+        const data = await res.json();
+        if (data.success) {
+          setRatings(data.ratings || []);
+        }
+      } catch (err) {
+        console.error("Failed to fetch ratings:", err);
+      }
+    };
+
+    fetchRatings();
+  }, [profile?.architectDetails?._id]);
 
 
   // --- DELETION HANDLERS ---
@@ -122,6 +144,7 @@ export default function Dashboard() {
           onEditProfile={() => setIsProfileModalOpen(true)}
         />
 
+        {/* Updated Grid to perfectly fit Projects, Quals, and Ratings */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           <ProjectsSection
             projects={projects}
@@ -135,6 +158,9 @@ export default function Dashboard() {
             onEditQual={(qual) => { setEditingQual(qual); setIsQualModalOpen(true); }}
             onDeleteQual={handleDeleteQualification}
           />
+          
+          {/* NEW RATINGS SECTION */}
+          <RatingsSection ratings={ratings} />
         </div>
       </div>
 

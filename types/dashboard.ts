@@ -20,12 +20,24 @@ export interface QualificationItem {
   coaCertUrl?: string;
 }
 
+export interface RatingItem {
+  _id: string;
+  overallRating: number;
+  review: string;
+  user: {
+    _id: string;
+    name: string;
+  };
+  createdAt: string;
+}
+
 export interface UserProfile {
   _id: string;
   name: string;
   mobile: string;
   gender: string;
   architectDetails?: {
+    _id: string;
     firmName?: string;
     email?: string;
     contact?: string;
