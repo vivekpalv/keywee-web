@@ -19,7 +19,7 @@ export default function ProfileCard({ profile, totalProjects, onEditProfile }: P
     archDetails?.city,
     archDetails?.experience,
     archDetails?.minBudget, // Added budget to completion fields
-    archDetails?.maxBudget
+    archDetails?.maxBudget,
   ];
   const completedCount = completionFields.filter(Boolean).length;
   const completionPercentage = Math.round((completedCount / completionFields.length) * 100);
@@ -96,7 +96,7 @@ export default function ProfileCard({ profile, totalProjects, onEditProfile }: P
           </div>
           <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3 mt-2">
             <span className="text-zinc-400 font-medium">📍 Headquarters:</span>
-            <span className="capitalize">{archDetails?.city || "-"}, {archDetails?.state || "-"}</span>
+            <span className="capitalize">{archDetails?.address || "-"}</span>
           </div>
           <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
             <span className="text-zinc-400 font-medium">📞 Mobile:</span>
