@@ -20,7 +20,7 @@ export default function RatingsSection({ ratings }: RatingsSectionProps) {
           No reviews yet.
         </div>
       ) : (
-        <div className="space-y-4 overflow-y-auto pr-2 custom-scrollbar max-h-[400px]">
+        <div className="space-y-4 overflow-y-auto pr-2 custom-scrollbar max-h-100">
           {ratings.map((rating) => (
             <div key={rating._id} className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-700/50 transition-colors hover:border-zinc-200 dark:hover:border-zinc-600">
               <div className="flex justify-between items-start mb-2">
