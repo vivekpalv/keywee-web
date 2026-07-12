@@ -36,19 +36,22 @@ export default function Login() {
   const [regData, setRegData] = useState({
     name: "",
     gender: "MALE",
-    contact: "",
     email: "",
     firmName: "",
     bio: "",
     experience: "",
-    address: "", // Changed from location to match your API updates
-    lat: 0,
-    long: 0,
+    address: "",
+    lat: "" as number | string,
+    long: "" as number | string,
     min: 1000000,
     max: 5000000
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    setRegData({ ...regData, [e.target.name]: e.target.value });
+  };
+
+  const handleCoordinateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRegData({ ...regData, [e.target.name]: e.target.value });
   };
 
@@ -76,8 +79,7 @@ export default function Login() {
   const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     
-    // Reset lat/long if user edits the text field
-    setRegData({ ...regData, address: value, lat: 0, long: 0 });
+    setRegData({ ...regData, address: value });
     setShowDropdown(true);
     setIsSearching(true);
 
@@ -91,7 +93,7 @@ export default function Login() {
   const selectLocation = (suggestion: LocationSuggestion) => {
     setRegData({
       ...regData,
-      address: suggestion.display_name, // Saves full string to pass on update forms later
+      address: suggestion.display_name,
       lat: Number(suggestion.lat),
       long: Number(suggestion.lon)
     });
@@ -178,9 +180,15 @@ export default function Login() {
     e.preventDefault();
     setError("");
     
-    if (!isExisting && (regData.lat === 0 || regData.long === 0)) {
-      setError("Please select a valid address from the dropdown suggestions.");
-      return;
+    // Strict Validation for Lat/Long
+    if (!isExisting) {
+      const numericLat = Number(regData.lat);
+      const numericLong = Number(regData.long);
+      
+      if (!regData.lat || !regData.long || isNaN(numericLat) || isNaN(numericLong)) {
+        setError("Please provide valid Latitude and Longitude coordinates for your office.");
+        return;
+      }
     }
 
     setLoading(true);
@@ -204,16 +212,15 @@ export default function Login() {
             mobile: Number(mobile),
             otp: Number(otpValue),
             gender: regData.gender,
-            contact: regData.contact,
             email: regData.email,
             firmName: regData.firmName,
             bio: regData.bio,
             experience: Number(regData.experience),
             min: Number(regData.min),
             max: Number(regData.max),
-            address: regData.address, // Now passing the full string along with lat/long
-            lat: regData.lat,
-            long: regData.long
+            address: regData.address,
+            lat: Number(regData.lat),
+            long: Number(regData.long)
           }),
         });
       }
@@ -343,10 +350,6 @@ export default function Login() {
                   <input type="email" name="email" required value={regData.email} onChange={handleInputChange} placeholder="john@example.com" className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-2.5 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Alternative Contact</label>
-                  <input type="tel" name="contact" required maxLength={10} value={regData.contact} onChange={(e) => setRegData({ ...regData, contact: e.target.value.replace(/\D/g, '') })} placeholder="10-digit number" className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-2.5 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
-                </div>
-                <div>
                   <label htmlFor="gender-select" className="mb-2 block text-sm font-semibold text-black dark:text-white">Gender</label>
                   <select id="gender-select" name="gender" required value={regData.gender} onChange={handleInputChange} className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-black dark:text-white outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]">
                     <option value="MALE">Male</option>
@@ -363,9 +366,9 @@ export default function Login() {
                   <input type="number" name="experience" required min="0" value={regData.experience} onChange={handleInputChange} placeholder="e.g. 8" className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-2.5 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
                 </div>
 
-                {/* --- Interactive Address Autocomplete --- */}
+                {/* --- Interactive Address & Coordinate Autocomplete --- */}
                 <div className="sm:col-span-2 relative">
-                  <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Office Address</label>
+                  <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Office Address <span className="text-red-500">*</span></label>
                   <div onClick={(e) => e.stopPropagation()}>
                     <input 
                       type="text" 
@@ -374,7 +377,7 @@ export default function Login() {
                       value={regData.address} 
                       onChange={handleLocationChange}
                       onFocus={() => { if(regData.address) setShowDropdown(true) }}
-                      placeholder="e.g. Cyber Hub, Gurugram" 
+                      placeholder="Search your office address..." 
                       className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-2.5 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" 
                     />
                     
@@ -401,7 +404,46 @@ export default function Login() {
                       </div>
                     )}
                   </div>
-                  <p className="mt-1 text-xs text-zinc-500">Select an address from the suggestions to capture coordinate data.</p>
+                  
+                  {/* Professional Coordinate Inputs */}
+                  <div className="mt-3 p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200 dark:border-zinc-700/60">
+                    <div className="flex items-center justify-between mb-3">
+                      <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wide">
+                        Location Coordinates
+                      </label>
+                      <span className="text-[10px] text-zinc-500 font-medium bg-zinc-200 dark:bg-zinc-700/80 px-2 py-0.5 rounded-md">
+                        Auto-filled or Manual
+                      </span>
+                    </div>
+                    <div className="flex gap-4">
+                      <div className="flex-1">
+                        <span className="text-[10px] text-zinc-500 font-semibold mb-1.5 block uppercase">Latitude <span className="text-red-500">*</span></span>
+                        <input 
+                          type="number" 
+                          step="any"
+                          name="lat" 
+                          required
+                          value={regData.lat} 
+                          onChange={handleCoordinateChange}
+                          placeholder="e.g. 28.4595"
+                          className="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-black dark:text-white outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308] transition-all"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <span className="text-[10px] text-zinc-500 font-semibold mb-1.5 block uppercase">Longitude <span className="text-red-500">*</span></span>
+                        <input 
+                          type="number" 
+                          step="any"
+                          name="long" 
+                          required
+                          value={regData.long} 
+                          onChange={handleCoordinateChange}
+                          placeholder="e.g. 77.0266"
+                          className="w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-black dark:text-white outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308] transition-all"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* --- Interactive Dual Seek Bar --- */}
