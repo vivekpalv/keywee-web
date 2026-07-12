@@ -36,7 +36,7 @@ export default function ProfileCard({ profile, totalProjects, onEditProfile }: P
 
   return (
     <div className="rounded-4xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8 mb-12 shadow-sm relative overflow-hidden group">
-      
+
       <div className="absolute top-6 right-6">
         <button onClick={onEditProfile} className="text-xs font-bold border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 rounded-lg px-4 py-2 transition-colors shadow-sm">
           Edit Profile
@@ -61,7 +61,7 @@ export default function ProfileCard({ profile, totalProjects, onEditProfile }: P
                 )}
               </div>
               <p className="text-sm font-bold text-[#EAB308] uppercase tracking-wide mt-1.5">{archDetails?.firmName || "Independent Professional"}</p>
-              
+
               {/* Profile Completion Bar */}
               <div className="mt-4 max-w-xs">
                 <div className="flex justify-between text-[10px] font-bold text-zinc-500 mb-1.5 uppercase tracking-wider">
@@ -69,8 +69,8 @@ export default function ProfileCard({ profile, totalProjects, onEditProfile }: P
                   <span className={completionPercentage === 100 ? "text-green-500" : "text-[#EAB308]"}>{completionPercentage}%</span>
                 </div>
                 <div className="h-1.5 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-                  <div 
-                    className={`h-full rounded-full transition-all duration-1000 ${completionPercentage === 100 ? 'bg-green-500' : 'bg-[#EAB308]'}`} 
+                  <div
+                    className={`h-full rounded-full transition-all duration-1000 ${completionPercentage === 100 ? 'bg-green-500' : 'bg-[#EAB308]'}`}
                     style={{ width: `${completionPercentage}%` }}
                   />
                 </div>
@@ -99,15 +99,15 @@ export default function ProfileCard({ profile, totalProjects, onEditProfile }: P
             <span className="capitalize">{archDetails?.city || "-"}, {archDetails?.state || "-"}</span>
           </div>
           <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
-            <span className="text-zinc-400 font-medium">📞 Direct Line:</span>
-            <span>{archDetails?.contact || profile?.mobile || "-"}</span>
+            <span className="text-zinc-400 font-medium">📞 Mobile:</span>
+            <span>{profile?.mobile || "-"}</span>
           </div>
           {/* NEW BUDGET DISPLAY */}
           <div className="flex flex-col border-b border-zinc-100 dark:border-zinc-800 pb-3">
             <div className="flex items-center justify-between">
               <span className="text-zinc-400 font-medium">💰 Target Budget:</span>
               <span className="font-mono text-xs font-bold text-[#EAB308]">
-                {archDetails?.minBudget || archDetails?.maxBudget 
+                {archDetails?.minBudget || archDetails?.maxBudget
                   ? `${formatCurrency(archDetails.minBudget)} - ${formatCurrency(archDetails.maxBudget)}`
                   : "Not Specified"}
               </span>
