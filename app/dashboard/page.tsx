@@ -136,6 +136,7 @@ export default function Dashboard() {
             <Link href="/booster-plans" className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-zinc-900 text-white text-sm font-semibold shadow-sm hover:opacity-90 transition">Booster Plans</Link>
             <Link href="/chat" className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-yellow-500 text-zinc-900 text-sm font-semibold shadow-sm hover:bg-yellow-400 transition">Messages</Link>
             <Link href="/payments" className="inline-flex items-center justify-center px-6 py-3 rounded-xl border text-sm font-semibold shadow-sm hover:bg-zinc-50 transition">Billing History</Link>
+            <Link href="/subscriptions" className="inline-flex items-center justify-center px-6 py-3 rounded-xl border text-sm font-semibold shadow-sm hover:bg-zinc-50 transition">My Subscription</Link>
           </div>
         </div>
 
