@@ -78,7 +78,6 @@ export default function Login() {
       const objectUrl = URL.createObjectURL(file);
       
       img.onload = () => {
-        const isSquare = img.width === img.height;
         // Allow a slight tolerance (e.g., 5px) for imprecise crops, but enforce strict square if preferred
         if (Math.abs(img.width - img.height) > 5) {
             setError("Profile image must have a 1:1 (square) aspect ratio.");
@@ -227,21 +226,46 @@ export default function Login() {
     e.preventDefault();
     setError("");
     
-    // Strict Validation for New Registrations
+    // --- STRICT MANDATORY VALIDATION FOR NEW REGISTRATIONS ---
     if (!isExisting) {
       if (!profileImageFile) {
         setError("A profile image is required.");
         return;
       }
 
+      if (!regData.name.trim() || !regData.email.trim() || !regData.firmName.trim()) {
+        setError("Please fill out your Name, Email, and Firm Name.");
+        return;
+      }
+
+      if (regData.experience === "" || Number(regData.experience) < 0) {
+        setError("Please provide valid years of experience.");
+        return;
+      }
+
+      if (!regData.address.trim()) {
+        setError("Please provide your office address.");
+        return;
+      }
+
       const numericLat = Number(regData.lat);
       const numericLong = Number(regData.long);
-      
       if (!regData.lat || !regData.long || isNaN(numericLat) || isNaN(numericLong)) {
         setError("Please provide valid Latitude and Longitude coordinates for your office.");
         return;
       }
+
+      if (regData.min === undefined || regData.max === undefined || regData.min >= regData.max) {
+        setError("Please provide a valid project budget range.");
+        return;
+      }
+
+      if (!regData.bio.trim() || regData.bio.trim().length < 10) {
+        setError("A professional bio is mandatory (minimum 10 characters).");
+        return;
+      }
     }
+    // ---------------------------------------------------------
 
     setLoading(true);
     const otpValue = otp.join("");
@@ -276,17 +300,6 @@ export default function Login() {
 
       } else {
         // Registration Flow
-        
-        // 1. First Verify OTP by hitting register-architect. If OTP fails, we don't upload the image.
-        // But the API registers the user immediately. So we need to upload the image first if we don't have a separate OTP verification endpoint.
-        
-        // Assuming we upload the image first, then register. 
-        // Note: Your image upload route requires a Bearer token according to the cURL, 
-        // but during registration, the user doesn't have a token yet. 
-        // If the `/api/v1/user/images` endpoint strictly requires a token, you MUST register the user first, 
-        // get the token, upload the image, and then call a PUT update.
-        // Assuming the image upload requires auth based on the provided cURL:
-
         // Step A: Register the user with a blank/temporary profileUrl
         const regRes = await fetch(`${API_BASE_URL}auth/register-architect`, {
           method: "POST",
@@ -471,15 +484,15 @@ export default function Login() {
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Full Name</label>
+                  <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Full Name <span className="text-red-500">*</span></label>
                   <input type="text" name="name" required value={regData.name} onChange={handleInputChange} placeholder="John Doe" className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-2.5 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Email Address</label>
+                  <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Email Address <span className="text-red-500">*</span></label>
                   <input type="email" name="email" required value={regData.email} onChange={handleInputChange} placeholder="john@example.com" className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-2.5 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
                 </div>
                 <div>
-                  <label htmlFor="gender-select" className="mb-2 block text-sm font-semibold text-black dark:text-white">Gender</label>
+                  <label htmlFor="gender-select" className="mb-2 block text-sm font-semibold text-black dark:text-white">Gender <span className="text-red-500">*</span></label>
                   <select id="gender-select" name="gender" required value={regData.gender} onChange={handleInputChange} className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-black dark:text-white outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]">
                     <option value="MALE">Male</option>
                     <option value="FEMALE">Female</option>
@@ -487,11 +500,11 @@ export default function Login() {
                   </select>
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Firm Name</label>
+                  <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Firm Name <span className="text-red-500">*</span></label>
                   <input type="text" name="firmName" required value={regData.firmName} onChange={handleInputChange} placeholder="Doe & Associates Design" className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-2.5 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
                 </div>
                 <div className="sm:col-span-2">
-                  <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Years of Experience</label>
+                  <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Years of Experience <span className="text-red-500">*</span></label>
                   <input type="number" name="experience" required min="0" value={regData.experience} onChange={handleInputChange} placeholder="e.g. 8" className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-2.5 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308]" />
                 </div>
 
@@ -579,7 +592,7 @@ export default function Login() {
                 <div className="sm:col-span-2 mt-2">
                   <div className="flex justify-between items-center mb-4">
                     <label className="text-sm font-semibold text-black dark:text-white">
-                      Project Budget Range
+                      Project Budget Range <span className="text-red-500">*</span>
                     </label>
                   </div>
                   
@@ -590,6 +603,7 @@ export default function Login() {
                         type="number" 
                         name="min"
                         min="0"
+                        required
                         value={regData.min} 
                         onChange={handleMinBudgetChange}
                         className="w-full bg-transparent text-sm font-bold text-black dark:text-white outline-none"
@@ -601,6 +615,7 @@ export default function Login() {
                       <input 
                         type="number" 
                         name="max"
+                        required
                         min={regData.min + 1}
                         value={regData.max} 
                         onChange={handleMaxBudgetChange}
@@ -646,7 +661,7 @@ export default function Login() {
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Professional Bio</label>
+                  <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Professional Bio <span className="text-red-500">*</span></label>
                   <textarea name="bio" required rows={3} value={regData.bio} onChange={handleInputChange} placeholder="Tell us about your specialization and past work..." className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-3 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308] resize-none" />
                 </div>
               </div>
