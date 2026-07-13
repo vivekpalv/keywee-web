@@ -52,7 +52,7 @@ export default function Dashboard() {
       try {
         const [userRes, catRes] = await Promise.all([
           fetch(`${API_BASE_URL}user/me`, { headers: { "Authorization": `Bearer ${token}` } }),
-          fetch(`${API_BASE_URL}user/category?parent=null`, { headers: { "Authorization": `Bearer ${token}` } }) // Updated to fetch only parents
+          fetch(`${API_BASE_URL}user/category?childWithParent=false`, { headers: { "Authorization": `Bearer ${token}` } }) // Updated to fetch only parents
         ]);
 
         const userData = await userRes.json();
