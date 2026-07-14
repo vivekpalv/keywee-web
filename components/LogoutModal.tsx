@@ -17,31 +17,33 @@ export default function LogoutModal({ isOpen, onClose, onConfirm }: LogoutModalP
         aria-modal="true"
         aria-labelledby="modal-title"
       >
-        <div className="flex items-center gap-3 text-red-600 dark:text-red-400 mb-3">
-          <div className="p-2 rounded-full bg-red-100 dark:bg-red-900/30">
+        {/* Header with Keywee Yellow Brand Accents */}
+        <div className="flex items-center gap-3 mb-3">
+          <div className="p-2.5 rounded-full bg-[#FFF9E6] dark:bg-[#FFF9E6]/10 text-[#D97706] dark:text-[#EAB308]">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/>
             </svg>
           </div>
-          <h3 id="modal-title" className="text-lg font-bold text-zinc-900 dark:text-white">
+          <h3 id="modal-title" className="text-lg font-extrabold tracking-tight text-zinc-900 dark:text-white">
             Confirm Logout
           </h3>
         </div>
         
-        <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-6">
+        <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-6 font-medium">
           Are you sure you want to log out of your account? You will need to sign back in to access your dashboard.
         </p>
 
-        <div className="flex items-center justify-end gap-3 font-semibold text-xs sm:text-sm">
+        {/* Buttons matching Black, White, and Neutral styling */}
+        <div className="flex items-center justify-end gap-3 font-bold text-xs sm:text-sm">
           <button
             onClick={onClose}
-            className="px-4 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+            className="px-5 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className="px-4 py-2.5 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors shadow-sm"
+            className="px-5 py-2.5 rounded-lg bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors shadow-sm"
           >
             Yes, Logout
           </button>
