@@ -1,7 +1,6 @@
-// components/PlanCard.tsx
 "use client";
 
-import React from 'react';
+import React from "react";
 
 export interface Plan {
   _id: string;
@@ -17,72 +16,123 @@ interface PlanCardProps {
   plan: Plan;
   isSelected: boolean;
   onSelect: () => void;
+  isBestValue?: boolean;
 }
 
-export default function PlanCard({ plan, isSelected, onSelect }: PlanCardProps) {
+export default function PlanCard({
+  plan,
+  isSelected,
+  onSelect,
+  isBestValue = false,
+}: PlanCardProps) {
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
       maximumFractionDigits: 0,
     }).format(amount);
   };
 
   const isYearly = plan.days >= 365;
 
+  const features = plan.desc
+    .split(/\\n|\n/)
+    .map((f) => f.trim())
+    .filter(Boolean);
+
   return (
     <div
       onClick={plan.isActive ? onSelect : undefined}
-      className={`relative flex flex-col justify-between p-6 rounded-xl border bg-white dark:bg-black transition-all duration-200 cursor-pointer ${
+      className={`relative flex flex-col p-6 rounded-2xl border bg-white dark:bg-[#0A0A0A] transition-all duration-200 cursor-pointer ${
         isSelected
-          ? 'border-[#EAB308] ring-1 ring-[#EAB308] shadow-lg shadow-[#EAB308]/10'
-          : 'border-zinc-200 dark:border-neutral-800 hover:border-zinc-300 dark:hover:border-neutral-700'
-      } ${!plan.isActive && 'opacity-75 cursor-not-allowed'}`}
+          ? "border-[#EAB308] ring-1 ring-[#EAB308] shadow-xl shadow-[#EAB308]/10"
+          : "border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700"
+      } ${!plan.isActive && "opacity-75 cursor-not-allowed"}`}
     >
-      {isYearly && (
-        <span className="absolute -top-3 left-6 bg-[#EAB308] text-black text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+      {isBestValue && (
+        <span className="absolute -top-3 left-6 bg-[#EAB308] text-black text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
           Best Value
         </span>
       )}
 
-      <div>
-        <div className="flex justify-between items-start mb-4">
-          <h3 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white">{plan.title}</h3>
-          <span className="text-xs font-medium px-2 py-1 bg-zinc-100 dark:bg-neutral-900 border border-zinc-200 dark:border-neutral-800 rounded text-zinc-600 dark:text-neutral-400">
-            {plan.days} Days
-          </span>
-        </div>
+      {/* Header */}
+      <div className="flex justify-between items-start mb-4">
+        <h3 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+          {plan.title}
+        </h3>
 
-        <p className="text-sm text-zinc-500 dark:text-neutral-400 min-h-10 mb-6">
-          {plan.desc}
-        </p>
-
-        <div className="flex items-baseline mb-6">
-          <span className="text-3xl font-extrabold text-[#EAB308]">
-            {formatCurrency(plan.amount)}
-          </span>
-          <span className="text-sm text-zinc-500 dark:text-neutral-500 ml-2">
-            / {isYearly ? 'year' : 'month'}
-          </span>
-        </div>
+        <span className="text-[10px] font-bold px-2 py-1 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
+          {plan.days} Days
+        </span>
       </div>
 
+      {/* Price */}
+      <div className="flex items-baseline mb-6">
+        <span className="text-4xl font-black text-zinc-900 dark:text-white">
+          {formatCurrency(plan.amount)}
+        </span>
+
+        <span className="text-sm font-medium text-zinc-500 dark:text-zinc-500 ml-1">
+          /{isYearly ? "yr" : "mo"}
+        </span>
+      </div>
+
+      {/* Button */}
       <button
         onClick={(e) => {
-          e.stopPropagation(); // Prevents double-firing the div click
+          e.stopPropagation();
           if (plan.isActive) onSelect();
         }}
         disabled={!plan.isActive}
-        className={`w-full py-3 rounded-lg font-semibold text-sm transition-all duration-200 ${
+        className={`w-full py-3 rounded-xl font-bold text-sm transition-all duration-200 mb-6 ${
           !plan.isActive
-            ? 'bg-zinc-200 dark:bg-neutral-800 text-zinc-500 dark:text-neutral-500 cursor-not-allowed'
+            ? "bg-zinc-100 dark:bg-zinc-900 text-zinc-400 dark:text-zinc-600 border border-zinc-200 dark:border-zinc-800 cursor-not-allowed"
             : isSelected
-            ? 'bg-[#EAB308] text-black shadow-md'
-            : 'bg-zinc-100 dark:bg-white text-zinc-900 dark:text-black hover:bg-zinc-200 dark:hover:bg-neutral-200'
+            ? "bg-[#EAB308] text-black shadow-md border border-[#EAB308]"
+            : "bg-transparent text-[#EAB308] border border-[#EAB308] hover:bg-[#EAB308]/10"
         }`}
       >
-        {plan.isActive ? (isSelected ? 'Selected' : 'Choose Plan') : 'Unavailable'}
+        {plan.isActive
+          ? isSelected
+            ? "Selected"
+            : "Choose plan"
+          : "Unavailable"}
       </button>
+
+      <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 mb-6" />
+
+      {/* Features */}
+      <ul className="flex flex-col gap-4 flex-grow">
+        {features.map((feature, index) => {
+          const isIncluded = feature.startsWith("✓");
+
+          const featureText = feature.replace(/^[✓-]\s*/, "");
+
+          return (
+            <li key={index} className="flex items-start text-sm">
+              <span
+                className={`mr-3 mt-0.5 font-bold shrink-0 ${
+                  isIncluded
+                    ? "text-green-500"
+                    : "text-zinc-400 dark:text-zinc-600"
+                }`}
+              >
+                ✓
+              </span>
+
+              <span
+                className={`leading-tight ${
+                  isIncluded
+                    ? "text-zinc-900 dark:text-zinc-100 font-medium"
+                    : "text-zinc-500 dark:text-zinc-500"
+                }`}
+              >
+                {featureText}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
