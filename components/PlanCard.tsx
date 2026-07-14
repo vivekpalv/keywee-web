@@ -102,7 +102,7 @@ export default function PlanCard({
       <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 mb-6" />
 
       {/* Features */}
-      <ul className="flex flex-col gap-4 flex-grow">
+      <ul className="flex flex-col gap-4 grow">
         {features.map((feature, index) => {
           const isIncluded = feature.startsWith("✓");
 
