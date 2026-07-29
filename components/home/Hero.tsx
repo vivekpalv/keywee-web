@@ -4,11 +4,11 @@ import { useState, useEffect } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
 const IMAGES = [
+  "https://res.cloudinary.com/dgeiv60mf/image/upload/v1785326342/Pexels_Photo_by_Ron_Lach1_uy1cpb.png",
+  "https://res.cloudinary.com/dgeiv60mf/image/upload/v1785326342/Pexels_Photo_by_Ron_Lach-11_qb9u6d.png",
   "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=500&q=80",
-  "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=500&q=80",
-  "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=500&q=80",
-  "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=500&q=80",
-  "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=500&q=80",
+  "https://res.cloudinary.com/dgeiv60mf/image/upload/v1785326143/Pexels_Photo_by_Alena_Darmel_v62ljo.png",
+  "https://res.cloudinary.com/dgeiv60mf/image/upload/v1785326142/pexels-pavel-danilyuk-7937756.jpg_vaxn3u.jpg",
 ];
 
 const STACK_ROTATIONS = [-26, -13, 0, 13, 26];

@@ -7,6 +7,10 @@ const cities = [
   { name: "Dubai", active: false },
   { name: "Europe", active: false },
   { name: "Russia", active: false },
+  { name: "USA", active: false },
+  { name: "Germany", active: false },
+  { name: "Italy", active: false },
+  { name: "Singapore", active: false },
 ];
 
 export default function LiveArea() {
@@ -92,7 +96,7 @@ export default function LiveArea() {
         </div>
 
         {/* Bottom CTA */}
-        <div className="mt-8 md:mt-12">
+        {/* <div className="mt-8 md:mt-12">
           <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-xl font-semibold tracking-tight leading-tight">
 
             <div className="flex items-center gap-2">
@@ -107,7 +111,7 @@ export default function LiveArea() {
             </button>
 
           </div>
-        </div>
+        </div> */}
 
       </div>
     </section>
