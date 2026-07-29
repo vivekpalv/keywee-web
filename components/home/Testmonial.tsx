@@ -14,7 +14,7 @@ const REVIEWS = [
 
 // Single Review Card Component (SCALED DOWN)
 const ReviewCard = ({ name, text, img }: { name: string; text: string; img: string }) => (
-  <div className="bg-white dark:bg-zinc-900 rounded-[24px] p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none border border-zinc-100 dark:border-zinc-800 flex flex-col gap-3 w-[250px] sm:w-[280px] transition-transform duration-300 hover:scale-[1.02] cursor-pointer">
+  <div className="bg-white dark:bg-zinc-900 rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none border border-zinc-100 dark:border-zinc-800 flex flex-col gap-3 w-62.5 sm:w-70 transition-transform duration-300 hover:scale-[1.02] cursor-pointer">
     <p className="text-[14px] text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">
       "{text}"
     </p>
@@ -27,7 +27,7 @@ const ReviewCard = ({ name, text, img }: { name: string; text: string; img: stri
 
 // Marquee Column Component
 const ReviewColumn = ({ reviews, reverse = false, speed = "40s" }: { reviews: any[], reverse?: boolean, speed?: string }) => (
-  <div className="relative w-full flex justify-center overflow-hidden h-[900px]"> {/* Reduced height container */}
+  <div className="relative w-full flex justify-center overflow-hidden h-225"> {/* Reduced height container */}
     <div 
       className={`flex flex-col gap-5 absolute w-full items-center ${reverse ? 'animate-marquee-down' : 'animate-marquee-up'}`}
       style={{ animationDuration: speed }}
@@ -52,7 +52,7 @@ export default function Testimonials() {
   const col5 = [REVIEWS[2], REVIEWS[3], REVIEWS[1], REVIEWS[5]]; 
 
   return (
-    <section className="relative w-full h-[500px] sm:h-[700px] bg-background overflow-hidden flex items-center justify-center pt-8"> {/* Reduced overall section height */}
+    <section className="relative w-full h-125 sm:h-175 bg-background overflow-hidden flex items-center justify-center pt-8"> {/* Reduced overall section height */}
       
       {/* --- BACKGROUND ANIMATED COLUMNS --- */}
       {/* Reduced scale and angle to make it tighter and less overwhelming */}
@@ -69,8 +69,8 @@ export default function Testimonials() {
       </div>
 
       {/* --- FADE GRADIENTS FOR SMOOTH EDGES --- */}
-      <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-background to-transparent z-10 pointer-events-none" />
-      <div className="absolute bottom-0 inset-x-0 h-32 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none" />
+      <div className="absolute top-0 inset-x-0 h-32 bg-linear-to-b from-background to-transparent z-10 pointer-events-none" />
+      <div className="absolute bottom-0 inset-x-0 h-32 bg-linear-to-t from-background to-transparent z-10 pointer-events-none" />
 
       {/* --- CENTER TEXT OVERLAY --- */}
       {/* Dark mode variant added to the radial gradient to match the dark background (`#09090b` / `9,9,11`) */}

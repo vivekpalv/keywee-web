@@ -149,7 +149,7 @@ export default function Hero() {
           if (!skipEnter) setIsExpanded(true);
         }}
       >
-        <div className="relative w-full max-w-6xl h-[150px] sm:h-[220px] md:h-[260px] mb-12 sm:mb-16 flex justify-center items-end">
+        <div className="relative w-full max-w-6xl h-37.5 sm:h-55 md:h-65 mb-12 sm:mb-16 flex justify-center items-end">
 
           {/* MOBILE: Stock Market Ticker Reel */}
           <div
@@ -169,9 +169,9 @@ export default function Hero() {
                   {IMAGES.map((src, idx) => (
                     <div
                       key={idx}
-                      className="relative overflow-hidden w-[130px] h-[130px] rounded-[24px] border-[3px] border-white dark:border-zinc-800 bg-zinc-200 dark:bg-zinc-700 shrink-0 group cursor-pointer"
+                      className="relative overflow-hidden w-32.5 h-32.5 rounded-3xl border-[3px] border-white dark:border-zinc-800 bg-zinc-200 dark:bg-zinc-700 shrink-0 group cursor-pointer"
                     >
-                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-gradient-to-br from-white/25 via-transparent to-transparent z-10 pointer-events-none" />
+                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-linear-to-br from-white/25 via-transparent to-transparent z-10 pointer-events-none" />
                       <img
                         src={src}
                         alt={`Architect inspiration ${idx + 1}`}
@@ -222,8 +222,8 @@ export default function Hero() {
               <div
                 className="
                   group relative overflow-hidden
-                  w-[160px] h-[160px] 
-                  md:w-[200px] md:h-[200px]
+                  w-40 h-40 
+                  md:w-50 md:h-50
                   rounded-[28px]
                   border-[3px] border-white dark:border-zinc-800
                   shadow-[0_20px_50px_rgba(0,0,0,0.14)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)]
@@ -234,7 +234,7 @@ export default function Hero() {
                 "
               >
                 {/* Hover Glow */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-gradient-to-br from-white/25 via-transparent to-transparent z-10 pointer-events-none" />
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-linear-to-br from-white/25 via-transparent to-transparent z-10 pointer-events-none" />
 
                 {/* Image */}
                 <img
