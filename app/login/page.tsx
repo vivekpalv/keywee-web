@@ -9,11 +9,12 @@ import { BASE_URL } from "@/utils/api";
 const API_BASE_URL = BASE_URL;
 const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024; // 2MB limit in bytes
 
+// Updated Interface for Google Maps API
 interface LocationSuggestion {
-  place_id: number;
+  place_id: string;
   display_name: string;
-  lat: string;
-  lon: string;
+  lat: number;
+  lon: number;
 }
 
 export default function Login() {
@@ -78,7 +79,7 @@ export default function Login() {
       const objectUrl = URL.createObjectURL(file);
       
       img.onload = () => {
-        // Allow a slight tolerance (e.g., 5px) for imprecise crops, but enforce strict square if preferred
+        // Allow a slight tolerance (e.g., 5px) for imprecise crops
         if (Math.abs(img.width - img.height) > 5) {
             setError("Profile image must have a 1:1 (square) aspect ratio.");
             URL.revokeObjectURL(objectUrl);
@@ -101,7 +102,7 @@ export default function Login() {
     }
   };
 
-  // --- Location Autocomplete Logic ---
+  // --- Google Maps Location Autocomplete Logic ---
   const fetchLocationSuggestions = async (query: string) => {
     if (!query || query.length < 3) {
       setSuggestions([]);
@@ -110,13 +111,33 @@ export default function Login() {
     }
 
     try {
+      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+      if (!apiKey) {
+        console.error("Google Maps API key is missing. Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your .env");
+        setIsSearching(false);
+        return;
+      }
+
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=jsonv2&limit=5`
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(query)}&key=${apiKey}`
       );
       const data = await res.json();
-      setSuggestions(data);
+
+      if (data.status === "OK" && data.results) {
+        // Map Google API results to our component's required structure
+        const formattedSuggestions = data.results.map((result: any) => ({
+          place_id: result.place_id,
+          display_name: result.formatted_address,
+          lat: result.geometry.location.lat,
+          lon: result.geometry.location.lng,
+        }));
+        setSuggestions(formattedSuggestions);
+      } else {
+        setSuggestions([]);
+      }
     } catch (err) {
       console.error("Failed to fetch locations", err);
+      setSuggestions([]);
     } finally {
       setIsSearching(false);
     }
@@ -300,7 +321,6 @@ export default function Login() {
 
       } else {
         // Registration Flow
-        // Step A: Register the user with a blank/temporary profileUrl
         const regRes = await fetch(`${API_BASE_URL}auth/register-architect`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -328,7 +348,6 @@ export default function Login() {
             const token = regDataResponse.token;
             if (token) localStorage.setItem("token", token);
 
-            // Step B: Upload the Image now that we have a token
             if (profileImageFile && token) {
                 const formData = new FormData();
                 formData.append("images", profileImageFile);
@@ -344,14 +363,13 @@ export default function Login() {
                 if (uploadData.success && uploadData.urls && uploadData.urls.length > 0) {
                     const finalProfileUrl = uploadData.urls[0];
                     
-                    // Step C: Update the user's profile with the uploaded image URL
                     await fetch(`${API_BASE_URL}user/update`, {
                         method: "PUT",
                         headers: { 
                             "Content-Type": "application/json",
                             "Authorization": `Bearer ${token}` 
                         },
-                        body: JSON.stringify({ profilePictureUrl: finalProfileUrl }) // Assuming your update controller handles this
+                        body: JSON.stringify({ profilePictureUrl: finalProfileUrl })
                     });
                 }
             }
