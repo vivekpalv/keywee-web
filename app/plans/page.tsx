@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import Script from 'next/script';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { BASE_URL } from '@/utils/api';
 import PlansGrid from '@/components/PlansGrid';
 import { Plan } from '@/components/PlanCard';
@@ -13,17 +12,8 @@ export default function PlansPage() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [isSkippable, setIsSkippable] = useState(false);
 
   useEffect(() => {
-    // Check if the user was directed here with the skippable flag
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('skippable') === 'true') {
-        setIsSkippable(true);
-      }
-    }
-
     const fetchPlans = async () => {
       const token = localStorage.getItem("token");
       
@@ -76,22 +66,10 @@ export default function PlansPage() {
 
   return (
     <>
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
 
-      <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-white px-6 py-12 md:py-20 transition-colors duration-300">
-        <div className="max-w-5xl mx-auto relative">
-          
-          {/* SKIPPABLE BUTTON (Only renders if ?skippable=true) */}
-          {isSkippable && (
-            <div className="flex justify-end mb-6">
-              <Link 
-                href="/" 
-                className="text-sm font-semibold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors flex items-center gap-1"
-              >
-                Skip for now <span>&rarr;</span>
-              </Link>
-            </div>
-          )}
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-black text-zinc-900 dark:text-white px-6 py-12 md:py-20 transition-colors duration-300">
+        <div className="max-w-6xl mx-auto w-full relative">
           
           {/* Header Section */}
           <div className="text-center mb-12 md:mb-16">
