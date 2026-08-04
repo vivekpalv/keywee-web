@@ -1,4 +1,6 @@
-import { useState, useEffect } from "react";
+"use client";
+
+import { useState, useEffect, useRef } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ProjectItem, MediaItem, CategoryItem } from "@/types/dashboard";
 import { BASE_URL } from "@/utils/api";
@@ -128,16 +130,13 @@ export default function ProjectModal({ isOpen, onClose, project, categories, onS
     setMediaItems(items);
   };
 
-  const toggleSubCategory = (subCatId: string) => {
-    setForm(prev => {
-      const isSelected = prev.subCategories.includes(subCatId);
-      return {
-        ...prev,
-        subCategories: isSelected 
-          ? prev.subCategories.filter(id => id !== subCatId) 
-          : [...prev.subCategories, subCatId]
-      };
-    });
+  // Ensure only one subcategory is stored, but keep it in an array for the API
+  const selectSubCategory = (subCatId: string) => {
+    setForm(prev => ({
+      ...prev,
+      subCategories: [subCatId]
+    }));
+    setIsSubCategoryDropdownOpen(false);
   };
 
   // --- Tag Logic Handlers ---
@@ -166,7 +165,7 @@ export default function ProjectModal({ isOpen, onClose, project, categories, onS
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.categoryId) return alert("Select a category.");
-
+    if (form.subCategories.length === 0) return alert("Select a subcategory.");
     if (mediaItems.length < 3) return alert("Please upload a minimum of 3 photos.");
     if (form.tags.length < 3) return alert("Please provide a minimum of 3 tags.");
 
@@ -218,6 +217,11 @@ export default function ProjectModal({ isOpen, onClose, project, categories, onS
   };
 
   const selectedCategoryName = categories.find(c => c._id === form.categoryId)?.name || "Select a category";
+  
+  // Find the name of the currently selected single subcategory
+  const selectedSubCategoryId = form.subCategories[0];
+  const selectedSubCategoryName = availableSubCategories.find(sc => sc._id === selectedSubCategoryId)?.name 
+    || (form.categoryId ? "Select subcategory" : "Select category first");
 
   return (
     <div className="fixed inset-0 z-100 flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm p-4">
@@ -259,9 +263,9 @@ export default function ProjectModal({ isOpen, onClose, project, categories, onS
               </div>
             </div>
 
-            {/* Sub Categories (Multi-select) */}
+            {/* Sub Categories (Single Select) */}
             <div className="relative">
-              <label className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide mb-2 block">Sub Categories</label>
+              <label className="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wide mb-2 block">Sub Category <span className="text-red-500">*</span></label>
               <div className="relative" tabIndex={0} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setIsSubCategoryDropdownOpen(false); }}>
                 <button 
                   type="button" 
@@ -270,9 +274,7 @@ export default function ProjectModal({ isOpen, onClose, project, categories, onS
                   className={`flex items-center justify-between w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-xl p-3.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none ${!form.categoryId ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   <span className="truncate">
-                    {form.subCategories.length > 0 
-                      ? `${form.subCategories.length} selected` 
-                      : (form.categoryId ? "Select subcategories" : "Select category first")}
+                    {selectedSubCategoryName}
                   </span>
                 </button>
                 
@@ -284,15 +286,14 @@ export default function ProjectModal({ isOpen, onClose, project, categories, onS
                       <div className="px-4 py-3 text-sm text-zinc-500 text-center">No subcategories found</div>
                     ) : (
                       availableSubCategories.map((subCat) => (
-                        <label key={subCat._id} className="flex items-center px-4 py-3 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer">
-                          <input 
-                            type="checkbox" 
-                            checked={form.subCategories.includes(subCat._id)}
-                            onChange={() => toggleSubCategory(subCat._id)}
-                            className="mr-3 w-4 h-4 rounded border-zinc-300 text-[#EAB308] focus:ring-[#EAB308]"
-                          />
+                        <button
+                          key={subCat._id}
+                          type="button"
+                          onClick={() => selectSubCategory(subCat._id)}
+                          className={`w-full text-left px-4 py-3 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 ${form.subCategories.includes(subCat._id) ? 'bg-zinc-50 dark:bg-zinc-800 font-bold text-[#EAB308]' : ''}`}
+                        >
                           {subCat.name}
-                        </label>
+                        </button>
                       ))
                     )}
                   </div>
