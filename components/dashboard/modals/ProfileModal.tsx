@@ -36,7 +36,7 @@ export default function ProfileModal({ isOpen, onClose, profile, onSuccess }: Pr
   const [form, setForm] = useState({
     name: "", firmName: "", email: "", experience: "", bio: "",
     city: "", state: "", address: "", lat: 0, long: 0, profilePictureUrl: "",
-    minBudget: 0, maxBudget: 10000000
+    minBudget: 0, maxBudget: 1000000000 // Updated default max to 1 Billion
   });
 
   useEffect(() => {
@@ -55,7 +55,7 @@ export default function ProfileModal({ isOpen, onClose, profile, onSuccess }: Pr
         long: (ad as any)?.long || 0,
         profilePictureUrl: ad?.profilePictureUrl || "",
         minBudget: ad?.minBudget || 0,
-        maxBudget: ad?.maxBudget || 10000000
+        maxBudget: ad?.maxBudget || 1000000000 // Updated fallback to 1 Billion
       });
       setProfileImagePreview(ad?.profilePictureUrl || null);
       setProfileImageFile(null);
@@ -257,12 +257,39 @@ export default function ProfileModal({ isOpen, onClose, profile, onSuccess }: Pr
                 <input type="number" min={form.minBudget + 1} value={form.maxBudget} onChange={(e) => setForm({ ...form, maxBudget: Math.max(Number(e.target.value), form.minBudget + 1) })} className="w-full bg-transparent text-sm font-bold outline-none" />
               </div>
             </div>
+            
+            {/* Updated slider math matches Login.tsx perfectly */}
             <div className="relative h-2 w-full bg-zinc-200 dark:bg-zinc-800 rounded-full flex items-center mt-2">
-              <div className="absolute h-2 bg-[#EAB308] rounded-full pointer-events-none transition-all duration-75" style={{ left: `${Math.min(100, Math.max(0, (form.minBudget / 10000000) * 100))}%`, right: `${100 - Math.min(100, Math.max(0, (form.maxBudget / 10000000) * 100))}%` }}></div>
-              <input type="range" min="0" max="10000000" step="100000" value={Math.min(form.minBudget, 10000000)} onChange={(e) => setForm({ ...form, minBudget: Math.min(Number(e.target.value), form.maxBudget - 1) })} className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#EAB308] [&::-webkit-slider-thumb]:cursor-pointer z-20" />
-              <input type="range" min="0" max="10000000" step="100000" value={Math.min(form.maxBudget, 10000000)} onChange={(e) => setForm({ ...form, maxBudget: Math.max(Number(e.target.value), form.minBudget + 1) })} className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#EAB308] [&::-webkit-slider-thumb]:cursor-pointer z-30" />
+              <div 
+                className="absolute h-2 bg-[#EAB308] rounded-full pointer-events-none transition-all duration-75" 
+                style={{ 
+                  left: `${Math.min(100, Math.max(0, (Number(form.minBudget) / 1000000000) * 100))}%`, 
+                  right: `${100 - Math.min(100, Math.max(0, (Number(form.maxBudget) / 1000000000) * 100))}%` 
+                }}
+              ></div>
+              <input 
+                type="range" 
+                min="0" 
+                max="1000000000" 
+                step="100000" 
+                value={Math.min(Number(form.minBudget), 1000000000)} 
+                onChange={(e) => setForm({ ...form, minBudget: Math.min(Number(e.target.value), form.maxBudget - 1) })} 
+                className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#EAB308] [&::-webkit-slider-thumb]:cursor-pointer z-20" 
+              />
+              <input 
+                type="range" 
+                min="0" 
+                max="1000000000" 
+                step="100000" 
+                value={Math.min(Number(form.maxBudget), 1000000000)} 
+                onChange={(e) => setForm({ ...form, maxBudget: Math.max(Number(e.target.value), form.minBudget + 1) })} 
+                className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#EAB308] [&::-webkit-slider-thumb]:cursor-pointer z-30" 
+              />
             </div>
-            <div className="flex justify-between text-[10px] font-medium text-zinc-400 mt-3"><span>₹0</span><span>₹1,00,00,000+</span></div>
+            <div className="flex justify-between text-[10px] font-medium text-zinc-400 mt-3">
+              <span>₹0</span>
+              <span>₹1,00,00,00,000+</span>
+            </div>
           </div>
 
           <div>

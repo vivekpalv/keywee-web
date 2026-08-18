@@ -306,7 +306,6 @@ export default function Login() {
             try {
                 const payments = await fetchUserPayments();
                 if (payments.length === 0) {
-                    // router.push("/plans?skippable=true");
                     router.push("/plans");
                 } else {
                     router.push("/");
@@ -375,7 +374,7 @@ export default function Login() {
                 }
             }
 
-            router.push("/plans?skippable=true");
+            router.push("/plans");
             router.refresh();
         } else {
             setError(regDataResponse.message || "Registration failed.");
@@ -490,7 +489,7 @@ export default function Login() {
                         <input 
                             type="file" 
                             accept="image/*" 
-                            required // HTML5 validation (acts as fallback to manual state check)
+                            required 
                             aria-label="Upload profile image" 
                             className="absolute inset-0 opacity-0 cursor-pointer" 
                             onChange={handleProfileImageSelect} 
@@ -647,8 +646,8 @@ export default function Login() {
                     <div
                       className="absolute h-2 bg-[#EAB308] rounded-full pointer-events-none transition-all duration-75"
                       style={{
-                        left: `${Math.min(100, Math.max(0, (regData.min / 10000000) * 100))}%`,
-                        right: `${100 - Math.min(100, Math.max(0, (regData.max / 10000000) * 100))}%`,
+                        left: `${Math.min(100, Math.max(0, (Number(regData.min) / 1000000000) * 100))}%`,
+                        right: `${100 - Math.min(100, Math.max(0, (Number(regData.max) / 1000000000) * 100))}%`,
                       }}
                     ></div>
                     
@@ -657,7 +656,7 @@ export default function Login() {
                       min="0"
                       max="1000000000"
                       step="100000"
-                      value={Math.min(regData.min, 1000000000)}
+                      value={Math.min(Number(regData.min), 1000000000)}
                       onChange={handleMinBudgetChange}
                       className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#EAB308] [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-shadow] z-20"
                     />
@@ -667,7 +666,7 @@ export default function Login() {
                       min="0"
                       max="1000000000"
                       step="100000"
-                      value={Math.min(regData.max, 1000000000)}
+                      value={Math.min(Number(regData.max), 1000000000)}
                       onChange={handleMaxBudgetChange}
                       className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#EAB308] [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-shadow] z-30"
                     />
