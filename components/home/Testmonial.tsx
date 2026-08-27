@@ -156,19 +156,6 @@ const REVIEWS = [
 ];
 
 // Single Review Card Component (SCALED DOWN)
-// const ReviewCard = ({ name, text, img }: { name: string; text: string; img: string }) => (
-//   <div className="bg-white dark:bg-zinc-900 rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none border border-zinc-100 dark:border-zinc-800 flex flex-col gap-3 w-62.5 sm:w-70 transition-transform duration-300 hover:scale-[1.02] cursor-pointer">
-//     <p className="text-[14px] text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">
-//       "{text}"
-//     </p>
-//     <div className="flex items-center gap-3 mt-1">
-//       <img src={img} alt={name} className="w-9 h-9 rounded-full object-cover bg-zinc-100 dark:bg-zinc-800" />
-//       <span className="font-bold text-sm text-zinc-900 dark:text-zinc-100">{name}</span>
-//     </div>
-//   </div>
-// );
-
-// Single Review Card Component (SCALED DOWN)
 const ReviewCard = ({ name, text, img, location }: { name: string; text: string; img: string; location?: string }) => (
   <div className="bg-white dark:bg-zinc-900 rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none border border-zinc-100 dark:border-zinc-800 flex flex-col gap-3 w-62.5 sm:w-70 transition-transform duration-300 hover:scale-[1.02] cursor-pointer">
     <p className="text-[14px] text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">
