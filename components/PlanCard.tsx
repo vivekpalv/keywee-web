@@ -5,7 +5,7 @@ import React from "react";
 export interface Plan {
   _id: string;
   title: string;
-  desc: string;
+  desc?: string;
   amount: number;
   isActive: boolean;
   days: number;
@@ -25,6 +25,9 @@ export default function PlanCard({
   onSelect,
   isBestValue = false,
 }: PlanCardProps) {
+  
+  if (!plan) return null;
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
@@ -35,7 +38,7 @@ export default function PlanCard({
 
   const isYearly = plan.days >= 365;
 
-  const features = plan.desc
+  const features = (plan.desc || "")
     .split(/\\n|\n/)
     .map((f) => f.trim())
     .filter(Boolean);
@@ -66,15 +69,30 @@ export default function PlanCard({
         </span>
       </div>
 
-      {/* Price */}
-      <div className="flex items-baseline mb-6">
-        <span className="text-4xl font-black text-zinc-900 dark:text-white">
-          {formatCurrency(plan.amount)}
-        </span>
+      {/* Price Container */}
+      <div className="flex flex-col mb-6">
+        
+        {/* SALE BADGE & Strike-through logic for 999 */}
+        {plan.amount === 999 && (
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-sm font-semibold text-zinc-400 line-through decoration-red-500/70">
+              {formatCurrency(100000)}
+            </span>
+            <span className="text-[10px] font-black uppercase tracking-wider text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-900/30 px-2 py-0.5 rounded animate-pulse">
+              99% Off
+            </span>
+          </div>
+        )}
+        
+        <div className="flex items-baseline">
+          <span className="text-4xl font-black text-zinc-900 dark:text-white">
+            {formatCurrency(plan.amount)}
+          </span>
 
-        <span className="text-sm font-medium text-zinc-500 dark:text-zinc-500 ml-1">
-          /{isYearly ? "yr" : "mo"}
-        </span>
+          <span className="text-sm font-medium text-zinc-500 dark:text-zinc-500 ml-1">
+            /{isYearly ? "yr" : "mo"}
+          </span>
+        </div>
       </div>
 
       {/* Button */}
@@ -105,7 +123,6 @@ export default function PlanCard({
       <ul className="flex flex-col gap-4 grow">
         {features.map((feature, index) => {
           const isIncluded = feature.startsWith("✓");
-
           const featureText = feature.replace(/^[✓-]\s*/, "");
 
           return (

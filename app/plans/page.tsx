@@ -33,6 +33,7 @@ export default function PlansPage() {
         const data = await res.json();
         
         if (res.ok && data.success) {
+          console.log("Fetched Plans:", data.plans);
           setPlans(data.plans);
         } else {
           setError(data.message || "Failed to load plans.");
