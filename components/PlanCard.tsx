@@ -89,9 +89,9 @@ export default function PlanCard({
             {formatCurrency(plan.amount)}
           </span>
 
-          <span className="text-sm font-medium text-zinc-500 dark:text-zinc-500 ml-1">
+          {/* <span className="text-sm font-medium text-zinc-500 dark:text-zinc-500 ml-1">
             /{isYearly ? "yr" : "mo"}
-          </span>
+          </span> */}
         </div>
       </div>
 
