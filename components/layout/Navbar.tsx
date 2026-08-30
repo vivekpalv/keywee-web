@@ -289,7 +289,7 @@ export default function Navbar() {
             <Link href="/" className="text-[#EAB308]">Home</Link>
             <Link href="/about" className="text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors">About Us</Link>
             <Link href="/contact" className="text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors">Contact Us</Link>
-            <Link href="#blogs" className="text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors">Blogs</Link>
+            <Link href="/blog" className="text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors">Blogs</Link>
           </div>
 
           {/* Actions Container */}
