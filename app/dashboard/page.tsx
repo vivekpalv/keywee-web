@@ -44,17 +44,56 @@ export default function Dashboard() {
   const [isQualModalOpen, setIsQualModalOpen] = useState(false);
 
   // --- Initial Data Fetch (Profile, Projects, Quals, Categories) ---
+  // useEffect(() => {
+  //   const fetchDashboardData = async () => {
+  //     const token = localStorage.getItem("token");
+  //     if (!token) return router.push("/login");
+
+  //     try {
+  //       const [userRes, catRes] = await Promise.all([
+  //         fetch(`${API_BASE_URL}user/me`, { headers: { "Authorization": `Bearer ${token}` } }),
+  //         fetch(`${API_BASE_URL}user/category?childWithParent=false`, { headers: { "Authorization": `Bearer ${token}` } }) // Updated to fetch only parents
+  //       ]);
+
+  //       const userData = await userRes.json();
+  //       const catData = await catRes.json();
+
+  //       if (userData.success) {
+  //         setProfile(userData.user);
+  //         setProjects(userData.projects || []);
+  //         setQualifications(userData.qualifications || []);
+  //       } else setError("Failed to load profile.");
+  //       if (catData.success) setCategories(catData.categories || []);
+
+  //     } catch (err) { setError("Network error."); }
+  //     finally { setLoading(false); }
+  //   };
+  //   fetchDashboardData();
+  // }, [router]);
+
+  // --- Initial Data Fetch (Profile, Projects, Quals, Categories, Subscription Check) ---
   useEffect(() => {
     const fetchDashboardData = async () => {
       const token = localStorage.getItem("token");
       if (!token) return router.push("/login");
 
       try {
-        const [userRes, catRes] = await Promise.all([
+        // Added the have-active-subscription API call to the parallel fetch
+        const [userRes, catRes, subRes] = await Promise.all([
           fetch(`${API_BASE_URL}user/me`, { headers: { "Authorization": `Bearer ${token}` } }),
-          fetch(`${API_BASE_URL}user/category?childWithParent=false`, { headers: { "Authorization": `Bearer ${token}` } }) // Updated to fetch only parents
+          fetch(`${API_BASE_URL}user/category?childWithParent=false`, { headers: { "Authorization": `Bearer ${token}` } }),
+          fetch(`${API_BASE_URL}user/have-active-subscription`, { headers: { "Authorization": `Bearer ${token}` } })
         ]);
 
+        // Parse and check the subscription status first
+        const subData = await subRes.json();
+        
+        if (subData.success && subData.hasActiveSubscription === false) {
+          // Redirect the user immediately if they have no active subscription
+          return router.push("/plans");
+        }
+
+        // If they have a subscription, proceed to parse the rest of the dashboard data
         const userData = await userRes.json();
         const catData = await catRes.json();
 
@@ -62,12 +101,21 @@ export default function Dashboard() {
           setProfile(userData.user);
           setProjects(userData.projects || []);
           setQualifications(userData.qualifications || []);
-        } else setError("Failed to load profile.");
-        if (catData.success) setCategories(catData.categories || []);
+        } else {
+          setError("Failed to load profile.");
+        }
 
-      } catch (err) { setError("Network error."); }
-      finally { setLoading(false); }
+        if (catData.success) {
+          setCategories(catData.categories || []);
+        }
+
+      } catch (err) { 
+        setError("Network error."); 
+      } finally { 
+        setLoading(false); 
+      }
     };
+    
     fetchDashboardData();
   }, [router]);
 
@@ -134,14 +182,6 @@ export default function Dashboard() {
           <div className="flex flex-wrap items-center gap-3">
             <Link href="/booster-plans" className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-zinc-900 text-white text-sm font-semibold shadow-sm hover:opacity-90 transition">Booster Plans</Link>
             <Link href="/chat" className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-yellow-500 text-zinc-900 text-sm font-semibold shadow-sm hover:bg-yellow-400 transition">Messages</Link>
-            {/* <a
-              href="https://play.google.com/store/apps/details?id=com.keywe.keywe&pcampaignid=web_share"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-yellow-500 text-zinc-900 text-sm font-semibold shadow-sm hover:bg-yellow-400 transition"
-            >
-              Messages
-            </a> */}
             <Link href="/payments" className="inline-flex items-center justify-center px-6 py-3 rounded-xl border text-sm font-semibold shadow-sm hover:bg-zinc-50 transition">Billing History</Link>
             <Link href="/subscriptions" className="inline-flex items-center justify-center px-6 py-3 rounded-xl border text-sm font-semibold shadow-sm hover:bg-zinc-50 transition">My Subscription</Link>
           </div>
