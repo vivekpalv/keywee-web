@@ -1,11 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation"; // <-- 1. Import useRouter
 import PlanCard, { Plan } from "./PlanCard";
 import { BASE_URL } from "@/utils/api";
 
 export default function PlansGrid({ plans }: { plans: Plan[] }) {
-  // Sort plans by amount (Highest -> Lowest)
+  const router = useRouter(); // <-- 2. Initialize router
+
+  // Sort plans by amount (Highest -> Lowest) to find Best Value
   const sortedPlans = [...plans].sort((a, b) => b.amount - a.amount);
 
   // Best Value = Second highest priced plan
@@ -19,7 +22,7 @@ export default function PlansGrid({ plans }: { plans: Plan[] }) {
 
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const token = localStorage.getItem("token");
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
   const handlePurchase = async () => {
     if (!selectedPlanId || isProcessing) return;
@@ -56,11 +59,14 @@ export default function PlansGrid({ plans }: { plans: Plan[] }) {
         order_id: data.orderId,
 
         handler: async function (response: any) {
+          // You can also call your backend API here to verify the signature if needed
           alert(
             `Payment Successful! Payment ID: ${response.razorpay_payment_id}`
           );
-
           console.log("Payment Success:", response);
+
+          // <-- 3. Redirect to payments page after success
+          router.push("/payments"); 
         },
 
         prefill: {
@@ -105,7 +111,9 @@ export default function PlansGrid({ plans }: { plans: Plan[] }) {
   return (
     <div className="flex flex-col items-center">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto items-stretch w-full mb-10">
-        {plans.map((plan) => (
+        {[...plans]
+          .sort((a, b) => a.amount - b.amount) // Render from lowest to highest price visually
+          .map((plan) => (
           <PlanCard
             key={plan._id}
             plan={plan}

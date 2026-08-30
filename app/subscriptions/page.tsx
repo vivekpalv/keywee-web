@@ -139,7 +139,7 @@ export default function SubscriptionsPage() {
             href="/plans" 
             className="px-5 py-2.5 bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 text-sm font-bold rounded-xl transition-colors shadow-sm"
           >
-            Explore Plans
+            Upgrade Plans
           </Link>
         </div>
 
