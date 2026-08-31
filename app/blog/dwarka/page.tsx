@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { Metadata } from "next";
+import Navbar from "@/components/layout/Navbar";
 
 // This adds SEO metadata to your static page
 export const metadata: Metadata = {
@@ -10,10 +11,12 @@ export const metadata: Metadata = {
 
 export default function DwarkaBlogPage() {
   return (
+    <>
+    <Navbar/>
     <article className="min-h-screen bg-[#FBFAF7] dark:bg-[#0A0A0A] text-zinc-900 dark:text-zinc-100 font-sans transition-colors duration-300">
       
       {/* Blog Hero Section */}
-      <header className="max-w-4xl mx-auto pt-20 pb-12 px-6 sm:px-8 text-center border-b border-zinc-200 dark:border-zinc-800">
+      <header className="max-w-4xl mx-auto pt-30 pb-12 px-6 sm:px-8 text-center border-b border-zinc-200 dark:border-zinc-800">
         <div className="mb-4">
           <Link href="/blog" className="text-[#EAB308] text-sm font-bold tracking-widest uppercase hover:underline">
             Architecture & Design
@@ -128,5 +131,6 @@ export default function DwarkaBlogPage() {
         </div>
       </div>
     </article>
+    </>
   );
 }

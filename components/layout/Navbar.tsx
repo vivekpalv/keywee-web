@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation"; // <-- Imported usePathname
 import { jwtDecode } from "jwt-decode";
 import { useTheme } from "next-themes";
 import LogoutModal from "../LogoutModal";
@@ -16,6 +16,7 @@ interface DecodedToken {
 
 export default function Navbar() {
   const router = useRouter();
+  const pathname = usePathname(); // <-- Get current route
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [userRoles, setUserRoles] = useState<string[]>([]);
@@ -63,6 +64,19 @@ export default function Navbar() {
 
   const closeMenu = () => setIsMobileMenuOpen(false);
 
+  // --- Dynamic Active Link Helper ---
+  const isActive = (path: string) => {
+    if (path === "/") return pathname === "/";
+    return pathname.startsWith(path);
+  };
+
+  const getLinkClass = (path: string) => {
+    return isActive(path)
+      ? "text-[#EAB308]"
+      : "text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors";
+  };
+  // ----------------------------------
+
   return (
     <>
       <nav 
@@ -82,10 +96,10 @@ export default function Navbar() {
 
           {/* Desktop Global Nav Targets */}
           <div className="hidden md:flex gap-8 items-center text-sm font-semibold absolute left-1/2 -translate-x-1/2">
-            <Link href="/" className="text-[#EAB308]">Home</Link>
-            <Link href="/about" className="text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors">About Us</Link>
-            <Link href="/contact" className="text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors">Contact Us</Link>
-            <Link href="/blog" className="text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors">Blogs</Link>
+            <Link href="/" className={getLinkClass("/")}>Home</Link>
+            <Link href="/about" className={getLinkClass("/about")}>About Us</Link>
+            <Link href="/contact" className={getLinkClass("/contact")}>Contact Us</Link>
+            <Link href="/blog" className={getLinkClass("/blog")}>Blogs</Link>
           </div>
 
           {/* Actions Container */}
@@ -165,10 +179,10 @@ export default function Navbar() {
         >
           <div className="flex flex-col px-6 py-6 gap-6">
             <div className="flex flex-col gap-5 text-base font-semibold">
-              <Link href="/" onClick={closeMenu} className="text-[#EAB308]">Home</Link>
-              <Link href="/about" onClick={closeMenu} className="text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white">About Us</Link>
-              <Link href="/contact" onClick={closeMenu} className="text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white">Contact Us</Link>
-              <Link href="/blog" onClick={closeMenu} className="text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white">Blogs</Link>
+              <Link href="/" onClick={closeMenu} className={getLinkClass("/")}>Home</Link>
+              <Link href="/about" onClick={closeMenu} className={getLinkClass("/about")}>About Us</Link>
+              <Link href="/contact" onClick={closeMenu} className={getLinkClass("/contact")}>Contact Us</Link>
+              <Link href="/blog" onClick={closeMenu} className={getLinkClass("/blog")}>Blogs</Link>
             </div>
 
             <hr className="border-zinc-200 dark:border-zinc-800" />

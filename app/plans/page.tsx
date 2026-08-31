@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Script from 'next/script';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { BASE_URL } from '@/utils/api';
 import PlansGrid from '@/components/PlansGrid';
 import { Plan } from '@/components/PlanCard';
@@ -69,9 +70,19 @@ export default function PlansPage() {
     <>
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
 
-      <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-black text-zinc-900 dark:text-white px-6 py-12 md:py-20 transition-colors duration-300">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-black text-zinc-900 dark:text-white px-6 py-20 md:py-24 transition-colors duration-300">
         <div className="max-w-6xl mx-auto w-full relative">
           
+          {/* Back to Dashboard Link - Absolutely positioned higher up */}
+          <div className="absolute -top-12 md:-top-16 left-0">
+            <Link 
+              href="/" 
+              className="text-sm font-semibold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors flex items-center gap-2"
+            >
+              &larr; Back to Home
+            </Link>
+          </div>
+
           {/* Header Section */}
           <div className="text-center mb-12 md:mb-16">
             <span className="text-xs font-bold tracking-widest text-[#EAB308] uppercase bg-[#EAB308]/10 px-3 py-1 rounded-full">

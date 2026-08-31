@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { Metadata } from "next";
+import Navbar from "@/components/layout/Navbar";
 
 export const metadata: Metadata = {
   title: "Keywee Blog | Architecture & Interior Design Insights",
@@ -33,10 +34,12 @@ const BLOG_POSTS = [
 
 export default function BlogIndexPage() {
   return (
+    <>
+    <Navbar />
     <div className="min-h-screen bg-[#FBFAF7] dark:bg-[#0A0A0A] text-zinc-900 dark:text-zinc-100 font-sans transition-colors duration-300">
       
       {/* Header Section */}
-      <header className="max-w-6xl mx-auto pt-20 pb-12 px-6 sm:px-8 border-b border-zinc-200 dark:border-zinc-800">
+      <header className="max-w-6xl mx-auto pt-30 pb-12 px-6 sm:px-8 border-b border-zinc-200 dark:border-zinc-800">
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-tight mb-4">
           Keywee <span className="text-[#EAB308]">Blogs</span>
         </h1>
@@ -97,5 +100,6 @@ export default function BlogIndexPage() {
       </main>
 
     </div>
+    </>
   );
 }

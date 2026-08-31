@@ -125,7 +125,7 @@ export default function SubscriptionsPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-zinc-200 dark:border-zinc-800 pb-6 mb-8 gap-4">
           <div>
             <Link 
-              href="/" 
+              href="/dashboard" 
               className="inline-flex items-center text-xs font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors mb-3"
             >
               &larr; Back to Dashboard

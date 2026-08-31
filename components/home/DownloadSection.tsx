@@ -2,10 +2,11 @@
 
 import React from "react";
 import { motion } from "framer-motion";
+import { APP_STORE_URL, PLAY_STORE_URL } from "@/utils/api";
 
 export default function DownloadSection() {
-  // Mouse Tracking Function
-  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+  // Mouse Tracking Function for Anchor tags
+  const handleMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
 
     e.currentTarget.style.setProperty(
@@ -42,9 +43,12 @@ export default function DownloadSection() {
 
         {/* Store Buttons */}
         <div className="flex flex-col sm:flex-row items-center gap-4">
-          {/* App Store Button */}
-          <button
-            type="button"
+          
+          {/* App Store Button Link */}
+          <a
+            href={APP_STORE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             onMouseMove={handleMouseMove}
             style={{
               transformOrigin:
@@ -75,11 +79,13 @@ export default function DownloadSection() {
                 App Store
               </span>
             </div>
-          </button>
+          </a>
 
-          {/* Google Play Button */}
-          <button
-            type="button"
+          {/* Google Play Button Link */}
+          <a
+            href={PLAY_STORE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             onMouseMove={handleMouseMove}
             style={{
               transformOrigin:
@@ -110,7 +116,7 @@ export default function DownloadSection() {
                 Google Play
               </span>
             </div>
-          </button>
+          </a>
         </div>
       </motion.div>
     </section>
