@@ -16,7 +16,7 @@ export default function QualificationsSection({ qualifications, onAddQual, onEdi
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
         <h3 className="text-xl font-extrabold text-zinc-900 dark:text-zinc-100 pl-2">Credentials</h3>
-        <button onClick={onAddQual} className="text-xs font-bold border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-900 rounded-xl px-4 py-2.5 transition-colors">
+        <button onClick={onAddQual} className="text-xs font-bold cursor-pointer border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-900 rounded-xl px-4 py-2.5 transition-colors">
           + Add
         </button>
       </div>

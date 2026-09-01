@@ -38,7 +38,7 @@ export default function ProfileCard({ profile, totalProjects, onEditProfile }: P
     <div className="rounded-4xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8 mb-12 shadow-sm relative overflow-hidden group">
 
       <div className="absolute top-6 right-6">
-        <button onClick={onEditProfile} className="text-xs font-bold border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 rounded-lg px-4 py-2 transition-colors shadow-sm">
+        <button onClick={onEditProfile} className="text-xs cursor-pointer font-bold border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 rounded-lg px-4 py-2 transition-colors shadow-sm">
           Edit Profile
         </button>
       </div>

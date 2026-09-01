@@ -43,34 +43,6 @@ export default function Dashboard() {
   const [editingQual, setEditingQual] = useState<QualificationItem | null>(null);
   const [isQualModalOpen, setIsQualModalOpen] = useState(false);
 
-  // --- Initial Data Fetch (Profile, Projects, Quals, Categories) ---
-  // useEffect(() => {
-  //   const fetchDashboardData = async () => {
-  //     const token = localStorage.getItem("token");
-  //     if (!token) return router.push("/login");
-
-  //     try {
-  //       const [userRes, catRes] = await Promise.all([
-  //         fetch(`${API_BASE_URL}user/me`, { headers: { "Authorization": `Bearer ${token}` } }),
-  //         fetch(`${API_BASE_URL}user/category?childWithParent=false`, { headers: { "Authorization": `Bearer ${token}` } }) // Updated to fetch only parents
-  //       ]);
-
-  //       const userData = await userRes.json();
-  //       const catData = await catRes.json();
-
-  //       if (userData.success) {
-  //         setProfile(userData.user);
-  //         setProjects(userData.projects || []);
-  //         setQualifications(userData.qualifications || []);
-  //       } else setError("Failed to load profile.");
-  //       if (catData.success) setCategories(catData.categories || []);
-
-  //     } catch (err) { setError("Network error."); }
-  //     finally { setLoading(false); }
-  //   };
-  //   fetchDashboardData();
-  // }, [router]);
-
   // --- Initial Data Fetch (Profile, Projects, Quals, Categories, Subscription Check) ---
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -176,14 +148,23 @@ export default function Dashboard() {
             <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-1">{greeting},</p>
             <div className="flex justify-between items-center w-full">
               <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight leading-none">Architect Dashboard</h1>
-              <Link href="/" className="sm:hidden flex px-3 py-1.5 rounded-lg text-[10px] font-bold border shadow-sm shrink-0 ml-3">&larr; Back</Link>
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <Link href="/booster-plans" className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-zinc-900 text-white text-sm font-semibold shadow-sm hover:opacity-90 transition">Booster Plans</Link>
-            {/* <Link href="/chat" className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-yellow-500 text-zinc-900 text-sm font-semibold shadow-sm hover:bg-yellow-400 transition">Messages</Link> */}
-            <Link href="/payments" className="inline-flex items-center justify-center px-6 py-3 rounded-xl border text-sm font-semibold shadow-sm hover:bg-zinc-50 transition">Billing History</Link>
-            <Link href="/subscriptions" className="inline-flex items-center justify-center px-6 py-3 rounded-xl border text-sm font-semibold shadow-sm hover:bg-zinc-50 transition">My Subscription</Link>
+          <div className="flex flex-wrap items-center gap-3 mt-4 sm:mt-0">
+            <Link href="/" className="cursor-pointer inline-flex items-center justify-center px-6 py-3 rounded-xl border text-sm font-semibold shadow-sm hover:bg-zinc-50 transition dark:hover:bg-zinc-800">
+              Home
+            </Link>
+            <Link href="/booster-plans" className="cursor-pointer inline-flex items-center justify-center px-6 py-3 rounded-xl bg-zinc-900 text-white text-sm font-semibold shadow-sm hover:opacity-90 transition dark:bg-white dark:text-zinc-900">
+              Booster Plans
+            </Link>
+            {/* Added dark:hover:bg-zinc-800 to fix white background hover bug in dark mode */}
+            <Link href="/payments" className="cursor-pointer inline-flex items-center justify-center px-6 py-3 rounded-xl border text-sm font-semibold shadow-sm hover:bg-zinc-50 transition dark:hover:bg-zinc-800">
+              Billing History
+            </Link>
+            {/* Added dark:hover:bg-zinc-800 to fix white background hover bug in dark mode */}
+            <Link href="/subscriptions" className="cursor-pointer inline-flex items-center justify-center px-6 py-3 rounded-xl border text-sm font-semibold shadow-sm hover:bg-zinc-50 transition dark:hover:bg-zinc-800">
+              My Subscription
+            </Link>
           </div>
         </div>
 
@@ -208,7 +189,7 @@ export default function Dashboard() {
             onDeleteQual={handleDeleteQualification}
           />
 
-          {/* NEW RATINGS SECTION */}
+          {/* RATINGS SECTION */}
           <RatingsSection ratings={ratings} />
         </div>
       </div>

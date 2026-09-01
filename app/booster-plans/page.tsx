@@ -75,7 +75,7 @@ export default function BoosterPlansPage() {
           
           <div className="flex justify-start mb-6">
             <Link 
-              href="/" 
+              href="/dashboard" 
               className="text-sm font-semibold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors flex items-center gap-1"
             >
               &larr; Back to Dashboard

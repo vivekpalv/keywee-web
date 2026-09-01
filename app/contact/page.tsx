@@ -27,8 +27,8 @@ export default function ContactPage() {
               <div className="space-y-4">
                 <div>
                   <h3 className="font-semibold text-sm uppercase tracking-wide text-zinc-500">Email Support</h3>
-                  <a href="mailto:keyweeofficial@gmail.cm" className="text-[#EAB308] hover:underline font-medium">
-                    keyweeofficial@gmail.cm
+                  <a href="mailto:keyweeofficial@gmail.com" className="text-[#EAB308] hover:underline font-medium">
+                    keyweeofficial@gmail.com
                   </a>
                 </div>
               </div>

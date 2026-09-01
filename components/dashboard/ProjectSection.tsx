@@ -14,7 +14,7 @@ export default function ProjectsSection({ projects, onAddProject, onEditProject,
     <div className="lg:col-span-2 flex flex-col gap-6">
       <div className="flex justify-between items-center bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
         <h3 className="text-xl font-extrabold text-zinc-900 dark:text-zinc-100 pl-2">Project Portfolio</h3>
-        <button onClick={onAddProject} className="text-xs font-bold bg-[#EAB308] hover:bg-yellow-600 text-white rounded-xl px-5 py-2.5 transition-colors shadow-sm">
+        <button onClick={onAddProject} className="text-xs font-bold bg-[#EAB308] cursor-pointer hover:bg-yellow-600 text-white rounded-xl px-5 py-2.5 transition-colors shadow-sm">
           + Add Project
         </button>
       </div>

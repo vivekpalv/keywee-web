@@ -76,10 +76,10 @@ export default function PlansPage() {
           {/* Back to Dashboard Link - Absolutely positioned higher up */}
           <div className="absolute -top-12 md:-top-16 left-0">
             <Link 
-              href="/" 
+              href="/subscriptions" 
               className="text-sm font-semibold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors flex items-center gap-2"
             >
-              &larr; Back to Home
+              &larr; Back to Subscriptions
             </Link>
           </div>
 
