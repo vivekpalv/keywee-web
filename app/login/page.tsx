@@ -6,7 +6,7 @@ import Link from "next/link";
 import Cropper from "react-easy-crop";
 import { fetchUserPayments } from "@/services/payment.service";
 import { BASE_URL } from "@/utils/api";
-import { getCroppedImg } from "@/utils/cropImage"; // Make sure this path is correct
+import { getCroppedImg } from "@/utils/cropImage";
 
 const API_BASE_URL = BASE_URL;
 const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024; // 2MB limit in bytes
@@ -20,7 +20,7 @@ interface LocationSuggestion {
 
 export default function Login() {
   const router = useRouter();
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(1); // Added Step 3 for switching roles
   const [isExisting, setIsExisting] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -84,7 +84,6 @@ export default function Login() {
       });
       reader.readAsDataURL(file);
       
-      // Reset input so the same file can be selected again if cancelled
       e.target.value = ''; 
     }
   };
@@ -250,7 +249,8 @@ export default function Login() {
     e.preventDefault();
     setError("");
 
-    if (!isExisting) {
+    // --- STRICT MANDATORY VALIDATION FOR NEW REGISTRATIONS & ROLE SWITCHES ---
+    if ((!isExisting && step === 2) || step === 3) {
       if (!profileImageFile) {
         setError("A profile image is required.");
         return;
@@ -282,12 +282,14 @@ export default function Login() {
         return;
       }
     }
+    // ---------------------------------------------------------
 
     setLoading(true);
     const otpValue = otp.join("");
 
     try {
-      if (isExisting) {
+      if (isExisting && step === 2) {
+        // --- 1. LOGIN FLOW ---
         const res = await fetch(`${API_BASE_URL}auth/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -297,6 +299,17 @@ export default function Login() {
 
         if (data.success || data.token) {
             if (data.token) localStorage.setItem("token", data.token);
+
+            // Check if the user is ONLY a client
+            const roles = data.user?.roles || [];
+            if (!roles.includes("ARCHITECT")) {
+                // Intercept and force the architect registration profile form
+                setStep(3);
+                setLoading(false);
+                return;
+            }
+
+            // Normal login routing for existing Architects
             try {
                 const payments = await fetchUserPayments();
                 if (payments.length === 0) {
@@ -313,7 +326,8 @@ export default function Login() {
             setLoading(false);
         }
 
-      } else {
+      } else if (!isExisting && step === 2) {
+        // --- 2. REGISTRATION FLOW ---
         const regRes = await fetch(`${API_BASE_URL}auth/register-architect`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -371,6 +385,73 @@ export default function Login() {
             router.refresh();
         } else {
             setError(regDataResponse.message || "Registration failed.");
+            setLoading(false);
+        }
+
+      } else if (step === 3) {
+        // --- 3. UPGRADE CLIENT TO ARCHITECT FLOW ---
+        const token = localStorage.getItem("token");
+        const switchRes = await fetch(`${API_BASE_URL}auth/switch-to-architect`, {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` 
+          },
+          body: JSON.stringify({
+            name: regData.name,
+            gender: regData.gender,
+            contact: mobile, 
+            email: regData.email,
+            firmName: regData.firmName,
+            bio: regData.bio,
+            experience: Number(regData.experience),
+            min: Number(regData.min),
+            max: Number(regData.max),
+            address: regData.address,
+            lat: Number(regData.lat),
+            long: Number(regData.long),
+            profileUrl: "" 
+          }),
+        });
+
+        const switchData = await switchRes.json();
+
+        if (switchData.success || switchData.message?.toLowerCase().includes("success")) {
+            // Process Image Upload
+            if (profileImageFile && token) {
+                const formData = new FormData();
+                formData.append("images", profileImageFile);
+
+                const uploadRes = await fetch(`${API_BASE_URL}user/images`, {
+                    method: "POST",
+                    headers: { "Authorization": `Bearer ${token}` },
+                    body: formData
+                });
+
+                const uploadData = await uploadRes.json();
+
+                if (uploadData.success && uploadData.urls && uploadData.urls.length > 0) {
+                    const finalProfileUrl = uploadData.urls[0];
+
+                    await fetch(`${API_BASE_URL}user/update`, {
+                        method: "PUT",
+                        headers: { 
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}` 
+                        },
+                        body: JSON.stringify({ 
+                          profilePictureUrl: finalProfileUrl,
+                          name: regData.name,
+                          gender: regData.gender 
+                        })
+                    });
+                }
+            }
+
+            router.push("/plans");
+            router.refresh();
+        } else {
+            setError(switchData.message || "Failed to switch account role.");
             setLoading(false);
         }
       }
@@ -435,7 +516,7 @@ export default function Login() {
 
       {/* MAIN FORM */}
       <div className="flex min-h-screen items-center justify-center bg-[#FBFAF7] dark:bg-[#0A0A0A] px-4 py-12 font-sans sm:px-6 transition-colors duration-300">
-        <div className={`w-full rounded-4xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black p-6 sm:p-10 shadow-sm transition-all duration-300 ${!isExisting && step === 2 ? 'max-w-3xl' : 'max-w-md'}`}>
+        <div className={`w-full rounded-4xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black p-6 sm:p-10 shadow-sm transition-all duration-300 ${((!isExisting && step === 2) || step === 3) ? 'max-w-3xl' : 'max-w-md'}`}>
 
           <div className="mb-8 text-center">
             <Link href="/" className="text-2xl font-extrabold tracking-tight">
@@ -443,10 +524,10 @@ export default function Login() {
               <span className="text-[#EAB308]">wee</span>
             </Link>
             <h1 className="mt-6 text-2xl font-bold text-black dark:text-white">
-              {step === 1 ? "Join as Architect" : (isExisting ? "Welcome Back" : "Architect Profile Setup")}
+              {step === 1 ? "Join as Architect" : step === 3 ? "Complete Architect Profile" : (isExisting ? "Welcome Back" : "Architect Profile Setup")}
             </h1>
             <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-              {step === 1 ? "Enter your mobile number to get started" : "Enter the verification code to continue"}
+              {step === 1 ? "Enter your mobile number to get started" : step === 3 ? "You are registered as a Client. Please provide architect details to switch roles." : "Enter the verification code to continue"}
             </p>
           </div>
 
@@ -485,38 +566,42 @@ export default function Login() {
             </form>
           ) : (
             <form onSubmit={handleAuthSubmit} className="flex flex-col gap-5">
-              <div className={`flex flex-col items-center justify-center w-full ${!isExisting ? "mb-4 border-b border-zinc-100 dark:border-zinc-800 pb-6" : ""}`}>
-                <div className="mb-4">
-                  <label className="text-sm font-semibold text-black dark:text-white">Enter OTP</label>
+              {/* Only show OTP input if user is in Step 2 */}
+              {step === 2 && (
+                <div className={`flex flex-col items-center justify-center w-full ${!isExisting ? "mb-4 border-b border-zinc-100 dark:border-zinc-800 pb-6" : ""}`}>
+                  <div className="mb-4">
+                    <label className="text-sm font-semibold text-black dark:text-white">Enter OTP</label>
+                  </div>
+                  <div className="flex justify-center gap-3 w-full">
+                    {otp.map((digit, index) => (
+                      <input
+                        key={index}
+                        ref={(el) => { otpRefs.current[index] = el; }}
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={1}
+                        value={digit}
+                        aria-label={`OTP digit ${index + 1}`}
+                        onChange={(e) => handleOtpChange(index, e.target.value)}
+                        onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                        onPaste={handleOtpPaste}
+                        className="w-12 h-12 sm:w-14 sm:h-14 text-center text-xl font-bold rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent text-black dark:text-white outline-none transition-all focus:border-[#EAB308] focus:ring-2 focus:ring-[#EAB308]/50"
+                      />
+                    ))}
+                  </div>
+                  <div className="mt-4 flex flex-col items-center gap-2">
+                    <p className="text-center text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                      Sent to +91 {mobile}
+                    </p>
+                    <button type="button" onClick={() => { setStep(1); setOtp(["", "", "", ""]); }} className="text-[#EAB308] hover:underline text-xs font-semibold">
+                      Change Number
+                    </button>
+                  </div>
                 </div>
-                <div className="flex justify-center gap-3 w-full">
-                  {otp.map((digit, index) => (
-                    <input
-                      key={index}
-                      ref={(el) => { otpRefs.current[index] = el; }}
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={1}
-                      value={digit}
-                      aria-label={`OTP digit ${index + 1}`}
-                      onChange={(e) => handleOtpChange(index, e.target.value)}
-                      onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                      onPaste={handleOtpPaste}
-                      className="w-12 h-12 sm:w-14 sm:h-14 text-center text-xl font-bold rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent text-black dark:text-white outline-none transition-all focus:border-[#EAB308] focus:ring-2 focus:ring-[#EAB308]/50"
-                    />
-                  ))}
-                </div>
-                <div className="mt-4 flex flex-col items-center gap-2">
-                  <p className="text-center text-xs font-medium text-zinc-500 dark:text-zinc-400">
-                    Sent to +91 {mobile}
-                  </p>
-                  <button type="button" onClick={() => { setStep(1); setOtp(["", "", "", ""]); }} className="text-[#EAB308] hover:underline text-xs font-semibold">
-                    Change Number
-                  </button>
-                </div>
-              </div>
+              )}
 
-              {!isExisting && (
+              {/* Show Full Profile Setup fields for New Registrations OR Client Upgrades */}
+              {(step === 3 || (!isExisting && step === 2)) && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
 
                   {/* --- Profile Image Upload Section --- */}
@@ -700,10 +785,10 @@ export default function Login() {
 
               <button
                 type="submit"
-                disabled={loading || otp.join("").length < 4}
+                disabled={loading || (step === 2 && otp.join("").length < 4)}
                 className="mt-4 w-full rounded-lg bg-[#EAB308] hover:bg-yellow-600 py-3.5 text-sm font-bold text-white transition-colors disabled:opacity-50 flex items-center justify-center"
               >
-                {loading ? "Processing..." : (isExisting ? "Secure Login" : "Register Profile")}
+                {loading ? "Processing..." : step === 3 ? "Upgrade to Architect" : (isExisting ? "Secure Login" : "Register Profile")}
               </button>
             </form>
           )}
