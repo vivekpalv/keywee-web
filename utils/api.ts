@@ -2,8 +2,8 @@
 import axios from 'axios';
 
 // 1. Export the raw BASE_URL for any legacy fetch() calls you still have
-export const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://backend.keywee.in/api/v1/";
-// export const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api/v1/";
+// export const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://backend.keywee.in/api/v1/";
+export const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api/v1/";
 
 export const APP_STORE_URL = "https://apps.apple.com/in/app/keywee/id6787178720";
 export const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.keywee&pcampaignid=web_share";

@@ -830,7 +830,7 @@ export default function Login() {
                 disabled={isSubmitDisabled}
                 className="mt-4 w-full rounded-lg bg-[#EAB308] hover:bg-yellow-600 py-3.5 text-sm font-bold text-white transition-colors disabled:opacity-50 flex items-center justify-center"
               >
-                {loading ? "Processing..." : step === 3 ? "Upgrade to Architect" : (isExisting ? "Secure Login" : "Register Profile")}
+                {loading ? "Processing..." : step === 3 ? "Upgrade to Architect" : (isExisting ? "Secure Login" : "Register")}
               </button>
             </form>
           )}
