@@ -30,6 +30,10 @@ export default function Login() {
   const [otp, setOtp] = useState<string[]>(["", "", "", ""]);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
+  // Legal Consent States
+  const [isPrivacyAccepted, setIsPrivacyAccepted] = useState(false);
+  const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+
   // Profile Image States
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
   const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
@@ -251,6 +255,10 @@ export default function Login() {
 
     // --- STRICT MANDATORY VALIDATION FOR NEW REGISTRATIONS & ROLE SWITCHES ---
     if ((!isExisting && step === 2) || step === 3) {
+      if (!isPrivacyAccepted || !isTermsAccepted) {
+        setError("You must accept the Privacy Notice and Terms of Service to continue.");
+        return;
+      }
       if (!profileImageFile) {
         setError("A profile image is required.");
         return;
@@ -461,6 +469,11 @@ export default function Login() {
     }
   };
 
+  // Determine if the submit button should be disabled
+  const isSetupFlow = (!isExisting && step === 2) || step === 3;
+  const isConsentGiven = isPrivacyAccepted && isTermsAccepted;
+  const isSubmitDisabled = loading || (step === 2 && otp.join("").length < 4) || (isSetupFlow && !isConsentGiven);
+
   return (
     <>
       {/* CROP MODAL PORTAL */}
@@ -601,7 +614,7 @@ export default function Login() {
               )}
 
               {/* Show Full Profile Setup fields for New Registrations OR Client Upgrades */}
-              {(step === 3 || (!isExisting && step === 2)) && (
+              {isSetupFlow && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
 
                   {/* --- Profile Image Upload Section --- */}
@@ -780,12 +793,41 @@ export default function Login() {
                     <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Professional Bio <span className="text-red-500">*</span></label>
                     <textarea name="bio" required rows={3} value={regData.bio} onChange={handleInputChange} placeholder="Tell us about your specialization and past work..." className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-3 text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none focus:border-[#EAB308] focus:ring-1 focus:ring-[#EAB308] resize-none" />
                   </div>
+                  
+                  {/* --- Legal Consents --- */}
+                  <div className="sm:col-span-2 mt-4 space-y-4 border-t border-zinc-200 dark:border-zinc-800 pt-6">
+                    <div className="flex items-start gap-3">
+                      <input 
+                        type="checkbox" 
+                        id="privacy-consent" 
+                        checked={isPrivacyAccepted}
+                        onChange={(e) => setIsPrivacyAccepted(e.target.checked)}
+                        className="mt-1 w-5 h-5 rounded border-zinc-300 text-[#EAB308] focus:ring-[#EAB308] cursor-pointer shrink-0" 
+                      />
+                      <label htmlFor="privacy-consent" className="text-sm text-zinc-700 dark:text-zinc-300 cursor-pointer select-none">
+                        I have read the <a href="/policies" target="_blank" rel="noopener noreferrer" className="text-[#EAB308] hover:underline font-semibold" onClick={(e) => e.stopPropagation()}>Privacy Notice</a> and consent to my data being processed as described in it. <span className="text-red-500">*</span>
+                      </label>
+                    </div>
+
+                    <div className="flex items-start gap-3">
+                      <input 
+                        type="checkbox" 
+                        id="terms-consent" 
+                        checked={isTermsAccepted}
+                        onChange={(e) => setIsTermsAccepted(e.target.checked)}
+                        className="mt-1 w-5 h-5 rounded border-zinc-300 text-[#EAB308] focus:ring-[#EAB308] cursor-pointer shrink-0" 
+                      />
+                      <label htmlFor="terms-consent" className="text-sm text-zinc-700 dark:text-zinc-300 cursor-pointer select-none">
+                        I have read, understood and agree to the <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-[#EAB308] hover:underline font-semibold" onClick={(e) => e.stopPropagation()}>Architect Listing and Platform Services Agreement</a>. <span className="text-red-500">*</span>
+                      </label>
+                    </div>
+                  </div>
                 </div>
               )}
 
               <button
                 type="submit"
-                disabled={loading || (step === 2 && otp.join("").length < 4)}
+                disabled={isSubmitDisabled}
                 className="mt-4 w-full rounded-lg bg-[#EAB308] hover:bg-yellow-600 py-3.5 text-sm font-bold text-white transition-colors disabled:opacity-50 flex items-center justify-center"
               >
                 {loading ? "Processing..." : step === 3 ? "Upgrade to Architect" : (isExisting ? "Secure Login" : "Register Profile")}
