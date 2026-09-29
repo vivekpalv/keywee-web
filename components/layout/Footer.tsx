@@ -24,20 +24,20 @@ export default function Footer() {
             <h4 className="text-sm font-bold text-foreground mb-5">Company</h4>
             <div className="flex flex-col gap-3 text-xs font-medium text-zinc-500 dark:text-zinc-400">
               <Link href="/about" className="hover:text-black dark:hover:text-white transition-colors">About Us</Link>
-              <Link href="/how-it-works" className="hover:text-black dark:hover:text-white transition-colors">How it Works</Link>
-              <Link href="/careers" className="hover:text-black dark:hover:text-white transition-colors">Careers</Link>
+              {/* <Link href="/how-it-works" className="hover:text-black dark:hover:text-white transition-colors">How it Works</Link> */}
+              {/* <Link href="/careers" className="hover:text-black dark:hover:text-white transition-colors">Careers</Link> */}
               <Link href="/contact" className="hover:text-black dark:hover:text-white transition-colors">Contact</Link>
             </div>
           </div>
 
           {/* Links Column 2: For Architects */}
           <div>
-            <h4 className="text-sm font-bold text-foreground mb-5">For Architects</h4>
+            <h4 className="text-sm font-bold text-foreground mb-5">Others</h4>
             <div className="flex flex-col gap-3 text-xs font-medium text-zinc-500 dark:text-zinc-400">
               <Link href="/become-architect" className="hover:text-black dark:hover:text-white transition-colors">Join as Architect</Link>
-              <Link href="/pricing" className="hover:text-black dark:hover:text-white transition-colors">Pricing</Link>
-              <Link href="/success-stories" className="hover:text-black dark:hover:text-white transition-colors">Success Stories</Link>
-              <Link href="/resources" className="hover:text-black dark:hover:text-white transition-colors">Resources</Link>
+              <Link href="/blog" className="hover:text-black dark:hover:text-white transition-colors">Blogs</Link>
+              {/* <Link href="/success-stories" className="hover:text-black dark:hover:text-white transition-colors">Success Stories</Link> */}
+              {/* <Link href="/resources" className="hover:text-black dark:hover:text-white transition-colors">Resources</Link> */}
             </div>
           </div>
 
@@ -45,11 +45,11 @@ export default function Footer() {
           <div>
             <h4 className="text-sm font-bold text-foreground mb-5">Support</h4>
             <div className="flex flex-col gap-3 text-xs font-medium text-zinc-500 dark:text-zinc-400">
-              <Link href="/help" className="hover:text-black dark:hover:text-white transition-colors">Help Center</Link>
-              <Link href="/faq" className="hover:text-black dark:hover:text-white transition-colors">FAQs</Link>
+              {/* <Link href="/help" className="hover:text-black dark:hover:text-white transition-colors">Help Center</Link> */}
+              {/* <Link href="/faq" className="hover:text-black dark:hover:text-white transition-colors">FAQs</Link> */}
               {/* Pointed Privacy Policy to your /policies page */}
-              <Link href="/policies" className="hover:text-black dark:hover:text-white transition-colors">Privacy Policy</Link>
-              <Link href="/terms" className="hover:text-black dark:hover:text-white transition-colors">Terms of Service</Link>
+              <Link href="/policies" className="hover:text-black dark:hover:text-white transition-colors">Privacy Notice</Link>
+              <Link href="/terms" className="hover:text-black dark:hover:text-white transition-colors">Terms of Use</Link>
             </div>
           </div>
 
