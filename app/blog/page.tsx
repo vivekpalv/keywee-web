@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { Metadata } from "next";
 import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
   title: "Keywee Blog | Architecture & Interior Design Insights",
@@ -98,6 +99,8 @@ export default function BlogIndexPage() {
           ))}
         </div>
       </main>
+
+      <Footer />
 
     </div>
     </>
