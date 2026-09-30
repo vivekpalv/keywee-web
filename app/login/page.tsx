@@ -553,7 +553,7 @@ export default function Login() {
           {step === 1 ? (
             <form onSubmit={handleSendOtp} className="flex flex-col gap-5">
               <div>
-                <label className="mb-2 block text-sm font-semibold text-black dark:text-white">Mobile Number</label>
+                <label className="mb-2 block text-sm font-semibold text-black dark:text-white">WhatsApp Number</label>
                 <div className="flex shadow-sm rounded-lg border border-zinc-300 dark:border-zinc-700 overflow-hidden focus-within:border-[#EAB308] focus-within:ring-1 focus-within:ring-[#EAB308] transition-colors bg-transparent">
                   <span className="flex items-center justify-center bg-zinc-50 dark:bg-zinc-900 px-4 text-sm font-semibold text-zinc-600 dark:text-zinc-400 border-r border-zinc-300 dark:border-zinc-700">
                     +91
