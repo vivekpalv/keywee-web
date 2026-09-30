@@ -49,7 +49,7 @@ export default function PlansGrid({ plans }: { plans: Plan[] }) {
 
       const options = {
         key:
-          process.env.RAZORPAY_KEY_ID ||
+          process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
           "YOUR_PUBLIC_KEY_HERE",
 
         amount: data.amount,
