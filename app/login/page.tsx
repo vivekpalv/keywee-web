@@ -540,7 +540,7 @@ export default function Login() {
               {step === 1 ? "Join as Architect" : step === 3 ? "Complete Architect Profile" : (isExisting ? "Welcome Back" : "Architect Profile Setup")}
             </h1>
             <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-              {step === 1 ? "Enter your mobile number to get started" : step === 3 ? "You are registered as a Client. Please provide architect details to switch roles." : "Enter the verification code to continue"}
+              {step === 1 ? "Enter your WhatsApp number to get started" : step === 3 ? "You are registered as a Client. Please provide architect details to switch roles." : "Enter the verification code to continue"}
             </p>
           </div>
 
